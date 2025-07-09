@@ -49,7 +49,7 @@ interface AppStore {
 
 export const useAppStore = create<AppStore>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       // User state
       user: null,
       setUser: (user) => set({ user }),

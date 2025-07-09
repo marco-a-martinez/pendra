@@ -1,9 +1,9 @@
 'use client';
 
 import { useAppStore } from '@/lib/store';
-import { BarChart3, CheckCircle2, Clock, Target, TrendingUp } from 'lucide-react';
+import { CheckCircle2, Clock, Target, TrendingUp } from 'lucide-react';
 import { formatDate } from '@/lib/dateUtils';
-import { isToday, isThisWeek, startOfWeek, endOfWeek } from 'date-fns';
+import { isToday, isThisWeek } from 'date-fns';
 
 export function DashboardView() {
   const { tasks, projects } = useAppStore();

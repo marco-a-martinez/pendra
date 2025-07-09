@@ -28,12 +28,12 @@ export function TaskCard({ task, className }: TaskCardProps) {
 
   const project = projects.find(p => p.id === task.project_id);
   const isCompleted = task.status === 'completed';
-  const overdue = isOverdue(task.due_date);
+  const overdue = isOverdue(task.due_date || null);
 
   const handleToggleComplete = () => {
     updateTask(task.id, {
       status: isCompleted ? 'inbox' : 'completed',
-      completed_at: isCompleted ? null : new Date().toISOString()
+      completed_at: isCompleted ? undefined : new Date().toISOString()
     });
   };
 

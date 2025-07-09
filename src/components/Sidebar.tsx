@@ -2,6 +2,7 @@
 
 import { useAppStore } from '@/lib/store';
 import { cn } from '@/lib/utils';
+import { ViewType } from '@/types';
 import { 
   Inbox, 
   Calendar, 
@@ -82,7 +83,7 @@ export function Sidebar() {
             return (
               <button
                 key={item.id}
-                onClick={() => setCurrentView(item.id as any)}
+                onClick={() => setCurrentView(item.id as ViewType)}
                 className={cn(
                   'sidebar-item w-full',
                   currentView === item.id && 'active'

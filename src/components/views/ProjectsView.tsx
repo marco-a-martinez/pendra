@@ -6,10 +6,10 @@ import { TaskCard } from '@/components/TaskCard';
 import { EmptyState } from '@/components/EmptyState';
 import { Project } from '@/types';
 import { generateId, projectColors } from '@/lib/utils';
-import { FolderOpen, Plus, MoreHorizontal, Edit, Trash2 } from 'lucide-react';
+import { FolderOpen, Plus, MoreHorizontal } from 'lucide-react';
 
 export function ProjectsView() {
-  const { projects, tasks, addProject, updateProject, deleteProject, user } = useAppStore();
+  const { projects, tasks, addProject, user } = useAppStore();
   const [showNewProject, setShowNewProject] = useState(false);
   const [newProjectName, setNewProjectName] = useState('');
   const [selectedColor, setSelectedColor] = useState(projectColors[0]);

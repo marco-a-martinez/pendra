@@ -1,5 +1,8 @@
 import { format, isToday, isTomorrow, isYesterday, startOfDay, endOfDay, addDays, subDays } from 'date-fns';
 
+// Re-export date-fns functions for convenience
+export { isToday, isTomorrow, isYesterday, startOfDay, endOfDay, addDays, subDays };
+
 export const formatDate = (date: Date | string): string => {
   const d = typeof date === 'string' ? new Date(date) : date;
   

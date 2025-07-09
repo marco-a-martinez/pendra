@@ -12,7 +12,7 @@ export function TodayView() {
   // Filter tasks for today
   const todayTasks = tasks.filter(task => 
     task.status === 'today' || 
-    isDueToday(task.due_date) ||
+    isDueToday(task.due_date || null) ||
     (task.scheduled_time && isToday(new Date(task.scheduled_time)))
   );
 
@@ -24,7 +24,7 @@ export function TodayView() {
       <EmptyState
         icon={CheckSquare}
         title="No tasks for today"
-        description="You're all caught up! Add a new task or schedule something for today."
+        description="You&apos;re all caught up! Add a new task or schedule something for today."
         actionLabel="Add Task"
         onAction={() => useAppStore.getState().setTaskModalOpen(true)}
       />
@@ -37,7 +37,7 @@ export function TodayView() {
       {pendingTasks.length > 0 && (
         <div>
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Today's Tasks ({pendingTasks.length})
+            Today&apos;s Tasks ({pendingTasks.length})
           </h2>
           <div className="space-y-3">
             {pendingTasks.map(task => (
@@ -65,7 +65,7 @@ export function TodayView() {
       {todayTasks.length > 0 && (
         <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
           <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Today's Progress
+            Today&apos;s Progress
           </h3>
           <div className="flex items-center space-x-4">
             <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">

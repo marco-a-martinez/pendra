@@ -74,6 +74,7 @@ export function Header() {
             <button className="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
               <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
                 {user?.user_metadata?.avatar_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={user.user_metadata.avatar_url}
                     alt="Profile"
