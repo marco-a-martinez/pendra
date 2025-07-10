@@ -87,7 +87,7 @@ export function LoginPage() {
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-            Pendra v2.0
+            Pendra FIXED
           </h1>
           <p className="text-sm text-gray-600 dark:text-gray-300">
             Modern productivity, beautifully designed
