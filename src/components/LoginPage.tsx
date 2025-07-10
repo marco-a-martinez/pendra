@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { LoadingSpinner } from './LoadingSpinner';
 
-// Tailwind v4 compatible login design - 2025-07-10T04:20:00.000Z
+// Clean single-form login with better alignment - 2025-07-10T04:25:00.000Z
 
 export function LoginPage() {
   const [loading, setLoading] = useState(false);
@@ -90,64 +90,22 @@ export function LoginPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
       <div style={{ width: '100%', maxWidth: '400px' }}>
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-4">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="text-center" style={{ marginBottom: '32px' }}>
+          <div className="bg-indigo-600 rounded-xl flex items-center justify-center mx-auto" style={{ width: '40px', height: '40px', marginBottom: '16px' }}>
+            <svg className="text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ width: '20px', height: '20px' }}>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Pendra</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white" style={{ marginBottom: '8px' }}>Pendra</h1>
           <p className="text-gray-600 dark:text-gray-400 text-sm">
             {isSignUp ? 'Create your account' : 'Welcome back'}
           </p>
         </div>
 
         {/* Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl" style={{ padding: '24px' }}>
-          {/* Tab Switcher */}
-          <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg mb-6" style={{ padding: '4px' }}>
-            <button
-              type="button"
-              onClick={() => {
-                setIsSignUp(false);
-                setError(null);
-                setSuccess(null);
-                setEmail('');
-                setPassword('');
-                setConfirmPassword('');
-              }}
-              className={`flex-1 text-sm font-medium transition-colors ${
-                !isSignUp
-                  ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
-                  : 'text-gray-600 dark:text-gray-400'
-              }`}
-              style={{ padding: '8px 12px', borderRadius: '6px' }}
-            >
-              Sign In
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setIsSignUp(true);
-                setError(null);
-                setSuccess(null);
-                setEmail('');
-                setPassword('');
-                setConfirmPassword('');
-              }}
-              className={`flex-1 text-sm font-medium transition-colors ${
-                isSignUp
-                  ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
-                  : 'text-gray-600 dark:text-gray-400'
-              }`}
-              style={{ padding: '8px 12px', borderRadius: '6px' }}
-            >
-              Sign Up
-            </button>
-          </div>
-
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl" style={{ padding: '32px' }}>
           {/* Form */}
-          <form onSubmit={handleEmailAuth} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <form onSubmit={handleEmailAuth} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             {/* Error Message */}
             {error && (
               <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm rounded-lg" style={{ padding: '12px' }}>
@@ -164,7 +122,7 @@ export function LoginPage() {
 
             {/* Email Field */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300" style={{ marginBottom: '4px' }}>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300" style={{ marginBottom: '6px' }}>
                 Email
               </label>
               <input
@@ -173,7 +131,7 @@ export function LoginPage() {
                 autoComplete="email"
                 required
                 className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                style={{ padding: '8px 12px' }}
+                style={{ padding: '12px 16px' }}
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -182,7 +140,7 @@ export function LoginPage() {
             
             {/* Password Field */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300" style={{ marginBottom: '4px' }}>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300" style={{ marginBottom: '6px' }}>
                 Password
               </label>
               <input
@@ -191,7 +149,7 @@ export function LoginPage() {
                 autoComplete={isSignUp ? 'new-password' : 'current-password'}
                 required
                 className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                style={{ padding: '8px 12px' }}
+                style={{ padding: '12px 16px' }}
                 placeholder={isSignUp ? 'Create password (6+ chars)' : 'Enter password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -201,7 +159,7 @@ export function LoginPage() {
             {/* Confirm Password Field (Sign Up Only) */}
             {isSignUp && (
               <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300" style={{ marginBottom: '4px' }}>
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300" style={{ marginBottom: '6px' }}>
                   Confirm Password
                 </label>
                 <input
@@ -210,7 +168,7 @@ export function LoginPage() {
                   autoComplete="new-password"
                   required
                   className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                  style={{ padding: '8px 12px' }}
+                  style={{ padding: '12px 16px' }}
                   placeholder="Confirm your password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
@@ -223,7 +181,7 @@ export function LoginPage() {
               type="submit"
               disabled={loading}
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-              style={{ padding: '10px 16px', gap: '8px' }}
+              style={{ padding: '12px 16px', gap: '8px', marginTop: '8px' }}
             >
               {loading && <LoadingSpinner className="w-4 h-4" />}
               <span>
@@ -233,6 +191,27 @@ export function LoginPage() {
                 }
               </span>
             </button>
+
+            {/* Toggle Link */}
+            <div className="text-center" style={{ marginTop: '8px' }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsSignUp(!isSignUp);
+                  setError(null);
+                  setSuccess(null);
+                  setEmail('');
+                  setPassword('');
+                  setConfirmPassword('');
+                }}
+                className="text-indigo-600 dark:text-indigo-400 hover:underline text-sm font-medium"
+              >
+                {isSignUp
+                  ? 'Already have an account? Sign in'
+                  : "Don't have an account? Sign up"
+                }
+              </button>
+            </div>
           </form>
         </div>
 
