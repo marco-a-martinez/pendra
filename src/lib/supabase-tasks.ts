@@ -4,8 +4,7 @@ import { Task, Project } from '@/types';
 // Check if Supabase is properly configured
 const isSupabaseConfigured = () => {
   return process.env.NEXT_PUBLIC_SUPABASE_URL && 
-         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
-         process.env.NEXT_PUBLIC_SUPABASE_URL !== 'https://mwiqrrqaxntpvjdkadhfd.supabase.co';
+         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 };
 
 // Task operations
