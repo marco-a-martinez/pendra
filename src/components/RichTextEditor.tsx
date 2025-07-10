@@ -55,6 +55,8 @@ export function RichTextEditor({
             'p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors',
             editor.isActive('bold') && 'bg-gray-100 dark:bg-gray-700'
           )}
+          data-1p-ignore
+          data-lpignore="true"
         >
           <Bold className="w-4 h-4" />
         </button>
@@ -65,6 +67,8 @@ export function RichTextEditor({
             'p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors',
             editor.isActive('italic') && 'bg-gray-100 dark:bg-gray-700'
           )}
+          data-1p-ignore
+          data-lpignore="true"
         >
           <Italic className="w-4 h-4" />
         </button>
@@ -76,6 +80,8 @@ export function RichTextEditor({
             'p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors',
             editor.isActive('bulletList') && 'bg-gray-100 dark:bg-gray-700'
           )}
+          data-1p-ignore
+          data-lpignore="true"
         >
           <List className="w-4 h-4" />
         </button>
@@ -86,6 +92,8 @@ export function RichTextEditor({
             'p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors',
             editor.isActive('orderedList') && 'bg-gray-100 dark:bg-gray-700'
           )}
+          data-1p-ignore
+          data-lpignore="true"
         >
           <ListOrdered className="w-4 h-4" />
         </button>

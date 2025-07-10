@@ -132,8 +132,11 @@ export function TaskModal() {
             {editingTask ? 'Edit Task' : 'Create New Task'}
           </h2>
           <button
+            type="button"
             onClick={handleClose}
             className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            data-1p-ignore
+            data-lpignore="true"
           >
             <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
           </button>
@@ -271,6 +274,8 @@ export function TaskModal() {
                     type="button"
                     onClick={() => removeTag(tag)}
                     className="ml-1 text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-100"
+                    data-1p-ignore
+                    data-lpignore="true"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -290,6 +295,8 @@ export function TaskModal() {
                 type="button"
                 onClick={addTag}
                 className="btn-secondary"
+                data-1p-ignore
+                data-lpignore="true"
               >
                 Add
               </button>
@@ -306,6 +313,8 @@ export function TaskModal() {
                 type="button"
                 onClick={() => setFormData(prev => ({ ...prev, color: '' }))}
                 className={`w-8 h-8 rounded-full border-2 ${!formData.color ? 'border-gray-400' : 'border-gray-200'} bg-gray-100 dark:bg-gray-700`}
+                data-1p-ignore
+                data-lpignore="true"
               />
               {projectColors.map(color => (
                 <button
@@ -314,6 +323,8 @@ export function TaskModal() {
                   onClick={() => setFormData(prev => ({ ...prev, color }))}
                   className={`w-8 h-8 rounded-full border-2 ${formData.color === color ? 'border-gray-400' : 'border-gray-200'}`}
                   style={{ backgroundColor: color }}
+                  data-1p-ignore
+                  data-lpignore="true"
                 />
               ))}
             </div>
@@ -325,12 +336,16 @@ export function TaskModal() {
               type="button"
               onClick={handleClose}
               className="btn-secondary"
+              data-1p-ignore
+              data-lpignore="true"
             >
               Cancel
             </button>
             <button
               type="submit"
               className="btn-primary"
+              data-1p-ignore
+              data-lpignore="true"
             >
               {editingTask ? 'Update Task' : 'Create Task'}
             </button>

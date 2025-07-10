@@ -70,14 +70,24 @@ export function Header() {
           </button>
 
           {/* Notifications */}
-          <button className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative">
+          <button 
+            type="button"
+            className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative"
+            data-1p-ignore
+            data-lpignore="true"
+          >
             <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300" />
             <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
           </button>
 
           {/* User Menu */}
           <div className="relative group">
-            <button className="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+            <button 
+              type="button"
+              className="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              data-1p-ignore
+              data-lpignore="true"
+            >
               <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
                 {user?.user_metadata?.avatar_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -104,8 +114,11 @@ export function Header() {
             <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
               <div className="py-1">
                 <button
+                  type="button"
                   onClick={handleSignOut}
                   className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  data-1p-ignore
+                  data-lpignore="true"
                 >
                   <LogOut className="w-4 h-4 mr-3" />
                   Sign Out

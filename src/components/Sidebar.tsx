@@ -67,8 +67,11 @@ export function Sidebar() {
             </h1>
           )}
           <button
+            type="button"
             onClick={toggleSidebar}
             className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
+            data-1p-ignore
+            data-lpignore="true"
           >
             <Menu className="w-5 h-5 text-gray-600 dark:text-gray-300" />
           </button>
@@ -83,11 +86,14 @@ export function Sidebar() {
             return (
               <button
                 key={item.id}
+                type="button"
                 onClick={() => setCurrentView(item.id as ViewType)}
                 className={cn(
                   'sidebar-item w-full',
                   currentView === item.id && 'active'
                 )}
+                data-1p-ignore
+                data-lpignore="true"
               >
                 <Icon className="w-5 h-5 mr-3 flex-shrink-0" />
                 {!sidebarCollapsed && (
@@ -112,7 +118,12 @@ export function Sidebar() {
                   <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Projects
                   </h3>
-                  <button className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <button 
+                    type="button"
+                    className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+                    data-1p-ignore
+                    data-lpignore="true"
+                  >
                     <Plus className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                   </button>
                 </div>
@@ -120,7 +131,10 @@ export function Sidebar() {
                   {projects.slice(0, 5).map((project) => (
                     <button
                       key={project.id}
+                      type="button"
                       className="sidebar-item w-full"
+                      data-1p-ignore
+                      data-lpignore="true"
                     >
                       <div 
                         className="w-3 h-3 rounded-full mr-3 flex-shrink-0"
@@ -143,8 +157,11 @@ export function Sidebar() {
         {/* Footer */}
         <div className="p-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
           <button
+            type="button"
             onClick={toggleDarkMode}
             className="sidebar-item w-full"
+            data-1p-ignore
+            data-lpignore="true"
           >
             {darkMode ? (
               <Sun className="w-5 h-5 mr-3 flex-shrink-0" />
@@ -158,7 +175,12 @@ export function Sidebar() {
             )}
           </button>
           
-          <button className="sidebar-item w-full">
+          <button 
+            type="button"
+            className="sidebar-item w-full"
+            data-1p-ignore
+            data-lpignore="true"
+          >
             <Settings className="w-5 h-5 mr-3 flex-shrink-0" />
             {!sidebarCollapsed && (
               <span className="flex-1 text-left">Settings</span>

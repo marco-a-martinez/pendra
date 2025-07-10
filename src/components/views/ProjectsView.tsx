@@ -94,19 +94,28 @@ export function ProjectsView() {
                         selectedColor === color ? 'border-gray-400' : 'border-gray-200'
                       }`}
                       style={{ backgroundColor: color }}
+                      data-1p-ignore
+                      data-lpignore="true"
                     />
                   ))}
                 </div>
               </div>
               
               <div className="flex space-x-3">
-                <button type="submit" className="btn-primary">
+                <button 
+                  type="submit" 
+                  className="btn-primary"
+                  data-1p-ignore
+                  data-lpignore="true"
+                >
                   Create Project
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowNewProject(false)}
                   className="btn-secondary"
+                  data-1p-ignore
+                  data-lpignore="true"
                 >
                   Cancel
                 </button>
@@ -126,8 +135,11 @@ export function ProjectsView() {
           {projects.length} project{projects.length !== 1 ? 's' : ''}
         </p>
         <button
+          type="button"
           onClick={() => setShowNewProject(true)}
           className="btn-primary flex items-center space-x-2"
+          data-1p-ignore
+          data-lpignore="true"
         >
           <Plus className="w-4 h-4" />
           <span>New Project</span>
