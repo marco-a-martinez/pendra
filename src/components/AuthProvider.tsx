@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { User, AuthResponse } from '@supabase/supabase-js';
+import { User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/lib/store';
 import { LoginPage } from './LoginPage';
@@ -34,37 +34,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Get initial session with timeout
     const getInitialSession = async () => {
       try {
-        // Add timeout to prevent hanging
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Session timeout')), 10000)
-        );
-        
-        const sessionPromise = supabase.auth.getSession();
-        
-        const result = await Promise.race([sessionPromise, timeoutPromise]);
-        const { data: { session } } = result as AuthResponse;
-        
-        setUser(session?.user ?? null);
-        
-        if (session?.user) {
-          // Database trigger handles user creation automatically
-          
-          setStoreUser({
-            id: session.user.id,
-            email: session.user.email!,
-            name: session.user.user_metadata?.full_name || session.user.user_metadata?.name,
-            avatar_url: session.user.user_metadata?.avatar_url,
-            created_at: session.user.created_at,
-            updated_at: session.user.updated_at || session.user.created_at,
-          });
-        } else {
+        // Set a timeout to ensure loading state doesn't hang
+        const timeoutId = setTimeout(() => {
+          console.warn('Auth session timeout, proceeding without session');
+          setUser(null);
           setStoreUser(null);
+          setLoading(false);
+        }, 5000);
+        
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        // Clear timeout if we got a response
+        clearTimeout(timeoutId);
+        
+        if (error) {
+          console.error('Auth session error:', error);
+          setUser(null);
+          setStoreUser(null);
+        } else {
+          setUser(session?.user ?? null);
+          
+          if (session?.user) {
+            // Database trigger handles user creation automatically
+            
+            setStoreUser({
+              id: session.user.id,
+              email: session.user.email!,
+              name: session.user.user_metadata?.full_name || session.user.user_metadata?.name,
+              avatar_url: session.user.user_metadata?.avatar_url,
+              created_at: session.user.created_at,
+              updated_at: session.user.updated_at || session.user.created_at,
+            });
+          } else {
+            setStoreUser(null);
+          }
         }
+        
+        setLoading(false);
       } catch (error) {
         console.error('Auth session error:', error);
         setUser(null);
         setStoreUser(null);
-      } finally {
         setLoading(false);
       }
     };
