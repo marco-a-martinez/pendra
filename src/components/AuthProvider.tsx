@@ -62,45 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Try to ensure user exists with fallback logic
-          if (event === 'SIGNED_IN') {
-            try {
-              // Wait a moment for trigger to complete
-              await new Promise(resolve => setTimeout(resolve, 1000));
-              
-              // Check if user exists
-              const { data: existingUser, error: selectError } = await supabase
-                .from('users')
-                .select('id')
-                .eq('id', session.user.id)
-                .maybeSingle();
-              
-              if (selectError) {
-                console.error('Error checking user existence:', selectError);
-              }
-              
-              // If user doesn't exist, create as fallback
-              if (!existingUser && !selectError) {
-                console.log('User not found, creating fallback record');
-                const { error: insertError } = await supabase
-                  .from('users')
-                  .insert({
-                    id: session.user.id,
-                    email: session.user.email!,
-                    name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || null,
-                    avatar_url: session.user.user_metadata?.avatar_url || null,
-                  });
-                
-                if (insertError) {
-                  console.error('Fallback user creation failed:', insertError);
-                } else {
-                  console.log('Fallback user creation successful');
-                }
-              }
-            } catch (error) {
-              console.error('Error in user creation fallback:', error);
-            }
-          }
+          // User creation is handled in LoginPage signup
           
           setStoreUser({
             id: session.user.id,

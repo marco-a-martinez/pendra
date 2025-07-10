@@ -52,6 +52,28 @@ export function LoginPage() {
           setError(`Signup failed: ${error.message}`);
         } else if (data.user) {
           console.log('Signup successful, user created:', data.user.id);
+          
+          // Create user record manually since trigger might be failing
+          try {
+            const { error: userError } = await supabase
+              .from('users')
+              .insert({
+                id: data.user.id,
+                email: data.user.email!,
+                name: data.user.user_metadata?.full_name || null,
+                avatar_url: data.user.user_metadata?.avatar_url || null,
+              });
+            
+            if (userError) {
+              console.error('User record creation failed:', userError);
+              // Don't show error to user since auth worked
+            } else {
+              console.log('User record created successfully');
+            }
+          } catch (err) {
+            console.error('Unexpected error creating user record:', err);
+          }
+          
           setError('Account created! Check your email for a confirmation link.');
         } else {
           setError('Signup completed but no user data returned.');
