@@ -200,18 +200,43 @@ A modern, full-featured productivity app combining the best of Things 3 and Sort
 
 ## Deployment
 
+### ⚠️ Critical: Environment Variables Required
+
+**The app requires Supabase environment variables to build successfully.** Without these, Vercel deployments will fail.
+
+### Quick Setup
+
+**Option 1: Automated Script**
+```bash
+# Install Vercel CLI if not already installed
+npm install -g vercel
+
+# Run the setup script
+./scripts/setup-vercel-env.sh
+```
+
+**Option 2: Manual Configuration**
+
+See detailed instructions in [`VERCEL_DEPLOYMENT.md`](./VERCEL_DEPLOYMENT.md)
+
 ### Deploy to Vercel
 
 1. **Connect your repository to Vercel**
    - Go to [vercel.com](https://vercel.com)
    - Import your GitHub repository
 
-2. **Configure environment variables**
+2. **🔴 CRITICAL: Configure environment variables**
    
-   Add the same environment variables from your `.env.local` file to Vercel:
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-   - `NEXT_PUBLIC_APP_URL` (set to your Vercel domain)
+   **Required variables** (add these in Vercel dashboard):
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=https://mwiqrrqaxntpvjdkadhfd.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im13aXFycWF4bnRwdmpka2FkaGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDU0MTYsImV4cCI6MjA2NzY4MTQxNn0.oyDPn3nbg3YssjMbL2gbcQ6mbb8ZOW_KZZMf3ySA-iM
+   ```
+   
+   **How to add:**
+   - Go to Project Settings → Environment Variables
+   - Add each variable for Production, Preview, and Development
+   - Save and redeploy
 
 3. **Update Supabase settings**
    
@@ -222,7 +247,7 @@ A modern, full-featured productivity app combining the best of Things 3 and Sort
 
 4. **Deploy**
    
-   Vercel will automatically deploy your app when you push to your main branch.
+   After adding environment variables, Vercel will automatically deploy your app when you push to your main branch.
 
 ## Project Structure
 
