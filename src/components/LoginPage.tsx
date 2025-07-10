@@ -177,12 +177,13 @@ export function LoginPage() {
             )}
 
             {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-              style={{ padding: '12px 16px', gap: '8px', marginTop: '8px' }}
-            >
+            <div className="flex justify-center">
+              <button
+                type="submit"
+                disabled={loading}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                style={{ padding: '12px 24px', gap: '8px', marginTop: '8px', minWidth: '140px' }}
+              >
               {loading && <LoadingSpinner className="w-4 h-4" />}
               <span>
                 {loading
@@ -190,7 +191,8 @@ export function LoginPage() {
                   : (isSignUp ? 'Create Account' : 'Sign In')
                 }
               </span>
-            </button>
+              </button>
+            </div>
 
             {/* Toggle Link */}
             <div className="text-center" style={{ marginTop: '8px' }}>
@@ -224,7 +226,7 @@ export function LoginPage() {
             </a>{' '}
             and{' '}
             <a href="#" className="text-indigo-600 dark:text-indigo-400 hover:underline">
-              Privacy Policy
+              Privacy&nbsp;Policy
             </a>
           </p>
         </div>
