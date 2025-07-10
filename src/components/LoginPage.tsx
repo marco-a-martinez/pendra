@@ -43,14 +43,18 @@ export function LoginPage() {
       setError(null);
 
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
         });
         if (error) {
-          setError(error.message);
+          console.error('Signup error:', error);
+          setError(`Signup failed: ${error.message}`);
+        } else if (data.user) {
+          console.log('Signup successful, user created:', data.user.id);
+          setError('Account created! Check your email for a confirmation link.');
         } else {
-          setError('Check your email for a confirmation link!');
+          setError('Signup completed but no user data returned.');
         }
       } else {
         const { error } = await supabase.auth.signInWithPassword({
