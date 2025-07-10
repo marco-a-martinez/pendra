@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAppStore } from '@/lib/store';
 import { TaskCard } from '@/components/TaskCard';
 import { EmptyState } from '@/components/EmptyState';
@@ -14,6 +14,17 @@ export function ProjectsView() {
   const [newProjectName, setNewProjectName] = useState('');
   const [selectedColor, setSelectedColor] = useState(projectColors[0]);
   const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    const handleShowNewProject = () => {
+      setShowNewProject(true);
+    };
+
+    window.addEventListener('showNewProject', handleShowNewProject);
+    return () => {
+      window.removeEventListener('showNewProject', handleShowNewProject);
+    };
+  }, []);
 
   const handleCreateProject = (e: React.FormEvent) => {
     e.preventDefault();

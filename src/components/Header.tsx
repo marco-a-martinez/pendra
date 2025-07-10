@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
+import { useState } from 'react';
 import { useAppStore } from '@/lib/store';
 import { useAuth } from './AuthProvider';
 import { Plus, Search, Bell } from 'lucide-react';
@@ -17,8 +18,9 @@ const viewTitles = {
 };
 
 export function Header() {
-  const { currentView, selectedDate, setTaskModalOpen } = useAppStore();
+  const { currentView, selectedDate, setTaskModalOpen, searchQuery, setSearchQuery } = useAppStore();
   const { user } = useAuth();
+  const [showNotifications, setShowNotifications] = useState(false);
 
 
 
@@ -48,6 +50,8 @@ export function Header() {
             <input
               type="text"
               placeholder="Search tasks..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 pr-4 py-2 w-48 lg:w-64 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
               data-1p-ignore
               data-lpignore="true"
@@ -68,15 +72,29 @@ export function Header() {
           </button>
 
           {/* Notifications */}
-          <button 
-            type="button"
-            className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative"
-            data-1p-ignore
-            data-lpignore="true"
-          >
-            <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-          </button>
+          <div className="relative">
+            <button 
+              type="button"
+              onClick={() => setShowNotifications(!showNotifications)}
+              className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative"
+              data-1p-ignore
+              data-lpignore="true"
+            >
+              <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+            </button>
+            
+            {showNotifications && (
+              <div className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                  <h3 className="font-semibold text-gray-900 dark:text-white">Notifications</h3>
+                </div>
+                <div className="p-4">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">No new notifications</p>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* User Menu */}
           <div className="relative group">

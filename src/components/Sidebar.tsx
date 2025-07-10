@@ -84,6 +84,14 @@ export function Sidebar() {
             </h3>
             <button
               type="button"
+              onClick={() => {
+                setCurrentView('projects');
+                // Trigger the new project form in ProjectsView
+                setTimeout(() => {
+                  const event = new CustomEvent('showNewProject');
+                  window.dispatchEvent(event);
+                }, 100);
+              }}
               className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
               data-1p-ignore
               data-lpignore="true"

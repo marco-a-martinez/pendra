@@ -23,6 +23,9 @@ interface AppStore {
   sidebarCollapsed: boolean;
   toggleSidebar: () => void;
   
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+  
   // Data state
   tasks: Task[];
   setTasks: (tasks: Task[] | ((prev: Task[]) => Task[])) => void;
@@ -69,6 +72,9 @@ export const useAppStore = create<AppStore>()(
       
       sidebarCollapsed: false,
       toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
+      
+      searchQuery: '',
+      setSearchQuery: (query) => set({ searchQuery: query }),
       
       // Data state
       tasks: [],

@@ -7,14 +7,22 @@ import { CheckSquare } from 'lucide-react';
 import { isToday, isDueToday } from '@/lib/dateUtils';
 
 export function TodayView() {
-  const { tasks, setTaskModalOpen } = useAppStore();
+  const { tasks, setTaskModalOpen, searchQuery } = useAppStore();
 
   // Filter tasks for today
-  const todayTasks = tasks.filter(task => 
+  let todayTasks = tasks.filter(task => 
     task.status === 'today' || 
     isDueToday(task.due_date || null) ||
     (task.scheduled_time && isToday(new Date(task.scheduled_time)))
   );
+
+  // Apply search filter
+  if (searchQuery) {
+    todayTasks = todayTasks.filter(task => 
+      task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (task.description && task.description.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
+  }
 
   const completedTasks = todayTasks.filter(task => task.status === 'completed');
   const pendingTasks = todayTasks.filter(task => task.status !== 'completed');
