@@ -8,16 +8,17 @@ import { supabase } from '@/lib/supabase';
 
 export function useTasks() {
   const { user } = useAuth();
+  const { user: appUser } = useAppStore();
   const { setTasks, setProjects, setIsLoading } = useAppStore();
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || !appUser) return;
 
     const loadData = async () => {
       setIsLoading(true);
       try {
         // Fetch tasks
-        const { data: tasksData, error: tasksError } = await fetchTasks(user.id);
+        const { data: tasksData, error: tasksError } = await fetchTasks(appUser.id);
         if (tasksError) {
           console.error('Error fetching tasks:', tasksError);
         } else if (tasksData) {
@@ -25,7 +26,7 @@ export function useTasks() {
         }
 
         // Fetch projects
-        const { data: projectsData, error: projectsError } = await fetchProjects(user.id);
+        const { data: projectsData, error: projectsError } = await fetchProjects(appUser.id);
         if (projectsError) {
           console.error('Error fetching projects:', projectsError);
         } else if (projectsData) {
@@ -49,7 +50,7 @@ export function useTasks() {
           event: '*',
           schema: 'public',
           table: 'tasks',
-          filter: `user_id=eq.${user.id}`,
+          filter: `user_id=eq.${appUser.id}`,
         },
         (payload) => {
           if (payload.eventType === 'INSERT' && payload.new) {
@@ -77,7 +78,7 @@ export function useTasks() {
           event: '*',
           schema: 'public',
           table: 'projects',
-          filter: `user_id=eq.${user.id}`,
+          filter: `user_id=eq.${appUser.id}`,
         },
         (payload) => {
           if (payload.eventType === 'INSERT' && payload.new) {
@@ -101,5 +102,5 @@ export function useTasks() {
       tasksSubscription.unsubscribe();
       projectsSubscription.unsubscribe();
     };
-  }, [user, setTasks, setProjects, setIsLoading]);
+  }, [user, appUser, setTasks, setProjects, setIsLoading]);
 }

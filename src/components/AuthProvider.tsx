@@ -16,50 +16,44 @@ const AuthContext = createContext<AuthContextType>({ user: null, loading: true }
 export const useAuth = () => useContext(AuthContext);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
   const { setUser: setAppUser } = useAppStore();
 
+  // Mock user for testing without authentication
+  const mockUser: SupabaseUser = {
+    id: 'test-user-123',
+    aud: 'authenticated',
+    role: 'authenticated',
+    email: 'test@example.com',
+    email_confirmed_at: new Date().toISOString(),
+    phone: '',
+    confirmed_at: new Date().toISOString(),
+    last_sign_in_at: new Date().toISOString(),
+    app_metadata: { provider: 'email', providers: ['email'] },
+    user_metadata: {
+      full_name: 'Test User',
+      name: 'Test User',
+      avatar_url: '',
+    },
+    identities: [],
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  };
+
+  const [user] = useState<SupabaseUser>(mockUser);
+
   useEffect(() => {
-    // Check active sessions and sets the user
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        // Create or update user in our database
-        const appUser: User = {
-          id: session.user.id,
-          email: session.user.email || '',
-          name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || '',
-          avatar_url: session.user.user_metadata?.avatar_url || '',
-          created_at: session.user.created_at || new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
-        setAppUser(appUser);
-      } else {
-        setAppUser(null);
-      }
-      setLoading(false);
-    });
-
-    // Listen for changes on auth state (logged in, signed out, etc.)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        const appUser: User = {
-          id: session.user.id,
-          email: session.user.email || '',
-          name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || '',
-          avatar_url: session.user.user_metadata?.avatar_url || '',
-          created_at: session.user.created_at || new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
-        setAppUser(appUser);
-      } else {
-        setAppUser(null);
-      }
-    });
-
-    return () => subscription.unsubscribe();
+    // Set mock user in app store
+    const appUser: User = {
+      id: mockUser.id,
+      email: mockUser.email || '',
+      name: mockUser.user_metadata?.full_name || mockUser.user_metadata?.name || '',
+      avatar_url: mockUser.user_metadata?.avatar_url || '',
+      created_at: mockUser.created_at || new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    setAppUser(appUser);
+    setLoading(false);
   }, [setAppUser]);
 
   return (
