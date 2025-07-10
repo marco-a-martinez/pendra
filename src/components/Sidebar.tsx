@@ -61,7 +61,7 @@ export function Sidebar() {
     )}>
       <div className="flex flex-col h-full">
         {/* Header */}
-        <div className="flex items-center p-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-start p-4 border-b border-gray-200 dark:border-gray-700">
           {!sidebarCollapsed && (
             <h1 className="text-xl font-bold text-gray-900 dark:text-white truncate flex-1 mr-2">
               Pendra
