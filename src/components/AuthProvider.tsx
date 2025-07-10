@@ -21,7 +21,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Mock user for testing without authentication
   const mockUser: SupabaseUser = {
-    id: 'test-user-123',
+    id: '550e8400-e29b-41d4-a716-446655440000',
     aud: 'authenticated',
     role: 'authenticated',
     email: 'test@example.com',

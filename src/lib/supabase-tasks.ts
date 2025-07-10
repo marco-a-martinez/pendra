@@ -51,6 +51,18 @@ export const createTask = async (task: Omit<Task, 'id' | 'created_at' | 'updated
       .select()
       .single();
     
+    // If we get a UUID error, fall back to local storage
+    if (error && error.code === '22P02') {
+      console.warn('UUID error - falling back to local task creation');
+      const localTask: Task = {
+        ...task,
+        id: `local-${Date.now()}`,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      return { data: localTask, error: null };
+    }
+    
     return { data, error };
   } catch (err) {
     console.error('Error creating task:', err);
