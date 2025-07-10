@@ -1,11 +1,11 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { Database } from '@/types/database';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 
 // Create a fallback client if environment variables are missing
-const createSupabaseClient = () => {
+const createSupabaseClient = (): SupabaseClient<Database> => {
   if (!supabaseUrl || !supabaseAnonKey) {
     console.error('Missing Supabase environment variables');
     // Return a mock client that won't break the app
@@ -16,7 +16,7 @@ const createSupabaseClient = () => {
         signOut: () => Promise.resolve({ error: null }),
         getUser: () => Promise.resolve({ data: { user: null }, error: null })
       }
-    } as any;
+    } as SupabaseClient<Database>;
   }
   
   return createClient<Database>(supabaseUrl, supabaseAnonKey, {
