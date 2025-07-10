@@ -1,7 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { useAppStore } from '@/lib/store';
 import { AppLayout } from '@/components/AppLayout';
 import { TaskModal } from '@/components/TaskModal';
@@ -16,15 +14,7 @@ import { useAuth } from '@/components/AuthProvider';
 
 export default function HomePage() {
   const { currentView } = useAppStore();
-  const { user, loading } = useAuth();
-  const router = useRouter();
-  
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push('/login');
-    }
-  }, [user, loading, router]);
+  const { loading } = useAuth();
   
   // Load tasks and projects from Supabase
   useTasks();
@@ -36,11 +26,6 @@ export default function HomePage() {
         <div className="text-lg">Loading...</div>
       </div>
     );
-  }
-  
-  // Don't render app if not authenticated
-  if (!user) {
-    return null;
   }
 
   const renderView = () => {

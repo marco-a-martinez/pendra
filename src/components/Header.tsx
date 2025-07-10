@@ -3,8 +3,7 @@
 
 import { useAppStore } from '@/lib/store';
 import { useAuth } from './AuthProvider';
-import { signOut } from '@/lib/supabase';
-import { Plus, Search, Bell, LogOut } from 'lucide-react';
+import { Plus, Search, Bell } from 'lucide-react';
 import { getInitials } from '@/lib/utils';
 import { formatDate } from '@/lib/dateUtils';
 
@@ -21,9 +20,7 @@ export function Header() {
   const { currentView, selectedDate, setTaskModalOpen } = useAppStore();
   const { user } = useAuth();
 
-  const handleSignOut = async () => {
-    await signOut();
-  };
+
 
   const getViewTitle = () => {
     if (currentView === 'today') {
@@ -112,20 +109,7 @@ export function Header() {
             </button>
 
             {/* Dropdown Menu */}
-            <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-              <div className="py-1">
-                <button
-                  type="button"
-                  onClick={handleSignOut}
-                  className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                  data-1p-ignore
-                  data-lpignore="true"
-                >
-                  <LogOut className="w-4 h-4 mr-3" />
-                  Sign Out
-                </button>
-              </div>
-            </div>
+
           </div>
         </div>
       </div>
