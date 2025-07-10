@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { User } from '@supabase/supabase-js';
+import { User, AuthResponse } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/lib/store';
 import { LoginPage } from './LoginPage';
@@ -41,7 +41,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         const sessionPromise = supabase.auth.getSession();
         
-        const { data: { session } } = await Promise.race([sessionPromise, timeoutPromise]) as any;
+        const result = await Promise.race([sessionPromise, timeoutPromise]);
+        const { data: { session } } = result as AuthResponse;
         
         setUser(session?.user ?? null);
         
