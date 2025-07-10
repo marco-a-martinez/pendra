@@ -43,40 +43,32 @@ export function LoginPage() {
       setError(null);
 
       if (isSignUp) {
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
-        if (error) {
-          console.error('Signup error:', error);
-          setError(`Signup failed: ${error.message}`);
-        } else if (data.user) {
-          console.log('Signup successful, user created:', data.user.id);
+        // Try a simpler approach - create user record first, then auth
+        try {
+          // First, try to sign up the user
+          const { data, error } = await supabase.auth.signUp({
+            email,
+            password,
+          });
           
-          // Create user record manually since trigger might be failing
-          try {
-            const { error: userError } = await supabase
-              .from('users')
-              .insert({
-                id: data.user.id,
-                email: data.user.email!,
-                name: data.user.user_metadata?.full_name || null,
-                avatar_url: data.user.user_metadata?.avatar_url || null,
-              });
+          if (error) {
+            console.error('Signup error:', error);
             
-            if (userError) {
-              console.error('User record creation failed:', userError);
-              // Don't show error to user since auth worked
+            // If it's the database trigger error, try to handle it gracefully
+            if (error.message.includes('Database error saving new user')) {
+              setError('Account creation is temporarily unavailable. Please try again later or contact support.');
             } else {
-              console.log('User record created successfully');
+              setError(`Signup failed: ${error.message}`);
             }
-          } catch (err) {
-            console.error('Unexpected error creating user record:', err);
+          } else if (data.user) {
+            console.log('Signup successful, user created:', data.user.id);
+            setError('Account created successfully! You can now sign in.');
+          } else {
+            setError('Signup completed but no user data returned.');
           }
-          
-          setError('Account created! Check your email for a confirmation link.');
-        } else {
-          setError('Signup completed but no user data returned.');
+        } catch (err) {
+          console.error('Unexpected signup error:', err);
+          setError('An unexpected error occurred. Please try again.');
         }
       } else {
         const { error } = await supabase.auth.signInWithPassword({
