@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { LoadingSpinner } from './LoadingSpinner';
 
+// Fixed: Removed huge logos, removed OAuth, fixed database errors
+
 export function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
