@@ -230,3 +230,34 @@ p {
     padding: 0.75rem;
   }
 }
+
+/* Fix layout and z-index issues */
+.app-layout {
+  position: relative;
+  isolation: isolate;
+}
+
+.header {
+  position: relative;
+  z-index: 10;
+}
+
+.sidebar {
+  position: fixed;
+  z-index: 20;
+}
+
+.modal {
+  position: fixed;
+  z-index: 50;
+  isolation: isolate;
+}
+
+/* Prevent text overflow and layout breaks */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  overflow-x: hidden;
+}
