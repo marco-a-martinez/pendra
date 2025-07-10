@@ -53,16 +53,32 @@ export function LoginPage() {
           
           if (error) {
             console.error('Signup error:', error);
-            
-            // If it's the database trigger error, try to handle it gracefully
-            if (error.message.includes('Database error saving new user')) {
-              setError('Account creation is temporarily unavailable. Please try again later or contact support.');
-            } else {
-              setError(`Signup failed: ${error.message}`);
-            }
+            setError(`Signup failed: ${error.message}`);
           } else if (data.user) {
             console.log('Signup successful, user created:', data.user.id);
-            setError('Account created successfully! You can now sign in.');
+            
+            // Create user record manually since we disabled the trigger
+            try {
+              const { error: userError } = await supabase
+                .from('users')
+                .insert({
+                  id: data.user.id,
+                  email: data.user.email!,
+                  name: data.user.user_metadata?.full_name || null,
+                  avatar_url: data.user.user_metadata?.avatar_url || null,
+                });
+              
+              if (userError) {
+                console.error('User record creation failed:', userError);
+                setError('Account created but profile setup failed. Please contact support.');
+              } else {
+                console.log('User record created successfully');
+                setError('Account created successfully! You can now sign in.');
+              }
+            } catch (err) {
+              console.error('Unexpected error creating user record:', err);
+              setError('Account created but profile setup failed. Please contact support.');
+            }
           } else {
             setError('Signup completed but no user data returned.');
           }
