@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { useAppStore } from '@/lib/store';
@@ -89,7 +90,8 @@ export function Header() {
               data-lpignore="true"
             >
               <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
-                {(user as any)?.user_metadata?.avatar_url ? (
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                {(user as unknown as { user_metadata?: { avatar_url?: string } })?.user_metadata?.avatar_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={user.user_metadata.avatar_url}
