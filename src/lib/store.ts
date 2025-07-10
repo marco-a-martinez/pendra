@@ -122,6 +122,7 @@ export const useAppStore = create<AppStore>()(
         sidebarCollapsed: state.sidebarCollapsed,
         calendarView: state.calendarView,
         currentView: state.currentView,
+        // Explicitly exclude modal states and other non-persistent data
       }),
     }
   )
