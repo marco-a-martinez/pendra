@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { LoadingSpinner } from './LoadingSpinner';
 
 // Fixed: Removed huge logos, removed OAuth, fixed database errors
+// Cache bust: Force clean build - 2023-10-01T12:00:00.000Z
 
 export function LoginPage() {
   const [loading, setLoading] = useState(false);
