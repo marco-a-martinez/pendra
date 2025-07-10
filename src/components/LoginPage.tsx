@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { LoadingSpinner } from './LoadingSpinner';
 
-// Clean, properly sized modern login - 2025-07-10T04:15:00.000Z
+// Tailwind v4 compatible login design - 2025-07-10T04:20:00.000Z
 
 export function LoginPage() {
   const [loading, setLoading] = useState(false);
@@ -88,7 +88,7 @@ export function LoginPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
-      <div className="w-full max-w-sm">
+      <div style={{ width: '100%', maxWidth: '400px' }}>
         {/* Header */}
         <div className="text-center mb-8">
           <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-4">
@@ -103,9 +103,9 @@ export function LoginPage() {
         </div>
 
         {/* Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl" style={{ padding: '24px' }}>
           {/* Tab Switcher */}
-          <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1 mb-6">
+          <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg mb-6" style={{ padding: '4px' }}>
             <button
               type="button"
               onClick={() => {
@@ -116,11 +116,12 @@ export function LoginPage() {
                 setPassword('');
                 setConfirmPassword('');
               }}
-              className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
+              className={`flex-1 text-sm font-medium transition-colors ${
                 !isSignUp
                   ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
                   : 'text-gray-600 dark:text-gray-400'
               }`}
+              style={{ padding: '8px 12px', borderRadius: '6px' }}
             >
               Sign In
             </button>
@@ -134,35 +135,36 @@ export function LoginPage() {
                 setPassword('');
                 setConfirmPassword('');
               }}
-              className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
+              className={`flex-1 text-sm font-medium transition-colors ${
                 isSignUp
                   ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
                   : 'text-gray-600 dark:text-gray-400'
               }`}
+              style={{ padding: '8px 12px', borderRadius: '6px' }}
             >
               Sign Up
             </button>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleEmailAuth} className="space-y-4">
+          <form onSubmit={handleEmailAuth} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {/* Error Message */}
             {error && (
-              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-3 py-2 rounded-lg text-sm">
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm rounded-lg" style={{ padding: '12px' }}>
                 {error}
               </div>
             )}
             
             {/* Success Message */}
             {success && (
-              <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 px-3 py-2 rounded-lg text-sm">
+              <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 text-sm rounded-lg" style={{ padding: '12px' }}>
                 {success}
               </div>
             )}
 
             {/* Email Field */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300" style={{ marginBottom: '4px' }}>
                 Email
               </label>
               <input
@@ -170,7 +172,8 @@ export function LoginPage() {
                 type="email"
                 autoComplete="email"
                 required
-                className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                style={{ padding: '8px 12px' }}
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -179,7 +182,7 @@ export function LoginPage() {
             
             {/* Password Field */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300" style={{ marginBottom: '4px' }}>
                 Password
               </label>
               <input
@@ -187,7 +190,8 @@ export function LoginPage() {
                 type="password"
                 autoComplete={isSignUp ? 'new-password' : 'current-password'}
                 required
-                className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                style={{ padding: '8px 12px' }}
                 placeholder={isSignUp ? 'Create password (6+ chars)' : 'Enter password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -197,7 +201,7 @@ export function LoginPage() {
             {/* Confirm Password Field (Sign Up Only) */}
             {isSignUp && (
               <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300" style={{ marginBottom: '4px' }}>
                   Confirm Password
                 </label>
                 <input
@@ -205,7 +209,8 @@ export function LoginPage() {
                   type="password"
                   autoComplete="new-password"
                   required
-                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                  className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                  style={{ padding: '8px 12px' }}
                   placeholder="Confirm your password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
@@ -217,7 +222,8 @@ export function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              style={{ padding: '10px 16px', gap: '8px' }}
             >
               {loading && <LoadingSpinner className="w-4 h-4" />}
               <span>
@@ -231,7 +237,7 @@ export function LoginPage() {
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-6">
+        <div className="text-center" style={{ marginTop: '24px' }}>
           <p className="text-xs text-gray-500 dark:text-gray-400">
             By continuing, you agree to our{' '}
             <a href="#" className="text-indigo-600 dark:text-indigo-400 hover:underline">
