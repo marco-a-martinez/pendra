@@ -7,7 +7,7 @@ import { CheckSquare } from 'lucide-react';
 import { isToday, isDueToday } from '@/lib/dateUtils';
 
 export function TodayView() {
-  const { tasks } = useAppStore();
+  const { tasks, setTaskModalOpen } = useAppStore();
 
   // Filter tasks for today
   const todayTasks = tasks.filter(task => 
@@ -26,7 +26,7 @@ export function TodayView() {
         title="No tasks for today"
         description="You&apos;re all caught up! Add a new task or schedule something for today."
         actionLabel="Add Task"
-        onAction={() => useAppStore.getState().setTaskModalOpen(true)}
+        onAction={() => setTaskModalOpen(true)}
       />
     );
   }

@@ -8,7 +8,7 @@ import { formatDate, isToday, isTomorrow } from '@/lib/dateUtils';
 import { addDays, startOfDay } from 'date-fns';
 
 export function UpcomingView() {
-  const { tasks } = useAppStore();
+  const { tasks, setTaskModalOpen } = useAppStore();
 
   // Filter upcoming tasks (not today, but have due dates or are scheduled)
   const upcomingTasks = tasks.filter(task => {
@@ -57,7 +57,7 @@ export function UpcomingView() {
         title="No upcoming tasks"
         description="You don't have any tasks scheduled for the future. Add some tasks with due dates to see them here."
         actionLabel="Add Task"
-        onAction={() => useAppStore.getState().setTaskModalOpen(true)}
+        onAction={() => setTaskModalOpen(true)}
       />
     );
   }
