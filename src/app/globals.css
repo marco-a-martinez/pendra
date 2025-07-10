@@ -249,8 +249,19 @@ p {
 
 .modal {
   position: fixed;
-  z-index: 50;
+  z-index: 60;
   isolation: isolate;
+}
+
+/* Ensure task modal is always above sidebar */
+.task-modal {
+  z-index: 60 !important;
+}
+
+/* Fix header text overflow */
+.header h1 {
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 /* Prevent text overflow and layout breaks */

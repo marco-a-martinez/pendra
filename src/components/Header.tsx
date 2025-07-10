@@ -38,12 +38,12 @@ export function Header() {
     <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 py-4 relative z-10">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4 min-w-0 flex-1">
-          <h1 className="text-xl md:text-2xl font-semibold text-gray-900 dark:text-white truncate">
+          <h1 className="text-lg md:text-xl lg:text-2xl font-semibold text-gray-900 dark:text-white truncate max-w-full">
             {getViewTitle()}
           </h1>
         </div>
 
-        <div className="flex items-center space-x-2 md:space-x-4">
+        <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-4 flex-shrink-0">
           {/* Search */}
           <div className="relative hidden md:block">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />

@@ -14,7 +14,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   const { sidebarCollapsed } = useAppStore();
 
   return (
-    <div className="h-screen flex bg-gray-50 dark:bg-gray-900 overflow-hidden relative">
+    <div className="h-screen flex bg-gray-50 dark:bg-gray-900 overflow-hidden relative app-layout">
       <Sidebar />
       <div className={cn(
         'flex-1 flex flex-col transition-all duration-300 min-w-0',
