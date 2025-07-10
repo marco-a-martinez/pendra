@@ -89,7 +89,7 @@ export function Header() {
               data-lpignore="true"
             >
               <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
-                {user?.user_metadata?.avatar_url ? (
+                {(user as any)?.user_metadata?.avatar_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={user.user_metadata.avatar_url}
