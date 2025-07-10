@@ -25,13 +25,13 @@ interface AppStore {
   
   // Data state
   tasks: Task[];
-  setTasks: (tasks: Task[]) => void;
+  setTasks: (tasks: Task[] | ((prev: Task[]) => Task[])) => void;
   addTask: (task: Task) => void;
   updateTask: (id: string, updates: Partial<Task>) => void;
   deleteTask: (id: string) => void;
   
   projects: Project[];
-  setProjects: (projects: Project[]) => void;
+  setProjects: (projects: Project[] | ((prev: Project[]) => Project[])) => void;
   addProject: (project: Project) => void;
   updateProject: (id: string, updates: Partial<Project>) => void;
   deleteProject: (id: string) => void;
@@ -72,7 +72,9 @@ export const useAppStore = create<AppStore>()(
       
       // Data state
       tasks: [],
-      setTasks: (tasks) => set({ tasks }),
+      setTasks: (tasks) => set((state) => ({ 
+        tasks: typeof tasks === 'function' ? tasks(state.tasks) : tasks 
+      })),
       addTask: (task) => set((state) => ({ tasks: [...state.tasks, task] })),
       updateTask: (id, updates) => set((state) => ({
         tasks: state.tasks.map(task => 
@@ -84,7 +86,9 @@ export const useAppStore = create<AppStore>()(
       })),
       
       projects: [],
-      setProjects: (projects) => set({ projects }),
+      setProjects: (projects) => set((state) => ({ 
+        projects: typeof projects === 'function' ? projects(state.projects) : projects 
+      })),
       addProject: (project) => set((state) => ({ projects: [...state.projects, project] })),
       updateProject: (id, updates) => set((state) => ({
         projects: state.projects.map(project => 

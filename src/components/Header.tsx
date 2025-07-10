@@ -90,8 +90,7 @@ export function Header() {
               data-lpignore="true"
             >
               <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
-                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                {(user as unknown as { user_metadata?: { avatar_url?: string } })?.user_metadata?.avatar_url ? (
+                {user?.user_metadata?.avatar_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={user.user_metadata.avatar_url}
@@ -99,12 +98,12 @@ export function Header() {
                     className="w-8 h-8 rounded-full"
                   />
                 ) : (
-                  getInitials(user?.user_metadata?.full_name || user?.email || 'U')
+                  getInitials(user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || 'U')
                 )}
               </div>
               <div className="text-left hidden sm:block">
                 <p className="text-sm font-medium text-gray-900 dark:text-white">
-                  {user?.user_metadata?.full_name || 'User'}
+                  {user?.user_metadata?.full_name || user?.user_metadata?.name || 'User'}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   {user?.email}

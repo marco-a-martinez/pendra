@@ -9,9 +9,13 @@ import { UpcomingView } from '@/components/views/UpcomingView';
 import { ProjectsView } from '@/components/views/ProjectsView';
 import { CalendarView } from '@/components/views/CalendarView';
 import { DashboardView } from '@/components/views/DashboardView';
+import { useTasks } from '@/hooks/use-tasks';
 
 export default function HomePage() {
   const { currentView } = useAppStore();
+  
+  // Load tasks and projects from Supabase
+  useTasks();
 
   const renderView = () => {
     switch (currentView) {

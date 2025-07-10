@@ -7,6 +7,8 @@ import { generateId, projectColors } from '@/lib/utils';
 import { generateTimeSlots } from '@/lib/dateUtils';
 import { X, Calendar, Clock, Flag, Tag, FolderOpen } from 'lucide-react';
 import { RichTextEditor } from './RichTextEditor';
+import { createTask as createTaskSupabase, updateTask as updateTaskSupabase } from '@/lib/supabase-tasks';
+import { useToast } from '@/hooks/use-toast';
 
 export function TaskModal() {
   const {
@@ -69,12 +71,13 @@ export function TaskModal() {
     setTagInput('');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const { toast } = useToast();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.title.trim() || !user) return;
 
-    const taskData: Task = {
-      id: editingTask?.id || generateId(),
+    const taskData = {
       user_id: user.id,
       title: formData.title.trim(),
       description: formData.description || undefined,
@@ -84,24 +87,46 @@ export function TaskModal() {
         : undefined,
       estimated_duration: formData.estimated_duration ? parseInt(formData.estimated_duration) : undefined,
       priority: formData.priority,
-      status: editingTask?.status || 'inbox',
+      status: editingTask?.status || 'inbox' as Task['status'],
       project_id: formData.project_id || undefined,
       tags: formData.tags,
       color: formData.color || undefined,
       repeat_rule: undefined,
       completed_at: undefined,
-      created_at: editingTask?.created_at || new Date().toISOString(),
-      updated_at: new Date().toISOString(),
       order_index: editingTask?.order_index || Date.now(),
     };
 
-    if (editingTask) {
-      updateTask(editingTask.id, taskData);
-    } else {
-      addTask(taskData);
+    try {
+      if (editingTask) {
+        const { data, error } = await updateTaskSupabase(editingTask.id, taskData);
+        if (error) throw error;
+        if (data) {
+          updateTask(editingTask.id, data);
+          toast({
+            title: "Task updated",
+            description: "Your task has been updated successfully.",
+          });
+        }
+      } else {
+        const { data, error } = await createTaskSupabase(taskData);
+        if (error) throw error;
+        if (data) {
+          addTask(data);
+          toast({
+            title: "Task created",
+            description: "Your task has been created successfully.",
+          });
+        }
+      }
+      handleClose();
+    } catch (error) {
+      console.error('Error saving task:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save task. Please try again.",
+        variant: "destructive",
+      });
     }
-
-    handleClose();
   };
 
   const addTag = () => {
