@@ -2,6 +2,7 @@
 
 import { useAppStore } from '@/lib/store';
 import { AppLayout } from '@/components/AppLayout';
+import { TaskModal } from '@/components/TaskModal';
 import { TodayView } from '@/components/views/TodayView';
 import { InboxView } from '@/components/views/InboxView';
 import { UpcomingView } from '@/components/views/UpcomingView';
@@ -32,8 +33,11 @@ export default function HomePage() {
   };
 
   return (
-    <AppLayout>
-      {renderView()}
-    </AppLayout>
+    <>
+      <AppLayout>
+        {renderView()}
+      </AppLayout>
+      <TaskModal />
+    </>
   );
 }

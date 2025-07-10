@@ -3,7 +3,6 @@
 import { useAppStore } from '@/lib/store';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
-import { TaskModal } from './TaskModal';
 import { cn } from '@/lib/utils';
 
 interface AppLayoutProps {
@@ -27,7 +26,6 @@ export function AppLayout({ children }: AppLayoutProps) {
           </div>
         </main>
       </div>
-      <TaskModal />
     </div>
   );
 }
