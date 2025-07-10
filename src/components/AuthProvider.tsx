@@ -35,14 +35,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const getInitialSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user ?? null);
-      setStoreUser(session?.user ? {
-        id: session.user.id,
-        email: session.user.email!,
-        name: session.user.user_metadata?.full_name || session.user.user_metadata?.name,
-        avatar_url: session.user.user_metadata?.avatar_url,
-        created_at: session.user.created_at,
-        updated_at: session.user.updated_at || session.user.created_at,
-      } : null);
+      
+      if (session?.user) {
+        // Ensure user record exists for existing sessions
+        try {
+          const { error: insertError } = await supabase
+            .from('users')
+            .upsert({
+              id: session.user.id,
+              email: session.user.email!,
+              name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || null,
+              avatar_url: session.user.user_metadata?.avatar_url || null,
+              updated_at: new Date().toISOString(),
+            }, { onConflict: 'id' });
+          
+          if (insertError) {
+            console.error('Error ensuring user record:', insertError);
+          }
+        } catch (error) {
+          console.error('Unexpected error ensuring user:', error);
+        }
+        
+        setStoreUser({
+          id: session.user.id,
+          email: session.user.email!,
+          name: session.user.user_metadata?.full_name || session.user.user_metadata?.name,
+          avatar_url: session.user.user_metadata?.avatar_url,
+          created_at: session.user.created_at,
+          updated_at: session.user.updated_at || session.user.created_at,
+        });
+      } else {
+        setStoreUser(null);
+      }
+      
       setLoading(false);
     };
 
@@ -52,14 +77,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         setUser(session?.user ?? null);
-        setStoreUser(session?.user ? {
-          id: session.user.id,
-          email: session.user.email!,
-          name: session.user.user_metadata?.full_name || session.user.user_metadata?.name,
-          avatar_url: session.user.user_metadata?.avatar_url,
-          created_at: session.user.created_at,
-          updated_at: session.user.updated_at || session.user.created_at,
-        } : null);
+        
+        if (session?.user) {
+          // For new signups, ensure user record exists in database
+          if (event === 'SIGNED_UP') {
+            try {
+              const { error: insertError } = await supabase
+                .from('users')
+                .upsert({
+                  id: session.user.id,
+                  email: session.user.email!,
+                  name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || null,
+                  avatar_url: session.user.user_metadata?.avatar_url || null,
+                  created_at: session.user.created_at,
+                  updated_at: new Date().toISOString(),
+                }, { onConflict: 'id' });
+              
+              if (insertError) {
+                console.error('Error creating user record:', insertError);
+              }
+            } catch (error) {
+              console.error('Unexpected error creating user:', error);
+            }
+          }
+          
+          setStoreUser({
+            id: session.user.id,
+            email: session.user.email!,
+            name: session.user.user_metadata?.full_name || session.user.user_metadata?.name,
+            avatar_url: session.user.user_metadata?.avatar_url,
+            created_at: session.user.created_at,
+            updated_at: session.user.updated_at || session.user.created_at,
+          });
+        } else {
+          setStoreUser(null);
+        }
+        
         setLoading(false);
       }
     );

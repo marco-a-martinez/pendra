@@ -17,15 +17,6 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
 });
 
 // Auth helpers
-export const signInWithGoogle = async () => {
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/auth/callback`
-    }
-  });
-  return { data, error };
-};
 
 export const signOut = async () => {
   const { error } = await supabase.auth.signOut();
