@@ -60,16 +60,16 @@ export function Sidebar() {
     )}>
       <div className="flex flex-col h-full">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center p-4 border-b border-gray-200 dark:border-gray-700">
           {!sidebarCollapsed && (
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white truncate">
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white truncate flex-1 mr-2">
               Pendra
             </h1>
           )}
           <button
             type="button"
             onClick={toggleSidebar}
-            className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
+            className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0 ml-auto"
             data-1p-ignore
             data-lpignore="true"
           >
