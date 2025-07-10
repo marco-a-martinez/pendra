@@ -18,12 +18,11 @@ export function AppLayout({ children }: AppLayoutProps) {
       <Sidebar />
       <div className={cn(
         'flex-1 flex flex-col transition-all duration-300 min-w-0',
-        sidebarCollapsed ? 'ml-16' : 'ml-64',
-        'md:ml-64 md:ml-16' // Responsive margins
+        sidebarCollapsed ? 'ml-16' : 'ml-64'
       )}>
         <Header />
         <main className="flex-1 overflow-auto p-4 md:p-6">
-          <div className="max-w-full">
+          <div className="max-w-full mx-auto">
             {children}
           </div>
         </main>

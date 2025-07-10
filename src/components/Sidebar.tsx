@@ -56,27 +56,26 @@ export function Sidebar() {
   return (
     <div className={cn(
       'fixed left-0 top-0 h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 z-30',
-      sidebarCollapsed ? 'w-16' : 'w-64',
-      'max-w-[80vw]' // Prevent sidebar from being too wide on small screens
+      sidebarCollapsed ? 'w-16' : 'w-64'
     )}>
       <div className="flex flex-col h-full">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
           {!sidebarCollapsed && (
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white truncate">
               Pendra
             </h1>
           )}
           <button
             onClick={toggleSidebar}
-            className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
           >
             <Menu className="w-5 h-5 text-gray-600 dark:text-gray-300" />
           </button>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-2">
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           {navigationItems.map((item) => {
             const Icon = item.icon;
             const count = counts[item.id as keyof typeof counts];

@@ -194,3 +194,39 @@
 .dark .input-field::placeholder {
   color: #6b7280;
 }
+
+/* Typography improvements */
+body {
+  font-feature-settings: 'rlig' 1, 'calt' 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Better spacing for text elements */
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+
+p {
+  line-height: 1.6;
+}
+
+/* Prevent text overflow issues */
+.truncate-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Better responsive spacing */
+@media (max-width: 768px) {
+  .sidebar-item {
+    padding: 0.75rem;
+  }
+  
+  .task-card {
+    padding: 0.75rem;
+  }
+}

@@ -35,32 +35,32 @@ export function Header() {
   };
 
   return (
-    <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+    <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 py-4">
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
+        <div className="flex items-center space-x-4 min-w-0 flex-1">
+          <h1 className="text-xl md:text-2xl font-semibold text-gray-900 dark:text-white truncate">
             {getViewTitle()}
           </h1>
         </div>
 
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2 md:space-x-4">
           {/* Search */}
-          <div className="relative">
+          <div className="relative hidden md:block">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
               placeholder="Search tasks..."
-              className="pl-10 pr-4 py-2 w-64 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+              className="pl-10 pr-4 py-2 w-48 lg:w-64 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
             />
           </div>
 
           {/* Add Task Button */}
           <button
             onClick={() => setTaskModalOpen(true)}
-            className="btn-primary flex items-center space-x-2"
+            className="btn-primary flex items-center space-x-2 whitespace-nowrap"
           >
             <Plus className="w-4 h-4" />
-            <span>Add Task</span>
+            <span className="hidden sm:inline">Add Task</span>
           </button>
 
           {/* Notifications */}
