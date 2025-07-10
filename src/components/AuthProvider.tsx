@@ -31,27 +31,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { setUser: setStoreUser } = useAppStore();
 
   useEffect(() => {
-    // Get initial session
+    // Get initial session with timeout
     const getInitialSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        // Database trigger handles user creation automatically
+      try {
+        // Add timeout to prevent hanging
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Session timeout')), 10000)
+        );
         
-        setStoreUser({
-          id: session.user.id,
-          email: session.user.email!,
-          name: session.user.user_metadata?.full_name || session.user.user_metadata?.name,
-          avatar_url: session.user.user_metadata?.avatar_url,
-          created_at: session.user.created_at,
-          updated_at: session.user.updated_at || session.user.created_at,
-        });
-      } else {
+        const sessionPromise = supabase.auth.getSession();
+        
+        const { data: { session } } = await Promise.race([sessionPromise, timeoutPromise]) as any;
+        
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          // Database trigger handles user creation automatically
+          
+          setStoreUser({
+            id: session.user.id,
+            email: session.user.email!,
+            name: session.user.user_metadata?.full_name || session.user.user_metadata?.name,
+            avatar_url: session.user.user_metadata?.avatar_url,
+            created_at: session.user.created_at,
+            updated_at: session.user.updated_at || session.user.created_at,
+          });
+        } else {
+          setStoreUser(null);
+        }
+      } catch (error) {
+        console.error('Auth session error:', error);
+        setUser(null);
         setStoreUser(null);
+      } finally {
+        setLoading(false);
       }
-      
-      setLoading(false);
     };
 
     getInitialSession();
