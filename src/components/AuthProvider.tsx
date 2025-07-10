@@ -37,33 +37,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        // Ensure user record exists for existing sessions
-        try {
-          // First check if user exists
-          const { data: existingUser } = await supabase
-            .from('users')
-            .select('id')
-            .eq('id', session.user.id)
-            .single();
-          
-          // Only create if user doesn't exist
-          if (!existingUser) {
-            const { error: insertError } = await supabase
-              .from('users')
-              .insert({
-                id: session.user.id,
-                email: session.user.email!,
-                name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || null,
-                avatar_url: session.user.user_metadata?.avatar_url || null,
-              });
-            
-            if (insertError) {
-              console.error('Error ensuring user record:', insertError);
-            }
-          }
-        } catch (error) {
-          console.error('Unexpected error ensuring user:', error);
-        }
+        // Database trigger handles user creation automatically
         
         setStoreUser({
           id: session.user.id,
@@ -88,35 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // For all signed in users, ensure user record exists in database
-          if (event === 'SIGNED_IN') {
-            try {
-              // First check if user exists
-              const { data: existingUser } = await supabase
-                .from('users')
-                .select('id')
-                .eq('id', session.user.id)
-                .single();
-              
-              // Only create if user doesn't exist
-              if (!existingUser) {
-                const { error: insertError } = await supabase
-                  .from('users')
-                  .insert({
-                    id: session.user.id,
-                    email: session.user.email!,
-                    name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || null,
-                    avatar_url: session.user.user_metadata?.avatar_url || null,
-                  });
-                
-                if (insertError) {
-                  console.error('Error creating user record:', insertError);
-                }
-              }
-            } catch (error) {
-              console.error('Unexpected error with user creation:', error);
-            }
-          }
+          // Database trigger handles user creation automatically
           
           setStoreUser({
             id: session.user.id,
