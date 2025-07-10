@@ -41,6 +41,13 @@ export function useTasks() {
 
     loadData();
 
+    // Skip real-time subscriptions if Supabase URL is invalid
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    if (!supabaseUrl || supabaseUrl === 'https://mwiqrrqaxntpvjdkadhfd.supabase.co') {
+      console.warn('Skipping real-time subscriptions - Supabase not properly configured');
+      return;
+    }
+
     // Set up real-time subscriptions
     const tasksSubscription = supabase
       .channel('tasks-changes')
