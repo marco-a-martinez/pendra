@@ -79,8 +79,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // For new signups, ensure user record exists in database
-          if (event === 'SIGNED_UP') {
+          // For all signed in users, ensure user record exists in database
+          if (event === 'SIGNED_IN') {
             try {
               const { error: insertError } = await supabase
                 .from('users')
