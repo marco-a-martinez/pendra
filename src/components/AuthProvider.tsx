@@ -39,18 +39,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (session?.user) {
         // Ensure user record exists for existing sessions
         try {
-          const { error: insertError } = await supabase
+          // First check if user exists
+          const { data: existingUser } = await supabase
             .from('users')
-            .upsert({
-              id: session.user.id,
-              email: session.user.email!,
-              name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || null,
-              avatar_url: session.user.user_metadata?.avatar_url || null,
-              updated_at: new Date().toISOString(),
-            }, { onConflict: 'id' });
+            .select('id')
+            .eq('id', session.user.id)
+            .single();
           
-          if (insertError) {
-            console.error('Error ensuring user record:', insertError);
+          // Only create if user doesn't exist
+          if (!existingUser) {
+            const { error: insertError } = await supabase
+              .from('users')
+              .insert({
+                id: session.user.id,
+                email: session.user.email!,
+                name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || null,
+                avatar_url: session.user.user_metadata?.avatar_url || null,
+              });
+            
+            if (insertError) {
+              console.error('Error ensuring user record:', insertError);
+            }
           }
         } catch (error) {
           console.error('Unexpected error ensuring user:', error);
@@ -82,22 +91,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           // For all signed in users, ensure user record exists in database
           if (event === 'SIGNED_IN') {
             try {
-              const { error: insertError } = await supabase
+              // First check if user exists
+              const { data: existingUser } = await supabase
                 .from('users')
-                .upsert({
-                  id: session.user.id,
-                  email: session.user.email!,
-                  name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || null,
-                  avatar_url: session.user.user_metadata?.avatar_url || null,
-                  created_at: session.user.created_at,
-                  updated_at: new Date().toISOString(),
-                }, { onConflict: 'id' });
+                .select('id')
+                .eq('id', session.user.id)
+                .single();
               
-              if (insertError) {
-                console.error('Error creating user record:', insertError);
+              // Only create if user doesn't exist
+              if (!existingUser) {
+                const { error: insertError } = await supabase
+                  .from('users')
+                  .insert({
+                    id: session.user.id,
+                    email: session.user.email!,
+                    name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || null,
+                    avatar_url: session.user.user_metadata?.avatar_url || null,
+                  });
+                
+                if (insertError) {
+                  console.error('Error creating user record:', insertError);
+                }
               }
             } catch (error) {
-              console.error('Unexpected error creating user:', error);
+              console.error('Unexpected error with user creation:', error);
             }
           }
           

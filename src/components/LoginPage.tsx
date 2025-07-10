@@ -72,7 +72,7 @@ export function LoginPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
       <div className="max-w-md w-full space-y-6">
         <div className="text-center">
-          <div className="mx-auto h-12 w-12 bg-blue-600 rounded-lg flex items-center justify-center mb-4">
+          <div className="mx-auto bg-blue-600 rounded-lg flex items-center justify-center mb-4" style={{width: '48px', height: '48px'}}>
             <svg
               className="h-6 w-6 text-white"
               fill="none"
