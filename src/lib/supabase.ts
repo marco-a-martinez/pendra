@@ -16,7 +16,7 @@ const createSupabaseClient = (): SupabaseClient<Database> => {
         signOut: () => Promise.resolve({ error: null }),
         getUser: () => Promise.resolve({ data: { user: null }, error: null })
       }
-    } as SupabaseClient<Database>;
+    } as unknown as SupabaseClient<Database>;
   }
   
   return createClient<Database>(supabaseUrl, supabaseAnonKey, {
