@@ -247,15 +247,11 @@ p {
   z-index: 20;
 }
 
+/* Modal positioning */
 .modal {
   position: fixed;
-  z-index: 60;
+  z-index: 50;
   isolation: isolate;
-}
-
-/* Ensure task modal is always above sidebar */
-.task-modal {
-  z-index: 60 !important;
 }
 
 /* Fix header text overflow */
