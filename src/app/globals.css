@@ -16,6 +16,7 @@
   --text-secondary: #3C3C43;
   --text-tertiary: #8E8E93;
   --green: #34C759;
+  --green-bg: #34C75920;
   --red: #FF3B30;
 }
 
@@ -76,6 +77,52 @@ body {
 
 .drag-handle:active {
   cursor: grabbing !important;
+}
+
+/* Checklist styles */
+.todo-item:hover .checklist-button {
+  opacity: 1 !important;
+}
+
+.expand-button {
+  transition: transform 0.2s ease;
+}
+
+.checklist-checkbox {
+  transition: all 0.2s ease;
+}
+
+.checklist-checkbox:hover {
+  border-color: var(--gray-2) !important;
+  transform: scale(1.1);
+}
+
+.checklist-checkbox:focus {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.checklist-checkbox:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.checklist-item {
+  transition: opacity 0.2s ease;
+}
+
+.checklist-item:hover {
+  background-color: var(--gray-5);
+  margin: 0 -8px;
+  padding: 4px 8px !important;
+  border-radius: 4px;
+}
+
+.add-checklist-item-button:hover {
+  color: var(--text) !important;
+}
+
+.checklist-button:hover {
+  color: var(--blue) !important;
 }
 
 /* Checkbox styles */

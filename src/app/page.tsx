@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Plus, Check, GripVertical } from 'lucide-react';
+import { Plus, Check, GripVertical, ChevronDown, ChevronRight, ListTodo } from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -24,14 +24,38 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-interface Todo {
+interface ChecklistItem {
   id: string;
   text: string;
   completed: boolean;
 }
 
+interface Todo {
+  id: string;
+  text: string;
+  completed: boolean;
+  checklist?: ChecklistItem[];
+  expanded?: boolean;
+}
+
 // Sortable Todo Item Component
-function SortableTodoItem({ todo, onToggle }: { todo: Todo; onToggle: (id: string) => void }) {
+function SortableTodoItem({ 
+  todo, 
+  onToggle, 
+  onToggleExpand,
+  onAddChecklistItem,
+  onToggleChecklistItem,
+  onUpdateChecklistItem,
+  onDeleteChecklistItem
+}: { 
+  todo: Todo; 
+  onToggle: (id: string) => void;
+  onToggleExpand: (id: string) => void;
+  onAddChecklistItem: (todoId: string, text: string) => void;
+  onToggleChecklistItem: (todoId: string, itemId: string) => void;
+  onUpdateChecklistItem: (todoId: string, itemId: string, text: string) => void;
+  onDeleteChecklistItem: (todoId: string, itemId: string) => void;
+}) {
   const {
     attributes,
     listeners,
@@ -41,10 +65,32 @@ function SortableTodoItem({ todo, onToggle }: { todo: Todo; onToggle: (id: strin
     isDragging,
   } = useSortable({ id: todo.id });
 
+  const [isAddingChecklistItem, setIsAddingChecklistItem] = useState(false);
+  const [checklistInput, setChecklistInput] = useState('');
+  const checklistInputRef = useRef<HTMLInputElement>(null);
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
+  };
+
+  const hasChecklist = todo.checklist && todo.checklist.length > 0;
+  const completedCount = todo.checklist?.filter(item => item.completed).length || 0;
+  const totalCount = todo.checklist?.length || 0;
+
+  const handleAddChecklistItem = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (checklistInput.trim()) {
+      onAddChecklistItem(todo.id, checklistInput.trim());
+      setChecklistInput('');
+      setIsAddingChecklistItem(false);
+    }
+  };
+
+  const startAddingChecklistItem = () => {
+    setIsAddingChecklistItem(true);
+    setTimeout(() => checklistInputRef.current?.focus(), 0);
   };
 
   return (
@@ -73,16 +119,188 @@ function SortableTodoItem({ todo, onToggle }: { todo: Todo; onToggle: (id: strin
         >
           <GripVertical size={16} />
         </button>
+        
+        {hasChecklist && (
+          <button
+            onClick={() => onToggleExpand(todo.id)}
+            className="expand-button"
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: '2px',
+              cursor: 'pointer',
+              color: 'var(--text-tertiary)',
+              display: 'flex',
+              alignItems: 'center',
+              transition: 'transform 0.2s ease',
+              transform: todo.expanded ? 'rotate(0deg)' : 'rotate(-90deg)'
+            }}
+            aria-label={todo.expanded ? 'Collapse checklist' : 'Expand checklist'}
+          >
+            <ChevronDown size={16} />
+          </button>
+        )}
+        
         <button
           onClick={() => onToggle(todo.id)}
           className="checkbox"
           style={{ background: 'none', border: '1.5px solid var(--gray-3)' }}
           aria-label="Mark as complete"
         />
-        <span style={{ flex: 1, fontSize: '17px', color: 'var(--text)' }}>
-          {todo.text}
-        </span>
+        
+        <div style={{ flex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '17px', color: 'var(--text)' }}>
+              {todo.text}
+            </span>
+            {hasChecklist && (
+              <span style={{ 
+                fontSize: '13px', 
+                color: 'var(--text-tertiary)',
+                backgroundColor: completedCount === totalCount ? 'var(--green-bg)' : 'var(--gray-5)',
+                padding: '2px 6px',
+                borderRadius: '4px'
+              }}>
+                {completedCount}/{totalCount}
+              </span>
+            )}
+          </div>
+        </div>
+        
+        <button
+          onClick={() => {
+            if (!hasChecklist) {
+              onAddChecklistItem(todo.id, '');
+              onToggleExpand(todo.id);
+            }
+            startAddingChecklistItem();
+          }}
+          className="checklist-button"
+          style={{
+            background: 'none',
+            border: 'none',
+            padding: '4px',
+            cursor: 'pointer',
+            color: 'var(--text-tertiary)',
+            opacity: 0,
+            transition: 'opacity 0.2s ease',
+          }}
+          aria-label="Add checklist"
+        >
+          <ListTodo size={18} />
+        </button>
       </div>
+      
+      {/* Checklist items */}
+      {todo.expanded && hasChecklist && (
+        <div style={{ marginLeft: '56px', marginTop: '8px' }}>
+          {todo.checklist?.map((item) => (
+            <div key={item.id} className="checklist-item" style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '4px 0',
+            }}>
+              <button
+                onClick={() => onToggleChecklistItem(todo.id, item.id)}
+                className="checklist-checkbox"
+                style={{
+                  width: '16px',
+                  height: '16px',
+                  borderRadius: '50%',
+                  border: '1.5px solid var(--gray-3)',
+                  background: item.completed ? 'var(--blue)' : 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+                aria-label={item.completed ? 'Mark as incomplete' : 'Mark as complete'}
+              >
+                {item.completed && <Check size={10} color="white" strokeWidth={3} />}
+              </button>
+              <input
+                type="text"
+                value={item.text}
+                onChange={(e) => onUpdateChecklistItem(todo.id, item.id, e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Backspace' && item.text === '') {
+                    e.preventDefault();
+                    onDeleteChecklistItem(todo.id, item.id);
+                  }
+                }}
+                style={{
+                  flex: 1,
+                  background: 'transparent',
+                  border: 'none',
+                  outline: 'none',
+                  fontSize: '15px',
+                  color: item.completed ? 'var(--text-tertiary)' : 'var(--text)',
+                  textDecoration: item.completed ? 'line-through' : 'none',
+                }}
+                placeholder="Checklist item"
+              />
+            </div>
+          ))}
+          
+          {/* Add new checklist item */}
+          {isAddingChecklistItem ? (
+            <form onSubmit={handleAddChecklistItem} style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '4px 0',
+            }}>
+              <div style={{
+                width: '16px',
+                height: '16px',
+                borderRadius: '50%',
+                border: '1.5px solid var(--gray-3)',
+                flexShrink: 0,
+              }} />
+              <input
+                ref={checklistInputRef}
+                type="text"
+                value={checklistInput}
+                onChange={(e) => setChecklistInput(e.target.value)}
+                onBlur={() => !checklistInput.trim() && setIsAddingChecklistItem(false)}
+                style={{
+                  flex: 1,
+                  background: 'transparent',
+                  border: 'none',
+                  outline: 'none',
+                  fontSize: '15px',
+                  color: 'var(--text)',
+                }}
+                placeholder="New checklist item"
+                autoFocus
+              />
+            </form>
+          ) : (
+            <button
+              onClick={startAddingChecklistItem}
+              className="add-checklist-item-button"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '4px 0',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: 'var(--text-tertiary)',
+                fontSize: '15px',
+                width: '100%',
+                textAlign: 'left',
+              }}
+            >
+              <Plus size={16} />
+              <span>Add item</span>
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -93,6 +311,7 @@ export default function HomePage() {
     { id: '2', text: 'Click the circle to complete a todo', completed: false },
     { id: '3', text: 'Press the blue + button to add a new todo', completed: false },
     { id: '4', text: 'Drag tasks to reorder them', completed: false },
+    { id: '5', text: 'Click the list icon to add a checklist', completed: false },
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isAdding, setIsAdding] = useState(false);
@@ -126,14 +345,11 @@ export default function HomePage() {
 
   const startAdding = () => {
     setIsAdding(true);
-    // Focus input after state update
     setTimeout(() => inputRef.current?.focus(), 0);
   };
 
-  // Keyboard shortcut for new task
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      // Check if 'n' is pressed without any modifier keys and not in an input
       if (e.key === 'n' && !e.metaKey && !e.ctrlKey && !e.altKey && 
           document.activeElement?.tagName !== 'INPUT') {
         e.preventDefault();
@@ -150,6 +366,80 @@ export default function HomePage() {
       current.map(todo => 
         todo.id === id ? { ...todo, completed: !todo.completed } : todo
       )
+    );
+  };
+
+  const toggleExpand = (id: string) => {
+    setTodos(current =>
+      current.map(todo =>
+        todo.id === id ? { ...todo, expanded: !todo.expanded } : todo
+      )
+    );
+  };
+
+  const addChecklistItem = (todoId: string, text: string) => {
+    setTodos(current =>
+      current.map(todo => {
+        if (todo.id === todoId) {
+          const newItem: ChecklistItem = {
+            id: `checklist-${Date.now()}`,
+            text: text,
+            completed: false,
+          };
+          return {
+            ...todo,
+            checklist: [...(todo.checklist || []), newItem],
+            expanded: true,
+          };
+        }
+        return todo;
+      })
+    );
+  };
+
+  const toggleChecklistItem = (todoId: string, itemId: string) => {
+    setTodos(current =>
+      current.map(todo => {
+        if (todo.id === todoId && todo.checklist) {
+          return {
+            ...todo,
+            checklist: todo.checklist.map(item =>
+              item.id === itemId ? { ...item, completed: !item.completed } : item
+            ),
+          };
+        }
+        return todo;
+      })
+    );
+  };
+
+  const updateChecklistItem = (todoId: string, itemId: string, text: string) => {
+    setTodos(current =>
+      current.map(todo => {
+        if (todo.id === todoId && todo.checklist) {
+          return {
+            ...todo,
+            checklist: todo.checklist.map(item =>
+              item.id === itemId ? { ...item, text } : item
+            ),
+          };
+        }
+        return todo;
+      })
+    );
+  };
+
+  const deleteChecklistItem = (todoId: string, itemId: string) => {
+    setTodos(current =>
+      current.map(todo => {
+        if (todo.id === todoId && todo.checklist) {
+          return {
+            ...todo,
+            checklist: todo.checklist.filter(item => item.id !== itemId),
+          };
+        }
+        return todo;
+      })
     );
   };
 
@@ -253,6 +543,11 @@ export default function HomePage() {
                       key={todo.id}
                       todo={todo}
                       onToggle={toggleTodo}
+                      onToggleExpand={toggleExpand}
+                      onAddChecklistItem={addChecklistItem}
+                      onToggleChecklistItem={toggleChecklistItem}
+                      onUpdateChecklistItem={updateChecklistItem}
+                      onDeleteChecklistItem={deleteChecklistItem}
                     />
                   ))}
                 </SortableContext>
