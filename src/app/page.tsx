@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Plus, Check } from 'lucide-react';
 
 interface Todo {
@@ -17,6 +17,7 @@ export default function HomePage() {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isAdding, setIsAdding] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const addTodo = (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,6 +32,27 @@ export default function HomePage() {
       setIsAdding(false);
     }
   };
+
+  const startAdding = () => {
+    setIsAdding(true);
+    // Focus input after state update
+    setTimeout(() => inputRef.current?.focus(), 0);
+  };
+
+  // Keyboard shortcut for new task
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      // Check if 'n' is pressed without any modifier keys and not in an input
+      if (e.key === 'n' && !e.metaKey && !e.ctrlKey && !e.altKey && 
+          document.activeElement?.tagName !== 'INPUT') {
+        e.preventDefault();
+        startAdding();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, []);
 
   const toggleTodo = (id: string) => {
     setTodos(current => 
@@ -86,6 +108,7 @@ export default function HomePage() {
                   color: 'var(--text)'
                 }}
                 autoFocus
+                ref={inputRef}
               />
             </div>
           </form>
@@ -103,21 +126,58 @@ export default function HomePage() {
               </p>
             </div>
           ) : (
-            incompleteTodos.map((todo) => (
-              <div key={todo.id} className="todo-item animate-fade-in">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <button
-                    onClick={() => toggleTodo(todo.id)}
-                    className="checkbox"
-                    style={{ background: 'none', border: '1.5px solid var(--gray-3)' }}
-                    aria-label="Mark as complete"
-                  />
-                  <span style={{ flex: 1, fontSize: '17px', color: 'var(--text)' }}>
-                    {todo.text}
-                  </span>
+            <>
+              {incompleteTodos.map((todo) => (
+                <div key={todo.id} className="todo-item animate-fade-in">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <button
+                      onClick={() => toggleTodo(todo.id)}
+                      className="checkbox"
+                      style={{ background: 'none', border: '1.5px solid var(--gray-3)' }}
+                      aria-label="Mark as complete"
+                    />
+                    <span style={{ flex: 1, fontSize: '17px', color: 'var(--text)' }}>
+                      {todo.text}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))
+              ))}
+              {/* Inline add button */}
+              <button
+                onClick={startAdding}
+                className="inline-add-button"
+                style={{
+                  width: '100%',
+                  padding: '12px 0',
+                  marginTop: '8px',
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '17px',
+                  color: 'var(--text-tertiary)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  transition: 'color 0.2s ease'
+                }}
+                aria-label="Add new task"
+              >
+                <div style={{ 
+                  width: '20px', 
+                  height: '20px', 
+                  borderRadius: '50%',
+                  border: '1.5px solid var(--gray-3)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginLeft: '2px'
+                }}>
+                  <Plus size={12} strokeWidth={2} />
+                </div>
+                <span>Add task</span>
+              </button>
+            </>
           )}
         </div>
 
@@ -178,16 +238,17 @@ export default function HomePage() {
 
         {/* Floating add button */}
         <button
-          onClick={() => setIsAdding(true)}
+          onClick={startAdding}
           className="add-button"
           style={{
             position: 'fixed',
             bottom: '32px',
             right: '32px'
           }}
-          aria-label="Add new todo"
+          aria-label="Add new task (Press 'n')"
+          title="Add new task (Press 'n')"
         >
-          <Plus size={24} color="white" strokeWidth={2.5} />
+          <Plus size={28} color="white" strokeWidth={2.5} />
         </button>
       </div>
     </div>

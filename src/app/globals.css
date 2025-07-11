@@ -66,6 +66,15 @@ body {
   transform: scale(1.1);
 }
 
+.checkbox:focus {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.checkbox:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .checkbox.checked {
   background-color: var(--blue);
   border-color: var(--blue);
@@ -73,8 +82,8 @@ body {
 
 /* Add button styles */
 .add-button {
-  width: 44px;
-  height: 44px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   background-color: var(--blue);
   border: none;
@@ -82,17 +91,46 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
   transition: all 0.2s ease;
 }
 
 .add-button:hover {
-  transform: scale(1.1);
-  box-shadow: 0 4px 16px rgba(0, 122, 255, 0.4);
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 122, 255, 0.4);
+  background-color: #0066ff;
+}
+
+.add-button:focus {
+  outline: 3px solid rgba(0, 122, 255, 0.4);
+  outline-offset: 2px;
+}
+
+.add-button:focus:not(:focus-visible) {
+  outline: none;
 }
 
 .add-button:active {
   transform: scale(0.95);
+}
+
+/* Inline add button styles */
+.inline-add-button:hover {
+  color: var(--text) !important;
+}
+
+.inline-add-button:hover > div {
+  border-color: var(--text) !important;
+}
+
+.inline-add-button:focus {
+  outline: 2px solid var(--blue);
+  outline-offset: -2px;
+  border-radius: 8px;
+}
+
+.inline-add-button:focus:not(:focus-visible) {
+  outline: none;
 }
 
 /* Animations */
