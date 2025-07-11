@@ -50,20 +50,41 @@ function SortableTodoItem({
   const datePickerTimeout = useRef<NodeJS.Timeout>();
   const calendarButtonRef = useRef<HTMLButtonElement>(null);
   
-  // Handle escape key to close date picker
+  // Handle escape key and click outside to close date picker
   useEffect(() => {
+    if (!showDatePicker) return;
+
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && showDatePicker) {
+      if (event.key === 'Escape') {
         setShowDatePicker(false);
       }
     };
 
-    if (showDatePicker) {
-      document.addEventListener('keydown', handleEscape);
-    }
+    const handleClickOutside = (event: MouseEvent) => {
+      // Check if click is outside both the calendar button and date input
+      const target = event.target as Node;
+      const isDateInput = dateInputRef.current?.contains(target);
+      const isCalendarButton = calendarButtonRef.current?.contains(target);
+      
+      // Don't close if clicking on the date input or calendar button
+      if (!isDateInput && !isCalendarButton) {
+        // Add a small delay to allow date picker interactions to complete
+        setTimeout(() => {
+          setShowDatePicker(false);
+        }, 100);
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    // Add delay before adding click listener to avoid immediate closure
+    const clickTimeout = setTimeout(() => {
+      document.addEventListener('mousedown', handleClickOutside);
+    }, 200);
 
     return () => {
       document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('mousedown', handleClickOutside);
+      clearTimeout(clickTimeout);
       if (datePickerTimeout.current) {
         clearTimeout(datePickerTimeout.current);
       }
@@ -181,26 +202,26 @@ function SortableTodoItem({
         
         {/* Date picker */}
         {showDatePicker && (
-          <>
-            {/* Invisible overlay to catch clicks outside */}
-            <div
-              style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                zIndex: 999,
-              }}
-              onClick={() => setShowDatePicker(false)}
-            />
-            <input
+          <input
             ref={dateInputRef}
             type="date"
             value={todo.dueDate || ''}
             onChange={(e) => {
               onUpdateDate(todo.id, e.target.value || undefined);
               setShowDatePicker(false);
+            }}
+            onBlur={(e) => {
+              // Only close if the blur is not caused by clicking within the date picker
+              const relatedTarget = e.relatedTarget as HTMLElement;
+              if (!relatedTarget || !e.currentTarget.contains(relatedTarget)) {
+                // Use a timeout to allow date picker interactions to complete
+                setTimeout(() => {
+                  // Check if the date picker is still supposed to be open
+                  if (showDatePicker && !dateInputRef.current?.matches(':focus')) {
+                    setShowDatePicker(false);
+                  }
+                }, 200);
+              }
             }}
             style={{
               position: 'absolute',
@@ -215,9 +236,7 @@ function SortableTodoItem({
               zIndex: 1000,
             }}
             autoFocus
-            onClick={(e) => e.stopPropagation()}
           />
-          </>
         )}
       </div>
     </div>
