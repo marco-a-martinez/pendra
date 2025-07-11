@@ -48,6 +48,7 @@ function SortableTodoItem({
   onUpdateDate: (id: string, date: string | undefined) => void;
 }) {
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [datePickerPosition, setDatePickerPosition] = useState({ top: 0, left: 0 });
   const datePickerRef = useRef<DatePicker>(null);
   const calendarButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -136,6 +137,14 @@ function SortableTodoItem({
         <button
           ref={calendarButtonRef}
           onClick={() => {
+            if (!showDatePicker && calendarButtonRef.current) {
+              const rect = calendarButtonRef.current.getBoundingClientRect();
+              // Position the calendar directly below the button
+              setDatePickerPosition({
+                top: rect.bottom + 8,
+                left: rect.left - 250, // Align calendar under the button
+              });
+            }
             setShowDatePicker(!showDatePicker);
           }}
           style={{
@@ -158,10 +167,9 @@ function SortableTodoItem({
         {/* Date picker */}
         {showDatePicker && (
           <div style={{
-            position: 'absolute',
-            right: '40px',
-            top: '100%',
-            marginTop: '4px',
+            position: 'fixed',
+            top: datePickerPosition.top,
+            left: datePickerPosition.left,
             zIndex: 1000,
           }}>
             <DatePicker
