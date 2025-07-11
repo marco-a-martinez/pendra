@@ -22,10 +22,11 @@ export function Header() {
   const { user } = useAuth();
   const [showNotifications, setShowNotifications] = useState(false);
 
+
+
   const getViewTitle = () => {
     if (currentView === 'today') {
-      const today = new Date();
-      return `Today • ${today.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}`;
+      return `Today • ${formatDate(new Date())}`;
     }
     if (currentView === 'calendar') {
       return `Calendar • ${formatDate(selectedDate)}`;
@@ -34,7 +35,7 @@ export function Header() {
   };
 
   return (
-    <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 py-4 relative z-10">
+    <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 py-4 relative z-10">\n      <h1 className="absolute left-1/2 -translate-x-1/2 top-4 font-bold text-xl text-gray-900 dark:text-white select-none pointer-events-none">Pendra</h1>
       <div className="flex items-center justify-between w-full">
         <div className="flex items-center space-x-4 min-w-0 flex-1">
           <h1 className="text-lg md:text-xl lg:text-2xl font-semibold text-gray-900 dark:text-white truncate max-w-full">
@@ -95,15 +96,39 @@ export function Header() {
             )}
           </div>
 
-          {/* User Avatar */}
-          <button
-            type="button"
-            className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-sm md:text-base font-medium text-gray-700 dark:text-gray-300 hover:ring-2 hover:ring-blue-500 transition-all flex-shrink-0"
-            data-1p-ignore
-            data-lpignore="true"
-          >
-            {user?.user_metadata?.name ? getInitials(user.user_metadata.name) : 'TU'}
-          </button>
+          {/* User Menu */}
+          <div className="relative group">
+            <button 
+              type="button"
+              className="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              data-1p-ignore
+              data-lpignore="true"
+            >
+              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                {user?.user_metadata?.avatar_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={user.user_metadata.avatar_url}
+                    alt="Profile"
+                    className="w-8 h-8 rounded-full"
+                  />
+                ) : (
+                  getInitials(user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || 'U')
+                )}
+              </div>
+              <div className="text-left hidden sm:block">
+                <p className="text-sm font-medium text-gray-900 dark:text-white">
+                  {user?.user_metadata?.full_name || user?.user_metadata?.name || 'User'}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  {user?.email}
+                </p>
+              </div>
+            </button>
+
+            {/* Dropdown Menu */}
+
+          </div>
         </div>
       </div>
     </header>
