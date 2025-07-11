@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Plus, Check, X } from 'lucide-react';
 
 interface Todo {
@@ -10,17 +10,12 @@ interface Todo {
 }
 
 export default function HomePage() {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const [todos, setTodos] = useState<Todo[]>([
+    { id: '1', text: 'Welcome to your simple todo app!', completed: false },
+    { id: '2', text: 'Click the circle to complete a todo', completed: false },
+    { id: '3', text: 'Click the X to delete a todo', completed: false },
+  ]);
   const [inputValue, setInputValue] = useState('');
-
-  // Start with some example todos
-  useEffect(() => {
-    setTodos([
-      { id: '1', text: 'Welcome to your simple todo app!', completed: false },
-      { id: '2', text: 'Click the circle to complete a todo', completed: false },
-      { id: '3', text: 'Click the X to delete a todo', completed: false },
-    ]);
-  }, []);
 
   const addTodo = (e: React.FormEvent) => {
     e.preventDefault();
