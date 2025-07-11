@@ -21,24 +21,32 @@ export default function HomePage() {
     e.preventDefault();
     if (inputValue.trim()) {
       const newTodo: Todo = {
-        id: Date.now().toString(),
+        id: `todo-${Date.now()}`,
         text: inputValue.trim(),
         completed: false,
       };
-      setTodos([...todos, newTodo]);
+      setTodos(current => [...current, newTodo]);
       setInputValue('');
     }
   };
 
   const toggleTodo = (id: string) => {
-    setTodos(todos.map(todo => 
-      todo.id === id ? { ...todo, completed: !todo.completed } : todo
-    ));
+    setTodos(current => 
+      current.map(todo => 
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
+    );
   };
 
   const deleteTodo = (id: string) => {
-    setTodos(todos.filter(todo => todo.id !== id));
+    setTodos(current => current.filter(todo => todo.id !== id));
   };
+
+  const clearCompleted = () => {
+    setTodos(current => current.filter(todo => !todo.completed));
+  };
+
+  const completedCount = todos.filter(todo => todo.completed).length;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -56,15 +64,34 @@ export default function HomePage() {
               onChange={(e) => setInputValue(e.target.value)}
               placeholder="Add a new todo..."
               className="flex-1 px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              autoFocus
             />
             <button
               type="submit"
-              className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+              disabled={!inputValue.trim()}
+              className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Plus className="w-5 h-5" />
             </button>
           </div>
         </form>
+
+        {/* Stats and clear button */}
+        {todos.length > 0 && (
+          <div className="flex justify-between items-center mb-4 text-sm text-gray-600">
+            <span>
+              {todos.length} {todos.length === 1 ? 'todo' : 'todos'}, {completedCount} completed
+            </span>
+            {completedCount > 0 && (
+              <button
+                onClick={clearCompleted}
+                className="text-gray-500 hover:text-red-500 transition-colors"
+              >
+                Clear completed
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Todo list */}
         <div className="space-y-2">
@@ -76,7 +103,7 @@ export default function HomePage() {
             todos.map((todo) => (
               <div
                 key={todo.id}
-                className="flex items-center gap-3 p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200"
+                className="flex items-center gap-3 p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
               >
                 <button
                   onClick={() => toggleTodo(todo.id)}
@@ -85,6 +112,7 @@ export default function HomePage() {
                       ? 'bg-green-500 border-green-500'
                       : 'border-gray-300 hover:border-gray-400'
                   }`}
+                  aria-label={todo.completed ? 'Mark as incomplete' : 'Mark as complete'}
                 >
                   {todo.completed && <Check className="w-4 h-4 text-white" />}
                 </button>
@@ -100,6 +128,7 @@ export default function HomePage() {
                 <button
                   onClick={() => deleteTodo(todo.id)}
                   className="flex-shrink-0 text-gray-400 hover:text-red-500 transition-colors"
+                  aria-label="Delete todo"
                 >
                   <X className="w-5 h-5" />
                 </button>
