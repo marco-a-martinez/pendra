@@ -83,8 +83,14 @@
 /* Things 3 inspired components */
 @layer components {
   .checkbox-ring {
-    @apply w-[22px] h-[22px] rounded-full border-[1.5px] flex items-center justify-center;
-    @apply transition-all duration-200 ease-out;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 200ms ease-out;
     border-color: rgb(var(--system-gray-3));
   }
 
@@ -103,8 +109,10 @@
   }
 
   .todo-item {
-    @apply bg-white rounded-xl px-4 py-3.5;
-    @apply transition-all duration-200 ease-out;
+    background-color: white;
+    border-radius: 0.75rem;
+    padding: 0.875rem 1rem;
+    transition: all 200ms ease-out;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   }
 
@@ -114,8 +122,13 @@
   }
 
   .add-button {
-    @apply w-11 h-11 rounded-full flex items-center justify-center;
-    @apply transition-all duration-200 ease-out;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 200ms ease-out;
     background-color: rgb(var(--system-blue));
     box-shadow: 0 2px 8px rgba(var(--system-blue), 0.3);
   }
