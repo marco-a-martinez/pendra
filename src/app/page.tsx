@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Plus, Check, GripVertical, Calendar } from 'lucide-react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import {
   DndContext,
   closestCenter,
@@ -46,50 +48,8 @@ function SortableTodoItem({
   onUpdateDate: (id: string, date: string | undefined) => void;
 }) {
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const dateInputRef = useRef<HTMLInputElement>(null);
-  const datePickerTimeout = useRef<NodeJS.Timeout>();
+  const datePickerRef = useRef<DatePicker>(null);
   const calendarButtonRef = useRef<HTMLButtonElement>(null);
-  
-  // Handle escape key and click outside to close date picker
-  useEffect(() => {
-    if (!showDatePicker) return;
-
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setShowDatePicker(false);
-      }
-    };
-
-    const handleClickOutside = (event: MouseEvent) => {
-      // Check if click is outside both the calendar button and date input
-      const target = event.target as Node;
-      const isDateInput = dateInputRef.current?.contains(target);
-      const isCalendarButton = calendarButtonRef.current?.contains(target);
-      
-      // Don't close if clicking on the date input or calendar button
-      if (!isDateInput && !isCalendarButton) {
-        // Add a small delay to allow date picker interactions to complete
-        setTimeout(() => {
-          setShowDatePicker(false);
-        }, 100);
-      }
-    };
-
-    document.addEventListener('keydown', handleEscape);
-    // Add delay before adding click listener to avoid immediate closure
-    const clickTimeout = setTimeout(() => {
-      document.addEventListener('mousedown', handleClickOutside);
-    }, 200);
-
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.removeEventListener('mousedown', handleClickOutside);
-      clearTimeout(clickTimeout);
-      if (datePickerTimeout.current) {
-        clearTimeout(datePickerTimeout.current);
-      }
-    };
-  }, [showDatePicker]);
 
   const {
     attributes,
@@ -177,11 +137,6 @@ function SortableTodoItem({
           ref={calendarButtonRef}
           onClick={() => {
             setShowDatePicker(!showDatePicker);
-            if (!showDatePicker) {
-              setTimeout(() => {
-                dateInputRef.current?.showPicker();
-              }, 50);
-            }
           }}
           style={{
             background: 'none',
@@ -202,41 +157,33 @@ function SortableTodoItem({
         
         {/* Date picker */}
         {showDatePicker && (
-          <input
-            ref={dateInputRef}
-            type="date"
-            value={todo.dueDate || ''}
-            onChange={(e) => {
-              onUpdateDate(todo.id, e.target.value || undefined);
-              setShowDatePicker(false);
-            }}
-            onBlur={(e) => {
-              // Only close if the blur is not caused by clicking within the date picker
-              const relatedTarget = e.relatedTarget as HTMLElement;
-              if (!relatedTarget || !e.currentTarget.contains(relatedTarget)) {
-                // Use a timeout to allow date picker interactions to complete
-                setTimeout(() => {
-                  // Check if the date picker is still supposed to be open
-                  if (showDatePicker && !dateInputRef.current?.matches(':focus')) {
-                    setShowDatePicker(false);
-                  }
-                }, 200);
-              }
-            }}
-            style={{
-              position: 'absolute',
-              right: '40px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              padding: '4px 8px',
-              border: '1px solid var(--gray-3)',
-              borderRadius: '6px',
-              background: 'var(--background)',
-              fontSize: '14px',
-              zIndex: 1000,
-            }}
-            autoFocus
-          />
+          <div style={{
+            position: 'absolute',
+            right: '40px',
+            top: '100%',
+            marginTop: '4px',
+            zIndex: 1000,
+          }}>
+            <DatePicker
+              ref={datePickerRef}
+              selected={todo.dueDate ? new Date(todo.dueDate) : null}
+              onChange={(date: Date | null) => {
+                if (date) {
+                  const dateString = date.toISOString().split('T')[0];
+                  onUpdateDate(todo.id, dateString);
+                  setShowDatePicker(false);
+                }
+              }}
+              onClickOutside={() => setShowDatePicker(false)}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') {
+                  setShowDatePicker(false);
+                }
+              }}
+              inline
+              autoFocus
+            />
+          </div>
         )}
       </div>
     </div>
