@@ -40,39 +40,51 @@ export default function HomePage() {
     );
   };
 
-  const deleteTodo = (id: string) => {
-    setTodos(current => current.filter(todo => todo.id !== id));
-  };
-
   const incompleteTodos = todos.filter(todo => !todo.completed);
   const completedTodos = todos.filter(todo => todo.completed);
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'rgb(var(--system-grouped-background))' }}>
-      <div className="max-w-2xl mx-auto px-6 py-12">
+    <div style={{ minHeight: '100vh', backgroundColor: 'var(--background)' }}>
+      <div style={{ maxWidth: '680px', margin: '0 auto', padding: '48px 24px' }}>
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-[34px] font-bold tracking-tight" style={{ color: 'rgb(var(--system-label))' }}>
+        <div style={{ marginBottom: '32px' }}>
+          <h1 style={{ 
+            fontSize: '34px', 
+            fontWeight: '700', 
+            letterSpacing: '-0.5px',
+            margin: '0 0 4px 0',
+            color: 'var(--text)'
+          }}>
             Today
           </h1>
-          <p className="text-[15px] mt-1" style={{ color: 'rgb(var(--system-secondary-label))' }}>
+          <p style={{ 
+            fontSize: '15px', 
+            color: 'var(--text-tertiary)',
+            margin: 0
+          }}>
             {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
           </p>
         </div>
 
         {/* Add new todo form */}
         {isAdding && (
-          <form onSubmit={addTodo} className="mb-4 animate-slide-down">
-            <div className="todo-item flex items-center gap-3">
-              <div className="checkbox-ring" />
+          <form onSubmit={addTodo} className="animate-slide-down" style={{ marginBottom: '8px' }}>
+            <div className="todo-item" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div className="checkbox" />
               <input
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onBlur={() => !inputValue.trim() && setIsAdding(false)}
                 placeholder="New To-Do"
-                className="flex-1 bg-transparent outline-none text-[17px]"
-                style={{ color: 'rgb(var(--system-label))' }}
+                style={{
+                  flex: 1,
+                  background: 'transparent',
+                  border: 'none',
+                  outline: 'none',
+                  fontSize: '17px',
+                  color: 'var(--text)'
+                }}
                 autoFocus
               />
             </div>
@@ -80,26 +92,27 @@ export default function HomePage() {
         )}
 
         {/* Todo list */}
-        <div className="space-y-2">
+        <div>
           {incompleteTodos.length === 0 && !isAdding ? (
-            <div className="text-center py-12">
-              <p className="text-[17px] mb-2" style={{ color: 'rgb(var(--system-tertiary-label))' }}>
+            <div style={{ textAlign: 'center', padding: '48px 0' }}>
+              <p style={{ fontSize: '17px', color: 'var(--text-tertiary)', marginBottom: '8px' }}>
                 No tasks for today
               </p>
-              <p className="text-[15px]" style={{ color: 'rgb(var(--system-quaternary-label))' }}>
+              <p style={{ fontSize: '15px', color: 'var(--text-tertiary)' }}>
                 Tap + to add a task
               </p>
             </div>
           ) : (
             incompleteTodos.map((todo) => (
               <div key={todo.id} className="todo-item animate-fade-in">
-                <div className="flex items-center gap-3">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <button
                     onClick={() => toggleTodo(todo.id)}
-                    className="checkbox-ring"
+                    className="checkbox"
+                    style={{ background: 'none', border: '1.5px solid var(--gray-3)' }}
                     aria-label="Mark as complete"
                   />
-                  <span className="flex-1 text-[17px]" style={{ color: 'rgb(var(--system-label))' }}>
+                  <span style={{ flex: 1, fontSize: '17px', color: 'var(--text)' }}>
                     {todo.text}
                   </span>
                 </div>
@@ -110,31 +123,50 @@ export default function HomePage() {
 
         {/* Completed section */}
         {completedTodos.length > 0 && (
-          <div className="mt-8">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-[13px] font-medium uppercase tracking-wide" style={{ color: 'rgb(var(--system-tertiary-label))' }}>
+          <div style={{ marginTop: '32px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+              <h2 style={{ 
+                fontSize: '13px', 
+                fontWeight: '600', 
+                textTransform: 'uppercase', 
+                letterSpacing: '0.5px',
+                color: 'var(--text-tertiary)',
+                margin: 0
+              }}>
                 Completed
               </h2>
               <button
                 onClick={() => setTodos(current => current.filter(todo => !todo.completed))}
-                className="text-[15px] transition-colors"
-                style={{ color: 'rgb(var(--system-blue))' }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '15px',
+                  color: 'var(--blue)',
+                  cursor: 'pointer',
+                  padding: 0
+                }}
               >
                 Clear
               </button>
             </div>
-            <div className="space-y-2">
+            <div style={{ opacity: 0.6 }}>
               {completedTodos.map((todo) => (
-                <div key={todo.id} className="todo-item opacity-60">
-                  <div className="flex items-center gap-3">
+                <div key={todo.id} className="todo-item">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <button
                       onClick={() => toggleTodo(todo.id)}
-                      className="checkbox-ring checked"
+                      className="checkbox checked"
+                      style={{ background: 'var(--blue)', border: '1.5px solid var(--blue)' }}
                       aria-label="Mark as incomplete"
                     >
-                      <Check className="w-3.5 h-3.5 text-white animate-checkmark" strokeWidth={3} />
+                      <Check className="animate-checkmark" size={14} color="white" strokeWidth={3} />
                     </button>
-                    <span className="flex-1 text-[17px] line-through" style={{ color: 'rgb(var(--system-tertiary-label))' }}>
+                    <span style={{ 
+                      flex: 1, 
+                      fontSize: '17px', 
+                      color: 'var(--text-tertiary)', 
+                      textDecoration: 'line-through' 
+                    }}>
                       {todo.text}
                     </span>
                   </div>
@@ -147,10 +179,15 @@ export default function HomePage() {
         {/* Floating add button */}
         <button
           onClick={() => setIsAdding(true)}
-          className="add-button fixed bottom-8 right-8"
+          className="add-button"
+          style={{
+            position: 'fixed',
+            bottom: '32px',
+            right: '32px'
+          }}
           aria-label="Add new todo"
         >
-          <Plus className="w-6 h-6 text-white" strokeWidth={2.5} />
+          <Plus size={24} color="white" strokeWidth={2.5} />
         </button>
       </div>
     </div>

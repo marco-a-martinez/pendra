@@ -2,173 +2,100 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    /* Apple HIG Colors */
-    --system-blue: 0, 122, 255;
-    --system-gray: 142, 142, 147;
-    --system-gray-2: 174, 174, 178;
-    --system-gray-3: 199, 199, 204;
-    --system-gray-4: 209, 209, 214;
-    --system-gray-5: 229, 229, 234;
-    --system-gray-6: 242, 242, 247;
-    --system-background: 255, 255, 255;
-    --system-secondary-background: 242, 242, 247;
-    --system-tertiary-background: 255, 255, 255;
-    --system-grouped-background: 242, 242, 247;
-    --system-label: 0, 0, 0;
-    --system-secondary-label: 60, 60, 67;
-    --system-tertiary-label: 60, 60, 67;
-    --system-quaternary-label: 60, 60, 67;
-    --system-green: 52, 199, 89;
-    --system-red: 255, 59, 48;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --system-blue: 10, 132, 255;
-      --system-gray: 142, 142, 147;
-      --system-gray-2: 99, 99, 102;
-      --system-gray-3: 72, 72, 74;
-      --system-gray-4: 58, 58, 60;
-      --system-gray-5: 44, 44, 46;
-      --system-gray-6: 28, 28, 30;
-      --system-background: 0, 0, 0;
-      --system-secondary-background: 28, 28, 30;
-      --system-tertiary-background: 44, 44, 46;
-      --system-grouped-background: 0, 0, 0;
-      --system-label: 255, 255, 255;
-      --system-secondary-label: 235, 235, 245;
-      --system-tertiary-label: 235, 235, 245;
-      --system-quaternary-label: 235, 235, 245;
-      --system-green: 48, 209, 88;
-      --system-red: 255, 69, 58;
-    }
-  }
-
-  * {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
-    background-color: rgb(var(--system-grouped-background));
-    color: rgb(var(--system-label));
-    font-size: 17px;
-    line-height: 1.47059;
-    font-weight: 400;
-    letter-spacing: -0.022em;
-  }
-
-  /* Custom scrollbar */
-  ::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: rgb(var(--system-gray-3));
-    border-radius: 4px;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: rgb(var(--system-gray-2));
-  }
+/* Apple-inspired design system */
+:root {
+  --blue: #007AFF;
+  --gray: #8E8E93;
+  --gray-2: #C7C7CC;
+  --gray-3: #D1D1D6;
+  --gray-4: #E5E5EA;
+  --gray-5: #F2F2F7;
+  --background: #F2F2F7;
+  --card: #FFFFFF;
+  --text: #000000;
+  --text-secondary: #3C3C43;
+  --text-tertiary: #8E8E93;
+  --green: #34C759;
+  --red: #FF3B30;
 }
 
-/* Things 3 inspired components */
-@layer components {
-  .checkbox-ring {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    border: 1.5px solid;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 200ms ease-out;
-    border-color: rgb(var(--system-gray-3));
-  }
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
-  .checkbox-ring:hover {
-    border-color: rgb(var(--system-gray-2));
-    transform: scale(1.1);
-  }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', sans-serif;
+  background-color: var(--background);
+  color: var(--text);
+  margin: 0;
+  padding: 0;
+}
 
-  .checkbox-ring.checked {
-    background-color: rgb(var(--system-blue));
-    border-color: rgb(var(--system-blue));
-  }
+/* Todo item styles */
+.todo-item {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+}
 
-  .checkbox-ring.checked:hover {
-    opacity: 0.9;
-  }
+.todo-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
 
-  .todo-item {
-    background-color: white;
-    border-radius: 0.75rem;
-    padding: 0.875rem 1rem;
-    transition: all 200ms ease-out;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  }
+/* Checkbox styles */
+.checkbox {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--gray-3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
 
-  .todo-item:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    transform: translateY(-1px);
-  }
+.checkbox:hover {
+  border-color: var(--gray-2);
+  transform: scale(1.1);
+}
 
-  .add-button {
-    width: 2.75rem;
-    height: 2.75rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 200ms ease-out;
-    background-color: rgb(var(--system-blue));
-    box-shadow: 0 2px 8px rgba(var(--system-blue), 0.3);
-  }
+.checkbox.checked {
+  background-color: var(--blue);
+  border-color: var(--blue);
+}
 
-  .add-button:hover {
-    transform: scale(1.1);
-    box-shadow: 0 4px 16px rgba(var(--system-blue), 0.4);
-  }
+/* Add button styles */
+.add-button {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: var(--blue);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+  transition: all 0.2s ease;
+}
 
-  .add-button:active {
-    transform: scale(0.95);
-  }
+.add-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 16px rgba(0, 122, 255, 0.4);
+}
 
-  @media (prefers-color-scheme: dark) {
-    .todo-item {
-      background-color: rgb(var(--system-secondary-background));
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-    }
-
-    .todo-item:hover {
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-  }
+.add-button:active {
+  transform: scale(0.95);
 }
 
 /* Animations */
-@keyframes checkmark {
-  0% {
-    transform: scale(0) rotate(45deg);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.2) rotate(45deg);
-  }
-  100% {
-    transform: scale(1) rotate(45deg);
-    opacity: 1;
-  }
-}
-
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -191,14 +118,26 @@
   }
 }
 
-.animate-checkmark {
-  animation: checkmark 0.3s ease-out;
+@keyframes checkmark {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.3s ease-out;
+  animation: fadeIn 0.3s ease;
 }
 
 .animate-slide-down {
-  animation: slideDown 0.3s ease-out;
+  animation: slideDown 0.3s ease;
+}
+
+.animate-checkmark {
+  animation: checkmark 0.3s ease;
 }
