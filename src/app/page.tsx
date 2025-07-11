@@ -74,71 +74,65 @@ function SortableChecklistItem({
       className="checklist-item sortable-checklist-item"
       {...attributes}
     >
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px',
-        padding: '4px 0',
-        width: '100%',
-      }}>
-      <button
-        className="drag-handle checklist-drag-handle"
-        {...listeners}
-        style={{
-          cursor: 'grab',
-          padding: '2px',
-          color: 'var(--text-tertiary)',
-          opacity: 0,
-          transition: 'opacity 0.2s ease',
-          display: 'flex',
-          alignItems: 'center',
-        }}
-        aria-label="Drag to reorder checklist item"
-      >
-        <GripVertical size={14} />
-      </button>
-      
-      <button
-        onClick={() => onToggle(todoId, item.id)}
-        className="checklist-checkbox"
-        style={{
-          width: '16px',
-          height: '16px',
-          borderRadius: '50%',
-          border: '1.5px solid var(--gray-3)',
-          background: item.completed ? 'var(--blue)' : 'none',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexShrink: 0,
-        }}
-        aria-label={item.completed ? 'Mark as incomplete' : 'Mark as complete'}
-      >
-        {item.completed && <Check size={10} color="white" strokeWidth={3} />}
-      </button>
-      
-      <input
-        type="text"
-        value={item.text}
-        onChange={(e) => onUpdate(todoId, item.id, e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Backspace' && item.text === '') {
-            e.preventDefault();
-            onDelete(todoId, item.id);
-          }
-        }}
-        style={{
-          flex: 1,
-          background: 'transparent',
-          border: 'none',
-          outline: 'none',
-          fontSize: '15px',
-          color: item.completed ? 'var(--text-tertiary)' : 'var(--text)',
-          textDecoration: item.completed ? 'line-through' : 'none',
-        }}
-        placeholder="Checklist item"
-      />
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <button
+          className="drag-handle checklist-drag-handle"
+          {...listeners}
+          style={{
+            cursor: 'grab',
+            padding: '2px',
+            color: 'var(--text-tertiary)',
+            opacity: 0,
+            transition: 'opacity 0.2s ease',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+          aria-label="Drag to reorder checklist item"
+        >
+          <GripVertical size={14} />
+        </button>
+        
+        <button
+          onClick={() => onToggle(todoId, item.id)}
+          className="checklist-checkbox"
+          style={{
+            width: '16px',
+            height: '16px',
+            borderRadius: '50%',
+            border: '1.5px solid var(--gray-3)',
+            background: item.completed ? 'var(--blue)' : 'none',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+          }}
+          aria-label={item.completed ? 'Mark as incomplete' : 'Mark as complete'}
+        >
+          {item.completed && <Check size={10} color="white" strokeWidth={3} />}
+        </button>
+        
+        <input
+          type="text"
+          value={item.text}
+          onChange={(e) => onUpdate(todoId, item.id, e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Backspace' && item.text === '') {
+              e.preventDefault();
+              onDelete(todoId, item.id);
+            }
+          }}
+          style={{
+            flex: 1,
+            background: 'transparent',
+            border: 'none',
+            outline: 'none',
+            fontSize: '15px',
+            color: item.completed ? 'var(--text-tertiary)' : 'var(--text)',
+            textDecoration: item.completed ? 'line-through' : 'none',
+          }}
+          placeholder="Checklist item"
+        />
       </div>
     </div>
   );
@@ -237,18 +231,13 @@ function ChecklistDndContext({
         
         <DragOverlay>
           {activeItem && (
-            <div style={{
+            <div className="checklist-item" style={{
               backgroundColor: 'var(--background)',
               borderRadius: '8px',
               boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-              padding: '4px',
+              padding: '4px 0',
             }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '4px 0',
-              }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <div style={{ width: '20px' }} />
                 <div style={{
                   width: '16px',

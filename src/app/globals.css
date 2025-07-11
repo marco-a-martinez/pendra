@@ -259,6 +259,10 @@ body {
 }
 
 /* Checklist drag handle styles */
+.sortable-checklist-item {
+  padding: 4px 0;
+}
+
 .sortable-checklist-item:hover .checklist-drag-handle {
   opacity: 1 !important;
 }
