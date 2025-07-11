@@ -112,8 +112,6 @@ body {
 
 .checklist-item:hover {
   background-color: var(--gray-5);
-  margin: 0 -8px;
-  padding: 4px 8px !important;
   border-radius: 4px;
 }
 
