@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Drag Debug</title>
+    <style>
+        body {
+            font-family: system-ui;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .todo-item {
+            padding: 12px;
+            margin: 8px 0;
+            background: #f9f9f9;
+            border-radius: 6px;
+            position: relative;
+        }
+        .checklist-container {
+            margin-left: 56px;
+            margin-top: 8px;
+            border: 2px solid red;
+            background: rgba(255,0,0,0.1);
+        }
+        .checklist-item {
+            padding: 4px 0;
+            border: 2px solid blue;
+            background: rgba(0,0,255,0.1);
+            margin: 2px 0;
+        }
+        .inner-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 2px solid green;
+            background: rgba(0,255,0,0.1);
+        }
+        .debug-info {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: white;
+            padding: 10px;
+            border: 1px solid #ccc;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Debug: DOM Structure Analysis</h2>
+        
+        <div class="todo-item">
+            <div>Main Todo Item (Working)</div>
+            <div>Transform applied here works correctly</div>
+        </div>
+
+        <div class="todo-item">
+            <div>Todo with Checklist</div>
+            <div class="checklist-container">
+                <div class="checklist-item">
+                    <div class="inner-content">
+                        <span>[drag]</span>
+                        <span>[checkbox]</span>
+                        <span>Checklist item content</span>
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <div class="inner-content">
+                        <span>[drag]</span>
+                        <span>[checkbox]</span>
+                        <span>Another checklist item</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="debug-info">
+        <div>Observations:</div>
+        <div>- Red border: checklist container (margin-left: 56px)</div>
+        <div>- Blue border: checklist items</div>
+        <div>- Green border: inner content</div>
+        <div>- Check if margins/positioning affect transform origin</div>
+    </div>
+</body>
+</html>

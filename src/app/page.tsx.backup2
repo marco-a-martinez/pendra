@@ -74,7 +74,7 @@ function SortableChecklistItem({
       className="checklist-item sortable-checklist-item"
       {...attributes}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingLeft: '56px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
         <button
           className="drag-handle checklist-drag-handle"
           {...listeners}
@@ -206,7 +206,7 @@ function ChecklistDndContext({
   const activeItem = activeChecklistId ? checklist.find(item => item.id === activeChecklistId) : null;
 
   return (
-    <div style={{ marginTop: '8px' }}>
+    <div style={{ marginLeft: '56px', marginTop: '8px' }}>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -237,7 +237,8 @@ function ChecklistDndContext({
               boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
               padding: '4px 0',
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingLeft: '56px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ width: '20px' }} />
                 <div style={{
                   width: '16px',
                   height: '16px',
@@ -270,8 +271,9 @@ function ChecklistDndContext({
           display: 'flex',
           alignItems: 'center',
           gap: '8px',
-          padding: '4px 0 4px 56px',
+          padding: '4px 0',
         }}>
+          <div style={{ width: '20px' }} />
           <div style={{
             width: '16px',
             height: '16px',
@@ -313,7 +315,7 @@ function ChecklistDndContext({
             fontSize: '15px',
             width: '100%',
             textAlign: 'left',
-            marginLeft: '76px',
+            marginLeft: '20px',
           }}
         >
           <Plus size={16} />
