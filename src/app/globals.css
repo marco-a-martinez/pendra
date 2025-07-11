@@ -83,6 +83,15 @@ body {
   transition: transform 0.2s ease;
 }
 
+/* Calendar button styles */
+.todo-item:hover .calendar-button {
+  opacity: 1 !important;
+}
+
+.calendar-button:hover {
+  color: var(--blue) !important;
+}
+
 /* Checkbox styles */
 .checkbox {
   width: 22px;

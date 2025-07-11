@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Plus, Check, GripVertical } from 'lucide-react';
+import { Plus, Check, GripVertical, Calendar } from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -28,6 +28,7 @@ interface Todo {
   id: string;
   text: string;
   completed: boolean;
+  dueDate?: string;
 }
 
 // Sortable Todo Item Component
@@ -36,12 +37,16 @@ function SortableTodoItem({
   onToggle, 
   onUpdate, 
   onDelete,
+  onUpdateDate,
 }: {
   todo: Todo;
   onToggle: (id: string) => void;
   onUpdate: (id: string, text: string) => void;
   onDelete: (id: string) => void;
+  onUpdateDate: (id: string, date: string | undefined) => void;
 }) {
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const dateInputRef = useRef<HTMLInputElement>(null);
   const {
     attributes,
     listeners,
@@ -64,7 +69,7 @@ function SortableTodoItem({
       className="todo-item sortable-item"
       {...attributes}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', position: 'relative' }}>
         <button
           className="drag-handle"
           {...listeners}
@@ -111,6 +116,63 @@ function SortableTodoItem({
             textDecoration: todo.completed ? 'line-through' : 'none',
           }}
         />
+        
+        {/* Date display */}
+        {todo.dueDate && (
+          <span style={{
+            fontSize: '14px',
+            color: 'var(--text-secondary)',
+            marginRight: '8px',
+          }}>
+            {new Date(todo.dueDate).toLocaleDateString()}
+          </span>
+        )}
+        
+        {/* Calendar icon */}
+        <button
+          onClick={() => setShowDatePicker(!showDatePicker)}
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '4px',
+            color: todo.dueDate ? 'var(--blue)' : 'var(--text-tertiary)',
+            display: 'flex',
+            alignItems: 'center',
+            opacity: todo.dueDate ? 1 : 0,
+            transition: 'opacity 0.2s ease',
+          }}
+          className="calendar-button"
+          aria-label="Set due date"
+        >
+          <Calendar size={18} />
+        </button>
+        
+        {/* Date picker */}
+        {showDatePicker && (
+          <input
+            ref={dateInputRef}
+            type="date"
+            value={todo.dueDate || ''}
+            onChange={(e) => {
+              onUpdateDate(todo.id, e.target.value || undefined);
+              setShowDatePicker(false);
+            }}
+            onBlur={() => setShowDatePicker(false)}
+            style={{
+              position: 'absolute',
+              right: '40px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              padding: '4px 8px',
+              border: '1px solid var(--gray-3)',
+              borderRadius: '6px',
+              background: 'var(--background)',
+              fontSize: '14px',
+            }}
+            autoFocus
+          />
+        )}
       </div>
     </div>
   );
@@ -168,6 +230,12 @@ export default function HomePage() {
   const updateTodo = (id: string, text: string) => {
     setTodos(todos.map(todo => 
       todo.id === id ? { ...todo, text } : todo
+    ));
+  };
+
+  const updateTodoDate = (id: string, date: string | undefined) => {
+    setTodos(todos.map(todo => 
+      todo.id === id ? { ...todo, dueDate: date } : todo
     ));
   };
 
@@ -284,6 +352,7 @@ export default function HomePage() {
                     onToggle={toggleTodo}
                     onUpdate={updateTodo}
                     onDelete={deleteTodo}
+                    onUpdateDate={updateTodoDate}
                   />
                 ))}
               </SortableContext>
