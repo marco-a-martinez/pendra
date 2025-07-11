@@ -26,7 +26,8 @@ export function Header() {
 
   const getViewTitle = () => {
     if (currentView === 'today') {
-      return `Today • ${formatDate(new Date())}`;
+      const today = new Date();
+      return `Today • ${today.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}`;
     }
     if (currentView === 'calendar') {
       return `Calendar • ${formatDate(selectedDate)}`;
@@ -35,7 +36,7 @@ export function Header() {
   };
 
   return (
-    <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 py-4 relative z-10">\n      <h1 className="absolute left-1/2 -translate-x-1/2 top-4 font-bold text-xl text-gray-900 dark:text-white select-none pointer-events-none">Pendra</h1>
+    <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 py-4 relative z-10">
       <div className="flex items-center justify-between w-full">
         <div className="flex items-center space-x-4 min-w-0 flex-1">
           <h1 className="text-lg md:text-xl lg:text-2xl font-semibold text-gray-900 dark:text-white truncate max-w-full">
