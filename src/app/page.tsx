@@ -38,6 +38,299 @@ interface Todo {
   expanded?: boolean;
 }
 
+// Sortable Checklist Item Component
+function SortableChecklistItem({
+  item,
+  todoId,
+  onToggle,
+  onUpdate,
+  onDelete,
+}: {
+  item: ChecklistItem;
+  todoId: string;
+  onToggle: (todoId: string, itemId: string) => void;
+  onUpdate: (todoId: string, itemId: string, text: string) => void;
+  onDelete: (todoId: string, itemId: string) => void;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: item.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{
+        ...style,
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        padding: '4px 0',
+      }}
+      className="checklist-item sortable-checklist-item"
+      {...attributes}
+    >
+      <button
+        className="drag-handle checklist-drag-handle"
+        {...listeners}
+        style={{
+          cursor: 'grab',
+          padding: '2px',
+          color: 'var(--text-tertiary)',
+          opacity: 0,
+          transition: 'opacity 0.2s ease',
+          display: 'flex',
+          alignItems: 'center',
+        }}
+        aria-label="Drag to reorder checklist item"
+      >
+        <GripVertical size={14} />
+      </button>
+      
+      <button
+        onClick={() => onToggle(todoId, item.id)}
+        className="checklist-checkbox"
+        style={{
+          width: '16px',
+          height: '16px',
+          borderRadius: '50%',
+          border: '1.5px solid var(--gray-3)',
+          background: item.completed ? 'var(--blue)' : 'none',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexShrink: 0,
+        }}
+        aria-label={item.completed ? 'Mark as incomplete' : 'Mark as complete'}
+      >
+        {item.completed && <Check size={10} color="white" strokeWidth={3} />}
+      </button>
+      
+      <input
+        type="text"
+        value={item.text}
+        onChange={(e) => onUpdate(todoId, item.id, e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Backspace' && item.text === '') {
+            e.preventDefault();
+            onDelete(todoId, item.id);
+          }
+        }}
+        style={{
+          flex: 1,
+          background: 'transparent',
+          border: 'none',
+          outline: 'none',
+          fontSize: '15px',
+          color: item.completed ? 'var(--text-tertiary)' : 'var(--text)',
+          textDecoration: item.completed ? 'line-through' : 'none',
+        }}
+        placeholder="Checklist item"
+      />
+    </div>
+  );
+}
+
+// Checklist DnD Context Component
+function ChecklistDndContext({
+  todoId,
+  checklist,
+  onReorder,
+  onToggleChecklistItem,
+  onUpdateChecklistItem,
+  onDeleteChecklistItem,
+  onAddChecklistItem,
+}: {
+  todoId: string;
+  checklist: ChecklistItem[];
+  onReorder: (newChecklist: ChecklistItem[]) => void;
+  onToggleChecklistItem: (todoId: string, itemId: string) => void;
+  onUpdateChecklistItem: (todoId: string, itemId: string, text: string) => void;
+  onDeleteChecklistItem: (todoId: string, itemId: string) => void;
+  onAddChecklistItem: (todoId: string, text: string) => void;
+}) {
+  const [activeChecklistId, setActiveChecklistId] = useState<string | null>(null);
+  const [isAddingChecklistItem, setIsAddingChecklistItem] = useState(false);
+  const [checklistInput, setChecklistInput] = useState('');
+  const checklistInputRef = useRef<HTMLInputElement>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleChecklistDragStart = (event: DragStartEvent) => {
+    setActiveChecklistId(event.active.id as string);
+  };
+
+  const handleChecklistDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = checklist.findIndex((item) => item.id === active.id);
+      const newIndex = checklist.findIndex((item) => item.id === over.id);
+      const newChecklist = arrayMove(checklist, oldIndex, newIndex);
+      onReorder(newChecklist);
+    }
+
+    setActiveChecklistId(null);
+  };
+
+  const startAddingChecklistItem = () => {
+    setIsAddingChecklistItem(true);
+    setTimeout(() => checklistInputRef.current?.focus(), 0);
+  };
+
+  const handleAddChecklistItem = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (checklistInput.trim()) {
+      onAddChecklistItem(todoId, checklistInput.trim());
+      setChecklistInput('');
+      setTimeout(() => checklistInputRef.current?.focus(), 0);
+    }
+  };
+
+  const activeItem = activeChecklistId ? checklist.find(item => item.id === activeChecklistId) : null;
+
+  return (
+    <div style={{ marginLeft: '56px', marginTop: '8px' }}>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={handleChecklistDragStart}
+        onDragEnd={handleChecklistDragEnd}
+      >
+        <SortableContext
+          items={checklist.map(item => item.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          {checklist.map((item) => (
+            <SortableChecklistItem
+              key={item.id}
+              item={item}
+              todoId={todoId}
+              onToggle={onToggleChecklistItem}
+              onUpdate={onUpdateChecklistItem}
+              onDelete={onDeleteChecklistItem}
+            />
+          ))}
+        </SortableContext>
+        
+        <DragOverlay>
+          {activeItem && (
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '4px 0',
+              backgroundColor: 'var(--background)',
+              borderRadius: '8px',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+            }}>
+              <div style={{ width: '20px' }} />
+              <div style={{
+                width: '16px',
+                height: '16px',
+                borderRadius: '50%',
+                border: '1.5px solid var(--gray-3)',
+                background: activeItem.completed ? 'var(--blue)' : 'none',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}>
+                {activeItem.completed && <Check size={10} color="white" strokeWidth={3} />}
+              </div>
+              <span style={{
+                fontSize: '15px',
+                color: activeItem.completed ? 'var(--text-tertiary)' : 'var(--text)',
+                textDecoration: activeItem.completed ? 'line-through' : 'none',
+              }}>
+                {activeItem.text}
+              </span>
+            </div>
+          )}
+        </DragOverlay>
+      </DndContext>
+      
+      {/* Add new checklist item */}
+      {isAddingChecklistItem ? (
+        <form onSubmit={handleAddChecklistItem} style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '4px 0',
+        }}>
+          <div style={{ width: '20px' }} />
+          <div style={{
+            width: '16px',
+            height: '16px',
+            borderRadius: '50%',
+            border: '1.5px solid var(--gray-3)',
+            flexShrink: 0,
+          }} />
+          <input
+            ref={checklistInputRef}
+            type="text"
+            value={checklistInput}
+            onChange={(e) => setChecklistInput(e.target.value)}
+            onBlur={() => !checklistInput.trim() && setIsAddingChecklistItem(false)}
+            style={{
+              flex: 1,
+              background: 'transparent',
+              border: 'none',
+              outline: 'none',
+              fontSize: '15px',
+              color: 'var(--text)',
+            }}
+            placeholder="New checklist item"
+            autoFocus
+          />
+        </form>
+      ) : (
+        <button
+          onClick={startAddingChecklistItem}
+          className="add-checklist-item-button"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '4px 0',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            color: 'var(--text-tertiary)',
+            fontSize: '15px',
+            width: '100%',
+            textAlign: 'left',
+            marginLeft: '20px',
+          }}
+        >
+          <Plus size={16} />
+          <span>Add item</span>
+        </button>
+      )}
+    </div>
+  );
+}
+
 // Sortable Todo Item Component
 function SortableTodoItem({ 
   todo, 
@@ -46,15 +339,17 @@ function SortableTodoItem({
   onAddChecklistItem,
   onToggleChecklistItem,
   onUpdateChecklistItem,
-  onDeleteChecklistItem
+  onDeleteChecklistItem,
+  onReorderChecklist,
 }: { 
-  todo: Todo; 
+  todo: Todo;
   onToggle: (id: string) => void;
   onToggleExpand: (id: string) => void;
   onAddChecklistItem: (todoId: string, text: string) => void;
   onToggleChecklistItem: (todoId: string, itemId: string) => void;
   onUpdateChecklistItem: (todoId: string, itemId: string, text: string) => void;
   onDeleteChecklistItem: (todoId: string, itemId: string) => void;
+  onReorderChecklist: (todoId: string, newChecklist: ChecklistItem[]) => void;
 }) {
   const {
     attributes,
@@ -64,10 +359,6 @@ function SortableTodoItem({
     transition,
     isDragging,
   } = useSortable({ id: todo.id });
-
-  const [isAddingChecklistItem, setIsAddingChecklistItem] = useState(false);
-  const [checklistInput, setChecklistInput] = useState('');
-  const checklistInputRef = useRef<HTMLInputElement>(null);
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -79,55 +370,43 @@ function SortableTodoItem({
   const completedCount = todo.checklist?.filter(item => item.completed).length || 0;
   const totalCount = todo.checklist?.length || 0;
 
-  const handleAddChecklistItem = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (checklistInput.trim()) {
-      onAddChecklistItem(todo.id, checklistInput.trim());
-      setChecklistInput('');
-      setIsAddingChecklistItem(false);
-    }
-  };
-
   const startAddingChecklistItem = () => {
-    setIsAddingChecklistItem(true);
-    setTimeout(() => checklistInputRef.current?.focus(), 0);
+    if (!hasChecklist) {
+      onAddChecklistItem(todo.id, '');
+      onToggleExpand(todo.id);
+    }
   };
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`todo-item ${isDragging ? 'dragging' : ''} animate-fade-in`}
+      className="todo-item sortable-item"
+      {...attributes}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
         <button
           className="drag-handle"
-          {...attributes}
           {...listeners}
           style={{
             cursor: 'grab',
             padding: '4px',
             color: 'var(--text-tertiary)',
-            background: 'none',
-            border: 'none',
-            display: 'flex',
-            alignItems: 'center',
             opacity: 0,
             transition: 'opacity 0.2s ease',
           }}
           aria-label="Drag to reorder"
         >
-          <GripVertical size={16} />
+          <GripVertical size={20} />
         </button>
         
         {hasChecklist && (
           <button
             onClick={() => onToggleExpand(todo.id)}
-            className="expand-button"
             style={{
               background: 'none',
               border: 'none',
-              padding: '2px',
+              padding: '4px',
               cursor: 'pointer',
               color: 'var(--text-tertiary)',
               display: 'flex',
@@ -168,13 +447,7 @@ function SortableTodoItem({
         </div>
         
         <button
-          onClick={() => {
-            if (!hasChecklist) {
-              onAddChecklistItem(todo.id, '');
-              onToggleExpand(todo.id);
-            }
-            startAddingChecklistItem();
-          }}
+          onClick={startAddingChecklistItem}
           className="checklist-button"
           style={{
             background: 'none',
@@ -193,113 +466,15 @@ function SortableTodoItem({
       
       {/* Checklist items */}
       {todo.expanded && hasChecklist && (
-        <div style={{ marginLeft: '56px', marginTop: '8px' }}>
-          {todo.checklist?.map((item) => (
-            <div key={item.id} className="checklist-item" style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '4px 0',
-            }}>
-              <button
-                onClick={() => onToggleChecklistItem(todo.id, item.id)}
-                className="checklist-checkbox"
-                style={{
-                  width: '16px',
-                  height: '16px',
-                  borderRadius: '50%',
-                  border: '1.5px solid var(--gray-3)',
-                  background: item.completed ? 'var(--blue)' : 'none',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                }}
-                aria-label={item.completed ? 'Mark as incomplete' : 'Mark as complete'}
-              >
-                {item.completed && <Check size={10} color="white" strokeWidth={3} />}
-              </button>
-              <input
-                type="text"
-                value={item.text}
-                onChange={(e) => onUpdateChecklistItem(todo.id, item.id, e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Backspace' && item.text === '') {
-                    e.preventDefault();
-                    onDeleteChecklistItem(todo.id, item.id);
-                  }
-                }}
-                style={{
-                  flex: 1,
-                  background: 'transparent',
-                  border: 'none',
-                  outline: 'none',
-                  fontSize: '15px',
-                  color: item.completed ? 'var(--text-tertiary)' : 'var(--text)',
-                  textDecoration: item.completed ? 'line-through' : 'none',
-                }}
-                placeholder="Checklist item"
-              />
-            </div>
-          ))}
-          
-          {/* Add new checklist item */}
-          {isAddingChecklistItem ? (
-            <form onSubmit={handleAddChecklistItem} style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '4px 0',
-            }}>
-              <div style={{
-                width: '16px',
-                height: '16px',
-                borderRadius: '50%',
-                border: '1.5px solid var(--gray-3)',
-                flexShrink: 0,
-              }} />
-              <input
-                ref={checklistInputRef}
-                type="text"
-                value={checklistInput}
-                onChange={(e) => setChecklistInput(e.target.value)}
-                onBlur={() => !checklistInput.trim() && setIsAddingChecklistItem(false)}
-                style={{
-                  flex: 1,
-                  background: 'transparent',
-                  border: 'none',
-                  outline: 'none',
-                  fontSize: '15px',
-                  color: 'var(--text)',
-                }}
-                placeholder="New checklist item"
-                autoFocus
-              />
-            </form>
-          ) : (
-            <button
-              onClick={startAddingChecklistItem}
-              className="add-checklist-item-button"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '4px 0',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: 'var(--text-tertiary)',
-                fontSize: '15px',
-                width: '100%',
-                textAlign: 'left',
-              }}
-            >
-              <Plus size={16} />
-              <span>Add item</span>
-            </button>
-          )}
-        </div>
+        <ChecklistDndContext
+          todoId={todo.id}
+          checklist={todo.checklist || []}
+          onReorder={(newChecklist) => onReorderChecklist(todo.id, newChecklist)}
+          onToggleChecklistItem={onToggleChecklistItem}
+          onUpdateChecklistItem={onUpdateChecklistItem}
+          onDeleteChecklistItem={onDeleteChecklistItem}
+          onAddChecklistItem={onAddChecklistItem}
+        />
       )}
     </div>
   );
@@ -443,6 +618,20 @@ export default function HomePage() {
     );
   };
 
+  const reorderChecklist = (todoId: string, newChecklist: ChecklistItem[]) => {
+    setTodos(current =>
+      current.map(todo => {
+        if (todo.id === todoId) {
+          return {
+            ...todo,
+            checklist: newChecklist,
+          };
+        }
+        return todo;
+      })
+    );
+  };
+
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
   };
@@ -523,168 +712,138 @@ export default function HomePage() {
           onDragEnd={handleDragEnd}
         >
           <div>
-            {incompleteTodos.length === 0 && !isAdding ? (
-              <div style={{ textAlign: 'center', padding: '48px 0' }}>
-                <p style={{ fontSize: '17px', color: 'var(--text-tertiary)', marginBottom: '8px' }}>
-                  No tasks for today
-                </p>
-                <p style={{ fontSize: '15px', color: 'var(--text-tertiary)' }}>
-                  Tap + to add a task
-                </p>
-              </div>
-            ) : (
-              <>
-                <SortableContext
-                  items={incompleteTodos.map(todo => todo.id)}
-                  strategy={verticalListSortingStrategy}
-                >
-                  {incompleteTodos.map((todo) => (
-                    <SortableTodoItem
-                      key={todo.id}
-                      todo={todo}
-                      onToggle={toggleTodo}
-                      onToggleExpand={toggleExpand}
-                      onAddChecklistItem={addChecklistItem}
-                      onToggleChecklistItem={toggleChecklistItem}
-                      onUpdateChecklistItem={updateChecklistItem}
-                      onDeleteChecklistItem={deleteChecklistItem}
-                    />
-                  ))}
-                </SortableContext>
-                {/* Inline add button */}
-                <button
-                  onClick={startAdding}
-                  className="inline-add-button"
-                  style={{
-                    width: '100%',
-                    padding: '12px 0',
-                    marginTop: '8px',
-                    background: 'none',
-                    border: 'none',
-                    fontSize: '17px',
-                    color: 'var(--text-tertiary)',
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    transition: 'color 0.2s ease'
-                  }}
-                  aria-label="Add new task"
-                >
-                  <div style={{ width: '20px' }} />
-                  <div style={{ 
-                    width: '20px', 
-                    height: '20px', 
-                    borderRadius: '50%',
-                    border: '1.5px solid var(--gray-3)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginLeft: '2px'
-                  }}>
-                    <Plus size={12} strokeWidth={2} />
+            {incompleteTodos.length > 0 && (
+              <SortableContext
+                items={incompleteTodos.map(todo => todo.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                {incompleteTodos.map((todo) => (
+                  <SortableTodoItem
+                    key={todo.id}
+                    todo={todo}
+                    onToggle={toggleTodo}
+                    onToggleExpand={toggleExpand}
+                    onAddChecklistItem={addChecklistItem}
+                    onToggleChecklistItem={toggleChecklistItem}
+                    onUpdateChecklistItem={updateChecklistItem}
+                    onDeleteChecklistItem={deleteChecklistItem}
+                    onReorderChecklist={reorderChecklist}
+                  />
+                ))}
+              </SortableContext>
+            )}
+            
+            {/* Add task button at bottom of list */}
+            <button
+              onClick={startAdding}
+              className="add-task-inline"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '12px 0',
+                marginLeft: '32px',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: 'var(--text-tertiary)',
+                fontSize: '15px',
+                transition: 'color 0.2s ease',
+              }}
+              aria-label="Add new task (press 'n')"
+            >
+              <Plus size={18} />
+              <span>Add Task</span>
+            </button>
+
+            {/* Completed section */}
+            {completedTodos.length > 0 && (
+              <div style={{ marginTop: '32px' }}>
+                <h3 style={{ 
+                  fontSize: '13px', 
+                  fontWeight: '600', 
+                  color: 'var(--text-tertiary)', 
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  marginBottom: '12px'
+                }}>
+                  Completed ({completedTodos.length})
+                </h3>
+                {completedTodos.map((todo) => (
+                  <div key={todo.id} className="todo-item completed" style={{ opacity: 0.6 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <div style={{ width: '20px' }} />
+                      <button
+                        onClick={() => toggleTodo(todo.id)}
+                        className="checkbox completed"
+                        style={{ 
+                          background: 'var(--blue)', 
+                          border: '1.5px solid var(--blue)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}
+                        aria-label="Mark as incomplete"
+                      >
+                        <Check size={14} color="white" strokeWidth={3} />
+                      </button>
+                      <span style={{ 
+                        fontSize: '17px', 
+                        color: 'var(--text-tertiary)', 
+                        textDecoration: 'line-through' 
+                      }}>
+                        {todo.text}
+                      </span>
+                    </div>
                   </div>
-                  <span>Add task</span>
-                </button>
-              </>
+                ))}
+              </div>
             )}
           </div>
+          
           <DragOverlay>
-            {activeTodo ? (
-              <div className="todo-item dragging-overlay" style={{ 
+            {activeTodo && (
+              <div className="todo-item" style={{
                 backgroundColor: 'var(--background)',
-                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
-                cursor: 'grabbing'
+                boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+                borderRadius: '12px',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div className="drag-handle" style={{
-                    padding: '4px',
-                    color: 'var(--text-tertiary)',
-                    display: 'flex',
-                    alignItems: 'center',
-                  }}>
-                    <GripVertical size={16} />
-                  </div>
+                  <div style={{ width: '20px' }} />
                   <div className="checkbox" style={{ background: 'none', border: '1.5px solid var(--gray-3)' }} />
-                  <span style={{ flex: 1, fontSize: '17px', color: 'var(--text)' }}>
+                  <span style={{ fontSize: '17px', color: 'var(--text)' }}>
                     {activeTodo.text}
                   </span>
                 </div>
               </div>
-            ) : null}
+            )}
           </DragOverlay>
         </DndContext>
-
-        {/* Completed section */}
-        {completedTodos.length > 0 && (
-          <div style={{ marginTop: '32px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-              <h2 style={{ 
-                fontSize: '13px', 
-                fontWeight: '600', 
-                textTransform: 'uppercase', 
-                letterSpacing: '0.5px',
-                color: 'var(--text-tertiary)',
-                margin: 0
-              }}>
-                Completed
-              </h2>
-              <button
-                onClick={() => setTodos(current => current.filter(todo => !todo.completed))}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  fontSize: '15px',
-                  color: 'var(--blue)',
-                  cursor: 'pointer',
-                  padding: 0
-                }}
-              >
-                Clear
-              </button>
-            </div>
-            <div style={{ opacity: 0.6 }}>
-              {completedTodos.map((todo) => (
-                <div key={todo.id} className="todo-item">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ width: '20px' }} />
-                    <button
-                      onClick={() => toggleTodo(todo.id)}
-                      className="checkbox checked"
-                      style={{ background: 'var(--blue)', border: '1.5px solid var(--blue)' }}
-                      aria-label="Mark as incomplete"
-                    >
-                      <Check className="animate-checkmark" size={14} color="white" strokeWidth={3} />
-                    </button>
-                    <span style={{ 
-                      flex: 1, 
-                      fontSize: '17px', 
-                      color: 'var(--text-tertiary)', 
-                      textDecoration: 'line-through' 
-                    }}>
-                      {todo.text}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Floating add button */}
         <button
           onClick={startAdding}
-          className="add-button"
+          className="floating-add-button"
           style={{
             position: 'fixed',
-            bottom: '32px',
-            right: '32px'
+            bottom: '24px',
+            right: '24px',
+            width: '56px',
+            height: '56px',
+            borderRadius: '50%',
+            backgroundColor: 'var(--blue)',
+            color: 'white',
+            border: 'none',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 4px 12px rgba(0, 122, 255, 0.3)',
+            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
           }}
-          aria-label="Add new task (Press 'n')"
-          title="Add new task (Press 'n')"
+          aria-label="Add new task (press 'n')"
         >
-          <Plus size={28} color="white" strokeWidth={2.5} />
+          <Plus size={24} />
         </button>
       </div>
     </div>

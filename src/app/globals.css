@@ -257,3 +257,23 @@ body {
 .animate-checkmark {
   animation: checkmark 0.3s ease;
 }
+
+/* Checklist drag handle styles */
+.sortable-checklist-item:hover .checklist-drag-handle {
+  opacity: 1 !important;
+}
+
+.checklist-drag-handle:active {
+  cursor: grabbing !important;
+}
+
+.sortable-checklist-item {
+  transition: background-color 0.2s ease;
+}
+
+.sortable-checklist-item:hover {
+  background-color: var(--gray-5);
+  border-radius: 6px;
+  margin: 0 -8px;
+  padding: 4px 8px !important;
+}
