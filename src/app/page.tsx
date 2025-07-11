@@ -139,10 +139,23 @@ function SortableTodoItem({
           onClick={() => {
             if (!showDatePicker && calendarButtonRef.current) {
               const rect = calendarButtonRef.current.getBoundingClientRect();
-              // Position the calendar directly below the button
+              const calendarWidth = 280; // Approximate width of the date picker
+              const viewportWidth = window.innerWidth;
+              
+              // Default: Position calendar to the right of the todo item
+              let left = rect.right + 20;
+              
+              // If calendar would go off-screen, position it to the left of the button instead
+              if (left + calendarWidth > viewportWidth - 20) {
+                left = rect.left - calendarWidth - 20;
+              }
+              
+              // Position the calendar adjacent to the todo item
+              // The calendar will appear to the right of the todo (or left if no space)
+              // and vertically aligned with the todo item
               setDatePickerPosition({
-                top: rect.bottom + 8,
-                left: rect.left - 250, // Align calendar under the button
+                top: rect.top - 80, // Align with todo item (accounting for calendar header)
+                left: left,
               });
             }
             setShowDatePicker(!showDatePicker);
