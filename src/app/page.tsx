@@ -1,7 +1,28 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Plus, Check } from 'lucide-react';
+import { Plus, Check, GripVertical } from 'lucide-react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+  DragStartEvent,
+  DragOverlay,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import {
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface Todo {
   id: string;
@@ -9,15 +30,85 @@ interface Todo {
   completed: boolean;
 }
 
+// Sortable Todo Item Component
+function SortableTodoItem({ todo, onToggle }: { todo: Todo; onToggle: (id: string) => void }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: todo.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`todo-item ${isDragging ? 'dragging' : ''} animate-fade-in`}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <button
+          className="drag-handle"
+          {...attributes}
+          {...listeners}
+          style={{
+            cursor: 'grab',
+            padding: '4px',
+            color: 'var(--text-tertiary)',
+            background: 'none',
+            border: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            opacity: 0,
+            transition: 'opacity 0.2s ease',
+          }}
+          aria-label="Drag to reorder"
+        >
+          <GripVertical size={16} />
+        </button>
+        <button
+          onClick={() => onToggle(todo.id)}
+          className="checkbox"
+          style={{ background: 'none', border: '1.5px solid var(--gray-3)' }}
+          aria-label="Mark as complete"
+        />
+        <span style={{ flex: 1, fontSize: '17px', color: 'var(--text)' }}>
+          {todo.text}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export default function HomePage() {
   const [todos, setTodos] = useState<Todo[]>([
     { id: '1', text: 'Welcome to your simple todo app!', completed: false },
     { id: '2', text: 'Click the circle to complete a todo', completed: false },
     { id: '3', text: 'Press the blue + button to add a new todo', completed: false },
+    { id: '4', text: 'Drag tasks to reorder them', completed: false },
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isAdding, setIsAdding] = useState(false);
+  const [activeId, setActiveId] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const addTodo = (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,8 +153,27 @@ export default function HomePage() {
     );
   };
 
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      setTodos((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+
+    setActiveId(null);
+  };
+
   const incompleteTodos = todos.filter(todo => !todo.completed);
   const completedTodos = todos.filter(todo => todo.completed);
+  const activeTodo = activeId ? todos.find(todo => todo.id === activeId) : null;
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'var(--background)' }}>
@@ -92,6 +202,7 @@ export default function HomePage() {
         {isAdding && (
           <form onSubmit={addTodo} className="animate-slide-down" style={{ marginBottom: '8px' }}>
             <div className="todo-item" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ width: '20px' }} />
               <div className="checkbox" />
               <input
                 type="text"
@@ -115,71 +226,100 @@ export default function HomePage() {
         )}
 
         {/* Todo list */}
-        <div>
-          {incompleteTodos.length === 0 && !isAdding ? (
-            <div style={{ textAlign: 'center', padding: '48px 0' }}>
-              <p style={{ fontSize: '17px', color: 'var(--text-tertiary)', marginBottom: '8px' }}>
-                No tasks for today
-              </p>
-              <p style={{ fontSize: '15px', color: 'var(--text-tertiary)' }}>
-                Tap + to add a task
-              </p>
-            </div>
-          ) : (
-            <>
-              {incompleteTodos.map((todo) => (
-                <div key={todo.id} className="todo-item animate-fade-in">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <button
-                      onClick={() => toggleTodo(todo.id)}
-                      className="checkbox"
-                      style={{ background: 'none', border: '1.5px solid var(--gray-3)' }}
-                      aria-label="Mark as complete"
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
+          <div>
+            {incompleteTodos.length === 0 && !isAdding ? (
+              <div style={{ textAlign: 'center', padding: '48px 0' }}>
+                <p style={{ fontSize: '17px', color: 'var(--text-tertiary)', marginBottom: '8px' }}>
+                  No tasks for today
+                </p>
+                <p style={{ fontSize: '15px', color: 'var(--text-tertiary)' }}>
+                  Tap + to add a task
+                </p>
+              </div>
+            ) : (
+              <>
+                <SortableContext
+                  items={incompleteTodos.map(todo => todo.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  {incompleteTodos.map((todo) => (
+                    <SortableTodoItem
+                      key={todo.id}
+                      todo={todo}
+                      onToggle={toggleTodo}
                     />
-                    <span style={{ flex: 1, fontSize: '17px', color: 'var(--text)' }}>
-                      {todo.text}
-                    </span>
+                  ))}
+                </SortableContext>
+                {/* Inline add button */}
+                <button
+                  onClick={startAdding}
+                  className="inline-add-button"
+                  style={{
+                    width: '100%',
+                    padding: '12px 0',
+                    marginTop: '8px',
+                    background: 'none',
+                    border: 'none',
+                    fontSize: '17px',
+                    color: 'var(--text-tertiary)',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    transition: 'color 0.2s ease'
+                  }}
+                  aria-label="Add new task"
+                >
+                  <div style={{ width: '20px' }} />
+                  <div style={{ 
+                    width: '20px', 
+                    height: '20px', 
+                    borderRadius: '50%',
+                    border: '1.5px solid var(--gray-3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginLeft: '2px'
+                  }}>
+                    <Plus size={12} strokeWidth={2} />
                   </div>
+                  <span>Add task</span>
+                </button>
+              </>
+            )}
+          </div>
+          <DragOverlay>
+            {activeTodo ? (
+              <div className="todo-item dragging-overlay" style={{ 
+                backgroundColor: 'var(--background)',
+                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
+                cursor: 'grabbing'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div className="drag-handle" style={{
+                    padding: '4px',
+                    color: 'var(--text-tertiary)',
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}>
+                    <GripVertical size={16} />
+                  </div>
+                  <div className="checkbox" style={{ background: 'none', border: '1.5px solid var(--gray-3)' }} />
+                  <span style={{ flex: 1, fontSize: '17px', color: 'var(--text)' }}>
+                    {activeTodo.text}
+                  </span>
                 </div>
-              ))}
-              {/* Inline add button */}
-              <button
-                onClick={startAdding}
-                className="inline-add-button"
-                style={{
-                  width: '100%',
-                  padding: '12px 0',
-                  marginTop: '8px',
-                  background: 'none',
-                  border: 'none',
-                  fontSize: '17px',
-                  color: 'var(--text-tertiary)',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  transition: 'color 0.2s ease'
-                }}
-                aria-label="Add new task"
-              >
-                <div style={{ 
-                  width: '20px', 
-                  height: '20px', 
-                  borderRadius: '50%',
-                  border: '1.5px solid var(--gray-3)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginLeft: '2px'
-                }}>
-                  <Plus size={12} strokeWidth={2} />
-                </div>
-                <span>Add task</span>
-              </button>
-            </>
-          )}
-        </div>
+              </div>
+            ) : null}
+          </DragOverlay>
+        </DndContext>
 
         {/* Completed section */}
         {completedTodos.length > 0 && (
@@ -213,6 +353,7 @@ export default function HomePage() {
               {completedTodos.map((todo) => (
                 <div key={todo.id} className="todo-item">
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ width: '20px' }} />
                     <button
                       onClick={() => toggleTodo(todo.id)}
                       className="checkbox checked"
