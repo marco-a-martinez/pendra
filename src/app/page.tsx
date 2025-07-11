@@ -50,23 +50,20 @@ function SortableTodoItem({
   const datePickerTimeout = useRef<NodeJS.Timeout>();
   const calendarButtonRef = useRef<HTMLButtonElement>(null);
   
-  // Handle click outside to close date picker
+  // Handle escape key to close date picker
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        showDatePicker &&
-        dateInputRef.current &&
-        !dateInputRef.current.contains(event.target as Node) &&
-        calendarButtonRef.current &&
-        !calendarButtonRef.current.contains(event.target as Node)
-      ) {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && showDatePicker) {
         setShowDatePicker(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    if (showDatePicker) {
+      document.addEventListener('keydown', handleEscape);
+    }
+
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
       if (datePickerTimeout.current) {
         clearTimeout(datePickerTimeout.current);
       }
@@ -184,7 +181,20 @@ function SortableTodoItem({
         
         {/* Date picker */}
         {showDatePicker && (
-          <input
+          <>
+            {/* Invisible overlay to catch clicks outside */}
+            <div
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                zIndex: 999,
+              }}
+              onClick={() => setShowDatePicker(false)}
+            />
+            <input
             ref={dateInputRef}
             type="date"
             value={todo.dueDate || ''}
@@ -202,9 +212,12 @@ function SortableTodoItem({
               borderRadius: '6px',
               background: 'var(--background)',
               fontSize: '14px',
+              zIndex: 1000,
             }}
             autoFocus
+            onClick={(e) => e.stopPropagation()}
           />
+          </>
         )}
       </div>
     </div>
