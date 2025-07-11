@@ -266,12 +266,3 @@ body {
 .checklist-drag-handle:active {
   cursor: grabbing !important;
 }
-
-.sortable-checklist-item {
-  transition: background-color 0.2s ease;
-}
-
-.sortable-checklist-item:hover {
-  background-color: var(--gray-5);
-  border-radius: 6px;
-}

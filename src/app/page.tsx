@@ -70,19 +70,17 @@ function SortableChecklistItem({
   return (
     <div
       ref={setNodeRef}
-      style={{
-        ...style,
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px',
-        padding: '4px 8px',
-        margin: '0 -8px',
-        borderRadius: '6px',
-        transition: 'background-color 0.2s ease',
-      }}
+      style={style}
       className="checklist-item sortable-checklist-item"
       {...attributes}
     >
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        padding: '4px 0',
+        width: '100%',
+      }}>
       <button
         className="drag-handle checklist-drag-handle"
         {...listeners}
@@ -141,6 +139,7 @@ function SortableChecklistItem({
         }}
         placeholder="Checklist item"
       />
+      </div>
     </div>
   );
 }
@@ -239,36 +238,39 @@ function ChecklistDndContext({
         <DragOverlay>
           {activeItem && (
             <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '4px 8px',
               backgroundColor: 'var(--background)',
               borderRadius: '8px',
               boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-              width: 'auto',
+              padding: '4px',
             }}>
-              <div style={{ width: '20px' }} />
               <div style={{
-                width: '16px',
-                height: '16px',
-                borderRadius: '50%',
-                border: '1.5px solid var(--gray-3)',
-                background: activeItem.completed ? 'var(--blue)' : 'none',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
+                gap: '8px',
+                padding: '4px 0',
               }}>
-                {activeItem.completed && <Check size={10} color="white" strokeWidth={3} />}
+                <div style={{ width: '20px' }} />
+                <div style={{
+                  width: '16px',
+                  height: '16px',
+                  borderRadius: '50%',
+                  border: '1.5px solid var(--gray-3)',
+                  background: activeItem.completed ? 'var(--blue)' : 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}>
+                  {activeItem.completed && <Check size={10} color="white" strokeWidth={3} />}
+                </div>
+                <span style={{
+                  fontSize: '15px',
+                  color: activeItem.completed ? 'var(--text-tertiary)' : 'var(--text)',
+                  textDecoration: activeItem.completed ? 'line-through' : 'none',
+                }}>
+                  {activeItem.text}
+                </span>
               </div>
-              <span style={{
-                fontSize: '15px',
-                color: activeItem.completed ? 'var(--text-tertiary)' : 'var(--text)',
-                textDecoration: activeItem.completed ? 'line-through' : 'none',
-              }}>
-                {activeItem.text}
-              </span>
             </div>
           )}
         </DragOverlay>
@@ -280,8 +282,7 @@ function ChecklistDndContext({
           display: 'flex',
           alignItems: 'center',
           gap: '8px',
-          padding: '4px 8px',
-          margin: '0 -8px',
+          padding: '4px 0',
         }}>
           <div style={{ width: '20px' }} />
           <div style={{
@@ -325,7 +326,7 @@ function ChecklistDndContext({
             fontSize: '15px',
             width: '100%',
             textAlign: 'left',
-            marginLeft: '28px',
+            marginLeft: '20px',
           }}
         >
           <Plus size={16} />
