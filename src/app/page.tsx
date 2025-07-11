@@ -48,9 +48,9 @@ function SortableTodoItem({
   onUpdateDate: (id: string, date: string | undefined) => void;
 }) {
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [datePickerPosition, setDatePickerPosition] = useState({ top: 0, left: 0 });
   const datePickerRef = useRef<DatePicker>(null);
   const calendarButtonRef = useRef<HTMLButtonElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const {
     attributes,
@@ -74,7 +74,7 @@ function SortableTodoItem({
       className="todo-item sortable-item"
       {...attributes}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', position: 'relative' }}>
+      <div ref={containerRef} style={{ display: 'flex', alignItems: 'center', gap: '12px', position: 'relative' }}>
         <button
           className="drag-handle"
           {...listeners}
@@ -137,27 +137,6 @@ function SortableTodoItem({
         <button
           ref={calendarButtonRef}
           onClick={() => {
-            if (!showDatePicker && calendarButtonRef.current) {
-              const rect = calendarButtonRef.current.getBoundingClientRect();
-              const calendarWidth = 280; // Approximate width of the date picker
-              const viewportWidth = window.innerWidth;
-              
-              // Default: Position calendar to the right of the todo item
-              let left = rect.right + 20;
-              
-              // If calendar would go off-screen, position it to the left of the button instead
-              if (left + calendarWidth > viewportWidth - 20) {
-                left = rect.left - calendarWidth - 20;
-              }
-              
-              // Position the calendar adjacent to the todo item
-              // The calendar will appear to the right of the todo (or left if no space)
-              // and vertically aligned with the todo item
-              setDatePickerPosition({
-                top: rect.top - 80, // Align with todo item (accounting for calendar header)
-                left: left,
-              });
-            }
             setShowDatePicker(!showDatePicker);
           }}
           style={{
@@ -177,14 +156,18 @@ function SortableTodoItem({
           <Calendar size={18} />
         </button>
         
-        {/* Date picker */}
+        {/* Date picker - positioned relative to the todo item */}
         {showDatePicker && (
-          <div style={{
-            position: 'fixed',
-            top: datePickerPosition.top,
-            left: datePickerPosition.left,
-            zIndex: 1000,
-          }}>
+          <div 
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '100%',
+              transform: 'translateY(-50%)',
+              marginLeft: '20px',
+              zIndex: 1000,
+            }}
+          >
             <DatePicker
               ref={datePickerRef}
               selected={todo.dueDate ? new Date(todo.dueDate) : null}
@@ -203,6 +186,22 @@ function SortableTodoItem({
               }}
               inline
               autoFocus
+              popperPlacement="right-start"
+              popperModifiers={[
+                {
+                  name: 'preventOverflow',
+                  options: {
+                    boundary: 'viewport',
+                    padding: 20,
+                  },
+                },
+                {
+                  name: 'flip',
+                  options: {
+                    fallbackPlacements: ['left-start', 'bottom', 'top'],
+                  },
+                },
+              ]}
             />
           </div>
         )}
