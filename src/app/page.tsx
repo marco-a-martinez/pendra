@@ -74,7 +74,7 @@ function SortableChecklistItem({
       className="checklist-item sortable-checklist-item"
       {...attributes}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingLeft: '56px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingLeft: '56px', position: 'relative' }}>
         <button
           className="drag-handle checklist-drag-handle"
           {...listeners}
@@ -235,9 +235,9 @@ function ChecklistDndContext({
               backgroundColor: 'var(--background)',
               borderRadius: '8px',
               boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-              padding: '4px 0',
+              padding: '4px 0 4px 12px',
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingLeft: '56px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <div style={{
                   width: '16px',
                   height: '16px',
