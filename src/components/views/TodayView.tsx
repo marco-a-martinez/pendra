@@ -48,6 +48,19 @@ export function TodayView() {
             Today&apos;s Tasks ({pendingTasks.length})
           </h2>
           <div className="space-y-3">
+            {/* Inline Add Task Button */}
+            <button
+              onClick={() => setTaskModalOpen(true)}
+              className="w-full p-4 text-left rounded-xl border border-dashed border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-all duration-200 group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-5 h-5 rounded-full border-2 border-gray-300 dark:border-gray-700 group-hover:border-blue-500 dark:group-hover:border-blue-400 transition-colors" />
+                <span className="text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
+                  Add a task for today...
+                </span>
+              </div>
+            </button>
+            
             {pendingTasks.map(task => (
               <TaskCard key={task.id} task={task} />
             ))}
