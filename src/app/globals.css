@@ -79,38 +79,8 @@ body {
   cursor: grabbing !important;
 }
 
-  opacity: 1 !important;
-}
-
 .expand-button {
   transition: transform 0.2s ease;
-}
-
-  transition: all 0.2s ease;
-}
-
-  border-color: var(--gray-2) !important;
-  transform: scale(1.1);
-}
-
-  outline: 2px solid var(--blue);
-  outline-offset: 2px;
-}
-
-  outline: none;
-}
-
-  transition: opacity 0.2s ease;
-}
-
-  background-color: var(--gray-5);
-  border-radius: 4px;
-}
-
-  color: var(--text) !important;
-}
-
-  color: var(--blue) !important;
 }
 
 /* Checkbox styles */
@@ -244,13 +214,4 @@ body {
 
 .animate-checkmark {
   animation: checkmark 0.3s ease;
-}
-
-  padding: 4px 0;
-}
-
-  opacity: 1 !important;
-}
-
-  cursor: grabbing !important;
 }
