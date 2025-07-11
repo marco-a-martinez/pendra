@@ -75,7 +75,10 @@ function SortableChecklistItem({
         display: 'flex',
         alignItems: 'center',
         gap: '8px',
-        padding: '4px 0',
+        padding: '4px 8px',
+        margin: '0 -8px',
+        borderRadius: '6px',
+        transition: 'background-color 0.2s ease',
       }}
       className="checklist-item sortable-checklist-item"
       {...attributes}
@@ -239,10 +242,11 @@ function ChecklistDndContext({
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
-              padding: '4px 0',
+              padding: '4px 8px',
               backgroundColor: 'var(--background)',
               borderRadius: '8px',
               boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+              width: 'auto',
             }}>
               <div style={{ width: '20px' }} />
               <div style={{
@@ -276,7 +280,8 @@ function ChecklistDndContext({
           display: 'flex',
           alignItems: 'center',
           gap: '8px',
-          padding: '4px 0',
+          padding: '4px 8px',
+          margin: '0 -8px',
         }}>
           <div style={{ width: '20px' }} />
           <div style={{
@@ -320,7 +325,7 @@ function ChecklistDndContext({
             fontSize: '15px',
             width: '100%',
             textAlign: 'left',
-            marginLeft: '20px',
+            marginLeft: '28px',
           }}
         >
           <Plus size={16} />
