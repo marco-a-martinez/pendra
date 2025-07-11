@@ -70,11 +70,14 @@ function SortableChecklistItem({
   return (
     <div
       ref={setNodeRef}
-      style={style}
+      style={{
+        ...style,
+        paddingLeft: '56px',
+      }}
       className="checklist-item sortable-checklist-item"
       {...attributes}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingLeft: '56px', position: 'relative' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
         <button
           className="drag-handle checklist-drag-handle"
           {...listeners}
@@ -229,13 +232,15 @@ function ChecklistDndContext({
           ))}
         </SortableContext>
         
-        <DragOverlay>
+        <DragOverlay style={{ zIndex: 9999 }} dropAnimation={null}>
           {activeItem && (
             <div className="checklist-item" style={{
               backgroundColor: 'var(--background)',
               borderRadius: '8px',
               boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-              padding: '4px 0 4px 12px',
+              padding: '4px 0',
+              paddingLeft: '56px',
+              position: 'relative',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <div style={{
