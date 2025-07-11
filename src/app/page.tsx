@@ -47,6 +47,32 @@ function SortableTodoItem({
 }) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const dateInputRef = useRef<HTMLInputElement>(null);
+  const datePickerTimeout = useRef<NodeJS.Timeout>();
+  const calendarButtonRef = useRef<HTMLButtonElement>(null);
+  
+  // Handle click outside to close date picker
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        showDatePicker &&
+        dateInputRef.current &&
+        !dateInputRef.current.contains(event.target as Node) &&
+        calendarButtonRef.current &&
+        !calendarButtonRef.current.contains(event.target as Node)
+      ) {
+        setShowDatePicker(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      if (datePickerTimeout.current) {
+        clearTimeout(datePickerTimeout.current);
+      }
+    };
+  }, [showDatePicker]);
+
   const {
     attributes,
     listeners,
@@ -130,7 +156,15 @@ function SortableTodoItem({
         
         {/* Calendar icon */}
         <button
-          onClick={() => setShowDatePicker(!showDatePicker)}
+          ref={calendarButtonRef}
+          onClick={() => {
+            setShowDatePicker(!showDatePicker);
+            if (!showDatePicker) {
+              setTimeout(() => {
+                dateInputRef.current?.showPicker();
+              }, 50);
+            }
+          }}
           style={{
             background: 'none',
             border: 'none',
@@ -158,7 +192,6 @@ function SortableTodoItem({
               onUpdateDate(todo.id, e.target.value || undefined);
               setShowDatePicker(false);
             }}
-            onBlur={() => setShowDatePicker(false)}
             style={{
               position: 'absolute',
               right: '40px',
