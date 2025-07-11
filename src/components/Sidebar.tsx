@@ -66,7 +66,7 @@ export function Sidebar() {
             data-1p-ignore
             data-lpignore="true"
           >
-            <Icon className="w-5 h-5 mr-3 flex-shrink-0" />
+            <Icon className="w-4 h-4 mr-3 flex-shrink-0" />
             <span className="flex-1 text-left">{label}</span>
             {counts[id as keyof typeof counts] > 0 && (
               <span className="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 text-xs px-2 py-1 rounded-full">
@@ -131,9 +131,9 @@ export function Sidebar() {
           data-lpignore="true"
         >
           {darkMode ? (
-            <Sun className="w-5 h-5 mr-3 flex-shrink-0" />
+            <Sun className="w-4 h-4 mr-3 flex-shrink-0" />
           ) : (
-            <Moon className="w-5 h-5 mr-3 flex-shrink-0" />
+            <Moon className="w-4 h-4 mr-3 flex-shrink-0" />
           )}
           <span className="flex-1 text-left">{darkMode ? 'Light Mode' : 'Dark Mode'}</span>
         </button>
@@ -144,7 +144,7 @@ export function Sidebar() {
           data-1p-ignore
           data-lpignore="true"
         >
-          <Settings className="w-5 h-5 mr-3 flex-shrink-0" />
+          <Settings className="w-4 h-4 mr-3 flex-shrink-0" />
           <span className="flex-1 text-left">Settings</span>
         </button>
       </div>
