@@ -44,13 +44,14 @@ export function Sidebar() {
   return (
     <div
       className={cn(
-        'fixed left-0 top-0 h-full w-64 bg-white dark:bg-gray-800',
-        'border-r border-gray-200 dark:border-gray-700 z-20 flex flex-col'
+        'fixed left-0 top-0 h-full w-64',
+        'bg-gradient-to-b from-gray-50/50 to-white dark:from-gray-900 dark:to-gray-800',
+        'shadow-xl z-20 flex flex-col'
       )}
     >
       {/* Header */}
-      <div className="flex items-center justify-start p-4 border-b border-gray-200 dark:border-gray-700">
-        <h1 className="text-xl font-bold text-gray-900 dark:text-white truncate flex-1 mr-2">
+      <div className="flex items-center justify-start p-6">
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
           Pendra
         </h1>
       </div>
@@ -77,9 +78,9 @@ export function Sidebar() {
         ))}
 
         {/* Projects */}
-        <div className="pt-6 mt-6 border-t border-gray-200 dark:border-gray-700">
+        <div className="pt-6 mt-6">
           <div className="flex items-center justify-between mb-3 px-3">
-            <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+            <h3 className="text-xs font-semibold text-muted-foreground/70 tracking-wider">
               Projects
             </h3>
             <button

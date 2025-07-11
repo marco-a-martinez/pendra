@@ -67,7 +67,7 @@ export function DashboardView() {
           return (
             <div
               key={stat.label}
-              className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700"
+              className="bg-white dark:bg-secondary/50 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
             >
               <div className="flex items-center justify-between">
                 <div>
@@ -88,7 +88,7 @@ export function DashboardView() {
       </div>
 
       {/* Completion Rate */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+      <div className="bg-white dark:bg-secondary/50 rounded-xl p-6 shadow-lg">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           Overall Progress
         </h3>
@@ -122,7 +122,7 @@ export function DashboardView() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Activity */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-secondary/50 rounded-xl p-6 shadow-lg">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Recent Activity
           </h3>
