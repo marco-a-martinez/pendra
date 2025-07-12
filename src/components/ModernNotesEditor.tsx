@@ -33,7 +33,7 @@ export function ModernNotesEditor({ content, onChange, placeholder = 'Start typi
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-sm max-w-none focus:outline-none min-h-[120px] px-4 py-3',
+        class: 'prose prose-sm max-w-none focus:outline-none min-h-[120px] px-6 py-4',
       },
     },
     immediatelyRender: false,
@@ -54,8 +54,8 @@ export function ModernNotesEditor({ content, onChange, placeholder = 'Start typi
   if (!mounted || !editor) {
     return (
       <div className="w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
-        <div className="bg-gray-50 dark:bg-gray-900 px-3 py-2">
-          <div className="flex items-center gap-2">
+        <div className="bg-gray-50 dark:bg-gray-900 px-4 py-3">
+          <div className="flex items-center gap-3">
             <div className="flex items-center bg-white dark:bg-gray-800 rounded-full px-1 py-1 gap-0.5">
               <div className="w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded-full" />
               <div className="w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded-full" />
@@ -66,7 +66,7 @@ export function ModernNotesEditor({ content, onChange, placeholder = 'Start typi
             </div>
           </div>
         </div>
-        <div className="min-h-[120px] px-4 py-3">
+        <div className="min-h-[120px] px-6 py-4 border-t border-gray-100 dark:border-gray-700">
           <p className="text-gray-400 text-sm">{placeholder}</p>
         </div>
       </div>
@@ -76,8 +76,8 @@ export function ModernNotesEditor({ content, onChange, placeholder = 'Start typi
   return (
     <div className="w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
       {/* Integrated Toolbar with pill-shaped button groups */}
-      <div className="bg-gray-50 dark:bg-gray-900 px-3 py-2">
-        <div className="flex items-center gap-2">
+      <div className="bg-gray-50 dark:bg-gray-900 px-4 py-3">
+        <div className="flex items-center gap-3">
           {/* Text Style Group */}
           <div className="flex items-center bg-white dark:bg-gray-800 rounded-full px-1 py-1 gap-0.5 shadow-sm">
             <button
@@ -165,7 +165,7 @@ export function ModernNotesEditor({ content, onChange, placeholder = 'Start typi
       </div>
 
       {/* Editor Content Area */}
-      <div className="bg-white dark:bg-gray-800">
+      <div className="bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700">
         <EditorContent editor={editor} />
       </div>
     </div>

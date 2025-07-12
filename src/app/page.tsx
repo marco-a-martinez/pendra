@@ -238,7 +238,7 @@ function SortableTodoItem({
       
       {/* Notes section - Things 3 style with smooth animation */}
       {showNotes && (
-        <div className="mt-3 ml-11 mr-0 transition-all duration-200 ease-out">
+        <div className="mt-4 ml-11 mr-0 mb-2 transition-all duration-200 ease-out">
           <ModernNotesEditor
             content={notesContent}
             onChange={(content) => {
