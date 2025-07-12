@@ -14,11 +14,8 @@ import {
   Trash2, 
   CheckCircle2,
   Circle,
-  FolderOpen,
-  FileText,
-  ChevronDown
+  FolderOpen
 } from 'lucide-react';
-import { NotesEditor } from './NotesEditor';
 
 interface TaskCardProps {
   task: Task;
@@ -28,8 +25,6 @@ interface TaskCardProps {
 export function TaskCard({ task, className }: TaskCardProps) {
   const { updateTask, deleteTask, setEditingTask, setTaskModalOpen, projects } = useAppStore();
   const [showMenu, setShowMenu] = useState(false);
-  const [showNotes, setShowNotes] = useState(false);
-  const [notes, setNotes] = useState(task.notes || '');
 
   const project = projects.find(p => p.id === task.project_id);
   const isCompleted = task.status === 'completed';
@@ -53,11 +48,6 @@ export function TaskCard({ task, className }: TaskCardProps) {
       deleteTask(task.id);
     }
     setShowMenu(false);
-  };
-
-  const handleNotesUpdate = (newNotes: string) => {
-    setNotes(newNotes);
-    updateTask(task.id, { notes: newNotes });
   };
 
   return (
@@ -188,43 +178,6 @@ export function TaskCard({ task, className }: TaskCardProps) {
               ))}
             </div>
           )}
-        </div>
-      </div>
-
-      {/* Notes Section */}
-      <div className="mt-3 border-t border-gray-100 dark:border-gray-800">
-        <button
-          onClick={() => setShowNotes(!showNotes)}
-          className="flex items-center w-full py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
-        >
-          <ChevronDown 
-            className={cn(
-              'w-4 h-4 mr-1 transition-transform duration-200',
-              showNotes && 'rotate-180'
-            )} 
-          />
-          <FileText className="w-4 h-4 mr-1" />
-          <span className="font-medium">Notes</span>
-          {notes && !showNotes && (
-            <span className="ml-2 text-xs text-gray-500 dark:text-gray-500">
-              {notes.replace(/<[^>]*>/g, '').substring(0, 50)}...
-            </span>
-          )}
-        </button>
-        
-        {/* Collapsible Notes Editor */}
-        <div className={cn(
-          'overflow-hidden transition-all duration-300',
-          showNotes ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
-        )}>
-          <div className="pb-3">
-            <NotesEditor
-              content={notes}
-              onChange={handleNotesUpdate}
-              placeholder="Add notes, ideas, or additional context..."
-              className="mt-2"
-            />
-          </div>
         </div>
       </div>
 
