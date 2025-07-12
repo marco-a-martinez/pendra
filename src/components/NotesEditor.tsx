@@ -9,6 +9,7 @@ import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import Typography from '@tiptap/extension-typography';
+import TextAlign from '@tiptap/extension-text-align';
 import { lowlight } from 'lowlight';
 import { 
   Bold, 
@@ -20,12 +21,17 @@ import {
   ListOrdered,
   CheckSquare,
   Quote,
-  Heading1,
-  Heading2,
-  Link2
+  Link2,
+  Undo2,
+  Redo2,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  AlignJustify,
+  Type
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 
 interface NotesEditorProps {
   content: string;
@@ -48,7 +54,7 @@ export function NotesEditor({
         heading: {
           levels: [1, 2, 3]
         },
-        codeBlock: false, // We'll use CodeBlockLowlight instead
+        codeBlock: false,
       }),
       Placeholder.configure({
         placeholder,
@@ -57,28 +63,31 @@ export function NotesEditor({
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-blue-600 underline cursor-pointer hover:text-blue-700',
+          class: 'text-blue-500 underline cursor-pointer hover:text-blue-600 transition-colors',
         },
       }),
       Underline,
       TaskList.configure({
         HTMLAttributes: {
-          class: 'not-prose pl-2',
+          class: 'not-prose pl-2 space-y-1',
         },
       }),
       TaskItem.configure({
         nested: true,
         HTMLAttributes: {
-          class: 'flex items-start my-1',
+          class: 'flex items-start gap-2',
         },
       }),
       CodeBlockLowlight.configure({
         lowlight,
         HTMLAttributes: {
-          class: 'rounded-md bg-gray-100 dark:bg-gray-800 p-4 font-mono text-sm',
+          class: 'rounded-lg bg-gray-50 dark:bg-gray-900 p-4 font-mono text-sm my-2',
         },
       }),
       Typography,
+      TextAlign.configure({
+        types: ['heading', 'paragraph'],
+      }),
     ],
     content,
     editable,
@@ -90,25 +99,25 @@ export function NotesEditor({
         class: cn(
           'prose prose-sm dark:prose-invert max-w-none',
           'focus:outline-none',
-          'min-h-[80px]',
-          '[&_ul]:list-disc [&_ul]:pl-6',
-          '[&_ol]:list-decimal [&_ol]:pl-6',
-          '[&_h1]:text-xl [&_h1]:font-semibold [&_h1]:mb-2 [&_h1]:mt-4',
-          '[&_h2]:text-lg [&_h2]:font-semibold [&_h2]:mb-2 [&_h2]:mt-3',
-          '[&_h3]:text-base [&_h3]:font-semibold [&_h3]:mb-1 [&_h3]:mt-2',
-          '[&_p]:mb-2',
-          '[&_blockquote]:border-l-4 [&_blockquote]:border-gray-300 [&_blockquote]:pl-4 [&_blockquote]:italic',
-          '[&_code]:bg-gray-100 [&_code]:dark:bg-gray-800 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_code]:font-mono [&_code]:text-sm',
+          'min-h-[100px] px-3 py-2',
+          '[&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-1',
+          '[&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:space-y-1',
+          '[&_h1]:text-2xl [&_h1]:font-bold [&_h1]:mb-3 [&_h1]:mt-4',
+          '[&_h2]:text-xl [&_h2]:font-semibold [&_h2]:mb-2 [&_h2]:mt-3',
+          '[&_h3]:text-lg [&_h3]:font-medium [&_h3]:mb-2 [&_h3]:mt-2',
+          '[&_p]:mb-3 [&_p]:leading-relaxed',
+          '[&_blockquote]:border-l-4 [&_blockquote]:border-blue-500 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:my-3',
+          '[&_code]:bg-gray-100 [&_code]:dark:bg-gray-800 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:font-mono [&_code]:text-sm [&_code]:text-blue-600 [&_code]:dark:text-blue-400',
           '[&_.is-editor-empty:first-child::before]:content-[attr(data-placeholder)]',
           '[&_.is-editor-empty:first-child::before]:text-gray-400',
           '[&_.is-editor-empty:first-child::before]:float-left',
           '[&_.is-editor-empty:first-child::before]:pointer-events-none',
           '[&_.is-editor-empty:first-child::before]:h-0',
           '[&_ul[data-type="taskList"]]:list-none [&_ul[data-type="taskList"]]:pl-0',
-          '[&_li[data-type="taskItem"]]:flex [&_li[data-type="taskItem"]]:items-start',
-          '[&_li[data-type="taskItem"]>label]:mr-2 [&_li[data-type="taskItem"]>label]:mt-0.5',
+          '[&_li[data-type="taskItem"]>label]:flex [&_li[data-type="taskItem"]>label]:items-center [&_li[data-type="taskItem"]>label]:gap-2',
           '[&_li[data-type="taskItem"]>label>input]:rounded [&_li[data-type="taskItem"]>label>input]:border-gray-300',
           '[&_li[data-type="taskItem"]>div]:flex-1',
+          className
         ),
       },
     },
@@ -116,7 +125,7 @@ export function NotesEditor({
 
   // Update editor content when prop changes
   useEffect(() => {
-    if (editor && content !== editor.getHTML()) {
+    if (editor && content !== editor.getHTML() && !editor.isFocused) {
       editor.commands.setContent(content);
     }
   }, [content, editor]);
@@ -126,35 +135,61 @@ export function NotesEditor({
     if (editor) {
       editor.setEditable(editable);
     }
-  }, [editable, editor]);
+  }, [editor, editable]);
+
+  const setLink = useCallback(() => {
+    if (!editor) return;
+    
+    const previousUrl = editor.getAttributes('link').href;
+    const url = window.prompt('URL', previousUrl);
+
+    if (url === null) {
+      return;
+    }
+
+    if (url === '') {
+      editor.chain().focus().extendMarkRange('link').unsetLink().run();
+      return;
+    }
+
+    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+  }, [editor]);
 
   if (!editor) {
     return null;
   }
 
-  const MenuButton = ({ 
+  const ToolbarButton = ({ 
     onClick, 
     isActive = false,
+    disabled = false,
     children,
     title
   }: {
     onClick: () => void;
     isActive?: boolean;
+    disabled?: boolean;
     children: React.ReactNode;
     title?: string;
   }) => (
     <button
       type="button"
       onClick={onClick}
+      disabled={disabled}
       title={title}
       className={cn(
-        'p-1.5 rounded transition-all duration-150',
-        'hover:bg-gray-100 dark:hover:bg-gray-700',
-        isActive && 'bg-gray-100 dark:bg-gray-700 text-blue-600 dark:text-blue-400'
+        'p-2 rounded-md transition-all duration-200',
+        'hover:bg-gray-100 dark:hover:bg-gray-800',
+        'disabled:opacity-50 disabled:cursor-not-allowed',
+        isActive && 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30'
       )}
     >
       {children}
     </button>
+  );
+
+  const Separator = () => (
+    <div className="w-px h-6 bg-gray-200 dark:bg-gray-700" />
   );
 
   return (
@@ -162,119 +197,169 @@ export function NotesEditor({
       {editable && editor && (
         <BubbleMenu
           editor={editor}
-          tippyOptions={{ duration: 100 }}
+          tippyOptions={{ 
+            duration: 100,
+            placement: 'top',
+          }}
           className={cn(
-            'flex items-center gap-0.5 p-1 rounded-lg shadow-lg',
-            'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700',
+            'flex items-center gap-1 p-1.5 rounded-xl shadow-lg',
+            'bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700',
             'backdrop-blur-sm'
           )}
         >
-          <MenuButton
-            onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-            isActive={editor.isActive('heading', { level: 1 })}
-            title="Heading 1"
+          {/* Undo/Redo */}
+          <ToolbarButton
+            onClick={() => editor.chain().focus().undo().run()}
+            disabled={!editor.can().undo()}
+            title="Undo (Cmd+Z)"
           >
-            <Heading1 className="w-4 h-4" />
-          </MenuButton>
-          <MenuButton
-            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-            isActive={editor.isActive('heading', { level: 2 })}
-            title="Heading 2"
+            <Undo2 className="w-4 h-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor.chain().focus().redo().run()}
+            disabled={!editor.can().redo()}
+            title="Redo (Cmd+Shift+Z)"
           >
-            <Heading2 className="w-4 h-4" />
-          </MenuButton>
-          <div className="w-px h-4 bg-gray-300 dark:bg-gray-600 mx-0.5" />
-          <MenuButton
+            <Redo2 className="w-4 h-4" />
+          </ToolbarButton>
+          
+          <Separator />
+          
+          {/* Text Formatting */}
+          <ToolbarButton
             onClick={() => editor.chain().focus().toggleBold().run()}
             isActive={editor.isActive('bold')}
-            title="Bold"
+            title="Bold (Cmd+B)"
           >
             <Bold className="w-4 h-4" />
-          </MenuButton>
-          <MenuButton
+          </ToolbarButton>
+          <ToolbarButton
             onClick={() => editor.chain().focus().toggleItalic().run()}
             isActive={editor.isActive('italic')}
-            title="Italic"
+            title="Italic (Cmd+I)"
           >
             <Italic className="w-4 h-4" />
-          </MenuButton>
-          <MenuButton
+          </ToolbarButton>
+          <ToolbarButton
             onClick={() => editor.chain().focus().toggleUnderline().run()}
             isActive={editor.isActive('underline')}
-            title="Underline"
+            title="Underline (Cmd+U)"
           >
             <UnderlineIcon className="w-4 h-4" />
-          </MenuButton>
-          <MenuButton
+          </ToolbarButton>
+          <ToolbarButton
             onClick={() => editor.chain().focus().toggleStrike().run()}
             isActive={editor.isActive('strike')}
             title="Strikethrough"
           >
             <Strikethrough className="w-4 h-4" />
-          </MenuButton>
-          <MenuButton
+          </ToolbarButton>
+          <ToolbarButton
             onClick={() => editor.chain().focus().toggleCode().run()}
             isActive={editor.isActive('code')}
             title="Code"
           >
             <Code className="w-4 h-4" />
-          </MenuButton>
-          <div className="w-px h-4 bg-gray-300 dark:bg-gray-600 mx-0.5" />
-          <MenuButton
-            onClick={() => {
-              const url = window.prompt('Enter URL');
-              if (url) {
-                editor.chain().focus().setLink({ href: url }).run();
-              }
-            }}
+          </ToolbarButton>
+          
+          <Separator />
+          
+          {/* Links */}
+          <ToolbarButton
+            onClick={setLink}
             isActive={editor.isActive('link')}
-            title="Link"
+            title="Add Link (Cmd+K)"
           >
             <Link2 className="w-4 h-4" />
-          </MenuButton>
-          <div className="w-px h-4 bg-gray-300 dark:bg-gray-600 mx-0.5" />
-          <MenuButton
+          </ToolbarButton>
+          
+          <Separator />
+          
+          {/* Lists */}
+          <ToolbarButton
             onClick={() => editor.chain().focus().toggleBulletList().run()}
             isActive={editor.isActive('bulletList')}
             title="Bullet List"
           >
             <List className="w-4 h-4" />
-          </MenuButton>
-          <MenuButton
+          </ToolbarButton>
+          <ToolbarButton
             onClick={() => editor.chain().focus().toggleOrderedList().run()}
             isActive={editor.isActive('orderedList')}
             title="Numbered List"
           >
             <ListOrdered className="w-4 h-4" />
-          </MenuButton>
-          <MenuButton
+          </ToolbarButton>
+          <ToolbarButton
             onClick={() => editor.chain().focus().toggleTaskList().run()}
             isActive={editor.isActive('taskList')}
             title="Task List"
           >
             <CheckSquare className="w-4 h-4" />
-          </MenuButton>
-          <MenuButton
+          </ToolbarButton>
+          
+          <Separator />
+          
+          {/* Block Formatting */}
+          <ToolbarButton
             onClick={() => editor.chain().focus().toggleBlockquote().run()}
             isActive={editor.isActive('blockquote')}
             title="Quote"
           >
             <Quote className="w-4 h-4" />
-          </MenuButton>
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+            isActive={editor.isActive('codeBlock')}
+            title="Code Block"
+          >
+            <Code className="w-4 h-4" />
+          </ToolbarButton>
+          
+          <Separator />
+          
+          {/* Text Alignment */}
+          <ToolbarButton
+            onClick={() => editor.chain().focus().setTextAlign('left').run()}
+            isActive={editor.isActive({ textAlign: 'left' })}
+            title="Align Left"
+          >
+            <AlignLeft className="w-4 h-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor.chain().focus().setTextAlign('center').run()}
+            isActive={editor.isActive({ textAlign: 'center' })}
+            title="Align Center"
+          >
+            <AlignCenter className="w-4 h-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor.chain().focus().setTextAlign('right').run()}
+            isActive={editor.isActive({ textAlign: 'right' })}
+            title="Align Right"
+          >
+            <AlignRight className="w-4 h-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor.chain().focus().setTextAlign('justify').run()}
+            isActive={editor.isActive({ textAlign: 'justify' })}
+            title="Justify"
+          >
+            <AlignJustify className="w-4 h-4" />
+          </ToolbarButton>
         </BubbleMenu>
       )}
       
-      <div className={cn(
-        'rounded-lg transition-all duration-200',
-        'bg-gray-50 dark:bg-gray-900/50',
-        'border border-transparent',
-        editable && 'hover:border-gray-200 dark:hover:border-gray-700',
-        editable && 'focus-within:border-gray-300 dark:focus-within:border-gray-600',
-        editable && 'focus-within:bg-white dark:focus-within:bg-gray-900',
-        'p-4'
-      )}>
-        <EditorContent editor={editor} />
-      </div>
+      <EditorContent 
+        editor={editor} 
+        className={cn(
+          'rounded-lg border border-gray-200 dark:border-gray-700',
+          'bg-white dark:bg-gray-900',
+          'transition-colors duration-200',
+          editor?.isFocused && 'border-blue-500 dark:border-blue-400',
+          !editable && 'bg-gray-50 dark:bg-gray-950'
+        )}
+      />
     </div>
   );
 }

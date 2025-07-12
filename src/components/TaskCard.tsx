@@ -192,22 +192,28 @@ export function TaskCard({ task, className }: TaskCardProps) {
       </div>
 
       {/* Notes Section */}
-      <div className="mt-3 border-t border-gray-100 dark:border-gray-800">
+      <div className="mt-4">
         <button
           onClick={() => setShowNotes(!showNotes)}
-          className="flex items-center w-full py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
+          className={cn(
+            'flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm font-medium',
+            'transition-all duration-200',
+            showNotes 
+              ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' 
+              : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+          )}
         >
           <ChevronDown 
             className={cn(
-              'w-4 h-4 mr-1 transition-transform duration-200',
+              'w-4 h-4 transition-transform duration-200',
               showNotes && 'rotate-180'
             )} 
           />
-          <FileText className="w-4 h-4 mr-1" />
-          <span className="font-medium">Notes</span>
+          <FileText className="w-4 h-4" />
+          <span>Notes</span>
           {notes && !showNotes && (
-            <span className="ml-2 text-xs text-gray-500 dark:text-gray-500">
-              {notes.replace(/<[^>]*>/g, '').substring(0, 50)}...
+            <span className="ml-auto text-xs text-gray-500 dark:text-gray-500 max-w-[200px] truncate">
+              {notes.replace(/<[^>]*>/g, '').trim()}
             </span>
           )}
         </button>
@@ -215,14 +221,14 @@ export function TaskCard({ task, className }: TaskCardProps) {
         {/* Collapsible Notes Editor */}
         <div className={cn(
           'overflow-hidden transition-all duration-300',
-          showNotes ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
+          showNotes ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'
         )}>
-          <div className="pb-3">
+          <div className="pt-3">
             <NotesEditor
               content={notes}
               onChange={handleNotesUpdate}
               placeholder="Add notes, ideas, or additional context..."
-              className="mt-2"
+              className=""
             />
           </div>
         </div>
