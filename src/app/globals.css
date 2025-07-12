@@ -60,6 +60,10 @@ body {
 
 /* Show drag handle on hover */
 .todo-item:hover .drag-handle {
+  opacity: 0.5 !important;
+}
+
+.todo-item .drag-handle:hover {
   opacity: 1 !important;
 }
 
@@ -77,14 +81,13 @@ body {
 /* Drag handle styles */
 .drag-handle {
   touch-action: none;
-}
-
-.drag-handle:hover {
-  color: var(--text) !important;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .drag-handle:active {
   cursor: grabbing !important;
+  opacity: 1 !important;
 }
 
 .expand-button {

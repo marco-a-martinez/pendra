@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Plus, Check, GripVertical, Calendar, ChevronDown, FileText } from 'lucide-react';
+import { Plus, Check, Calendar, ChevronDown, FileText } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import {
@@ -80,21 +80,30 @@ function SortableTodoItem({
       className="todo-item sortable-item"
       {...attributes}
     >
-      <div ref={containerRef} style={{ display: 'flex', alignItems: 'center', gap: '12px', position: 'relative' }}>
-        <button
+      <div ref={containerRef} style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
+        <div
           className="drag-handle"
           {...listeners}
           style={{
             cursor: 'grab',
-            padding: '4px',
-            color: 'var(--text-tertiary)',
+            padding: '2px 4px',
+            color: '#D1D5DB',
             display: 'flex',
             alignItems: 'center',
+            opacity: 0,
+            transition: 'opacity 0.2s ease',
           }}
           aria-label="Drag to reorder"
         >
-          <GripVertical size={20} />
-        </button>
+          <svg width="12" height="20" viewBox="0 0 12 20" fill="currentColor">
+            <circle cx="3" cy="4" r="1.5" />
+            <circle cx="9" cy="4" r="1.5" />
+            <circle cx="3" cy="10" r="1.5" />
+            <circle cx="9" cy="10" r="1.5" />
+            <circle cx="3" cy="16" r="1.5" />
+            <circle cx="9" cy="16" r="1.5" />
+          </svg>
+        </div>
         
         <button
           onClick={() => onToggle(todo.id)}
