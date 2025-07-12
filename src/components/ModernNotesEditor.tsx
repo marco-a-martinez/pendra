@@ -3,7 +3,7 @@
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
-import { Bold, Italic, List, ListOrdered, Heading2, Type, Minus } from 'lucide-react';
+import { Bold, Italic, Heading2, Type, Minus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface ModernNotesEditorProps {
@@ -138,7 +138,7 @@ export function ModernNotesEditor({ content, onChange, placeholder = 'Start typi
           <div className="flex items-center bg-white dark:bg-gray-800 rounded-full px-1 py-1 gap-0.5 shadow-sm">
             <button
               onClick={() => editor.chain().focus().toggleBulletList().run()}
-              className={`p-2 rounded-full text-sm transition-all ${
+              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
                 editor.isActive('bulletList') 
                   ? 'bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900' 
                   : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -146,11 +146,11 @@ export function ModernNotesEditor({ content, onChange, placeholder = 'Start typi
               type="button"
               title="Bullet list"
             >
-              <List className="w-3.5 h-3.5" />
+              List
             </button>
             <button
               onClick={() => editor.chain().focus().toggleOrderedList().run()}
-              className={`p-2 rounded-full text-sm transition-all ${
+              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
                 editor.isActive('orderedList') 
                   ? 'bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900' 
                   : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -158,7 +158,7 @@ export function ModernNotesEditor({ content, onChange, placeholder = 'Start typi
               type="button"
               title="Numbered list"
             >
-              <ListOrdered className="w-3.5 h-3.5" />
+              Numbered
             </button>
           </div>
         </div>
