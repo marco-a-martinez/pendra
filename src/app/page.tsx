@@ -231,36 +231,20 @@ function SortableTodoItem({
               inline
               autoFocus
               popperPlacement="right-start"
-              popperModifiers={[
-                {
-                  name: 'preventOverflow',
-                  options: {
-                    boundary: 'viewport',
-                    padding: 20,
-                  },
-                },
-                {
-                  name: 'flip',
-                  options: {
-                    fallbackPlacements: ['left-start', 'bottom', 'top'],
-                  },
-                },
-              ]}
             />
           </div>
         )}
       </div>
       
-      {/* Notes section - Apple HIG style with smooth animation */}
+      {/* Notes section - Things 3 style with smooth animation */}
       {showNotes && (
         <div
           style={{
-            marginTop: '12px',
-            marginLeft: '56px',
-            marginRight: '12px',
-            padding: '12px',
-            backgroundColor: 'var(--gray-1)',
-            borderRadius: '8px',
+            marginTop: '8px',
+            marginLeft: '44px',
+            marginRight: '0',
+            paddingTop: '8px',
+            paddingBottom: '4px',
             animation: 'slideDown 0.2s ease-out',
           }}
         >
@@ -272,6 +256,7 @@ function SortableTodoItem({
             }}
             placeholder="Add notes..."
             className="notes-editor"
+            variant="things3"
           />
         </div>
       )}

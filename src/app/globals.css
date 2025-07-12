@@ -18,6 +18,11 @@
   --green: #34C759;
   --green-bg: #34C75920;
   --red: #FF3B30;
+  
+  /* Things 3 colors */
+  --things-bg: #FAFBFC;
+  --things-note-bg: #F8F9FA;
+  --things-border: #E8EAED;
 }
 
 * {
