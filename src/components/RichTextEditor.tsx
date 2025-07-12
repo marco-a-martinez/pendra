@@ -67,62 +67,76 @@ export function RichTextEditor({
       {/* Toolbar */}
       {variant === 'things3' && !isFocused ? null : (
         <div className={cn(
-          'flex items-center gap-1 p-2',
+          'flex items-center',
           variant === 'things3'
-            ? 'border-b border-transparent'
-            : 'border-b border-gray-200 dark:border-gray-600'
+            ? 'gap-0.5 p-1 border-b border-transparent'
+            : 'gap-1 p-2 border-b border-gray-200 dark:border-gray-600'
         )}>
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBold().run()}
           className={cn(
-            'p-2 rounded transition-colors',
+            'transition-colors',
             variant === 'things3'
-              ? 'hover:bg-gray-100 dark:hover:bg-gray-700'
-              : 'hover:bg-gray-100 dark:hover:bg-gray-700',
-            editor.isActive('bold') && (variant === 'things3' ? 'text-blue-500' : 'bg-gray-100 dark:bg-gray-700')
+              ? 'p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700'
+              : 'p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700',
+            editor.isActive('bold') && (variant === 'things3' ? 'text-blue-500 bg-blue-50' : 'bg-gray-100 dark:bg-gray-700')
           )}
           data-1p-ignore
           data-lpignore="true"
         >
-          <Bold className="w-4 h-4" />
+          <Bold className={variant === 'things3' ? 'w-3.5 h-3.5' : 'w-4 h-4'} />
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleItalic().run()}
           className={cn(
-            'p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors',
-            editor.isActive('italic') && 'bg-gray-100 dark:bg-gray-700'
+            'transition-colors',
+            variant === 'things3'
+              ? 'p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700'
+              : 'p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700',
+            editor.isActive('italic') && (variant === 'things3' ? 'text-blue-500 bg-blue-50' : 'bg-gray-100 dark:bg-gray-700')
           )}
           data-1p-ignore
           data-lpignore="true"
         >
-          <Italic className="w-4 h-4" />
+          <Italic className={variant === 'things3' ? 'w-3.5 h-3.5' : 'w-4 h-4'} />
         </button>
-        <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1" />
+        <div className={cn(
+          'w-px mx-1',
+          variant === 'things3'
+            ? 'h-4 bg-gray-200 dark:bg-gray-600'
+            : 'h-6 bg-gray-300 dark:bg-gray-600'
+        )} />
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           className={cn(
-            'p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors',
-            editor.isActive('bulletList') && 'bg-gray-100 dark:bg-gray-700'
+            'transition-colors',
+            variant === 'things3'
+              ? 'p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700'
+              : 'p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700',
+            editor.isActive('bulletList') && (variant === 'things3' ? 'text-blue-500 bg-blue-50' : 'bg-gray-100 dark:bg-gray-700')
           )}
           data-1p-ignore
           data-lpignore="true"
         >
-          <List className="w-4 h-4" />
+          <List className={variant === 'things3' ? 'w-3.5 h-3.5' : 'w-4 h-4'} />
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
           className={cn(
-            'p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors',
-            editor.isActive('orderedList') && 'bg-gray-100 dark:bg-gray-700'
+            'transition-colors',
+            variant === 'things3'
+              ? 'p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700'
+              : 'p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700',
+            editor.isActive('orderedList') && (variant === 'things3' ? 'text-blue-500 bg-blue-50' : 'bg-gray-100 dark:bg-gray-700')
           )}
           data-1p-ignore
           data-lpignore="true"
         >
-          <ListOrdered className="w-4 h-4" />
+          <ListOrdered className={variant === 'things3' ? 'w-3.5 h-3.5' : 'w-4 h-4'} />
         </button>
         </div>
       )}
@@ -130,7 +144,11 @@ export function RichTextEditor({
       {/* Editor */}
       <EditorContent 
         editor={editor} 
-        className="dark:bg-gray-700 dark:text-white rounded-b-md"
+        className={cn(
+          variant === 'things3'
+            ? 'rounded-b-lg'
+            : 'dark:bg-gray-700 dark:text-white rounded-b-md'
+        )}
       />
     </div>
   );

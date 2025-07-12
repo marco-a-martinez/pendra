@@ -105,6 +105,20 @@ body {
   color: var(--blue) !important;
 }
 
+/* Things 3 Editor Styles */
+.notes-editor .ProseMirror {
+  color: var(--text-secondary);
+}
+
+.notes-editor .ProseMirror p.is-editor-empty:first-child::before {
+  color: var(--text-tertiary);
+  opacity: 0.6;
+}
+
+.notes-editor .ProseMirror:focus {
+  outline: none;
+}
+
 /* Checkbox styles */
 .checkbox {
   width: 22px;
