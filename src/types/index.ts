@@ -23,6 +23,7 @@ export interface Task {
   project_id?: string;
   title: string;
   description?: string;
+  notes?: string;
   due_date?: string;
   scheduled_time?: string;
   estimated_duration?: number; // in minutes
