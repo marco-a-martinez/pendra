@@ -255,7 +255,7 @@ function SortableTodoItem({
               onUpdateNotes(todo.id, e.target.value);
             }}
             placeholder="Add notes..."
-            className="w-full p-3 text-sm border border-gray-200 dark:border-gray-700 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-200"
+            className="w-full p-3 text-sm border border-gray-100 dark:border-gray-600 rounded-lg resize-none focus:outline-none focus:border-gray-100 dark:focus:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
             rows={3}
           />
         </div>

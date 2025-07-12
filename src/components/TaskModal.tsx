@@ -192,7 +192,7 @@ export function TaskModal() {
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
               placeholder="Add more details..."
-              className="w-full p-3 text-sm border border-gray-200 dark:border-gray-700 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-200"
+              className="w-full p-3 text-sm border border-gray-100 dark:border-gray-600 rounded-lg resize-none focus:outline-none focus:border-gray-100 dark:focus:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
               rows={4}
             />
           </div>
