@@ -53,7 +53,7 @@ export function ModernNotesEditor({ content, onChange, placeholder = 'Start typi
 
   if (!mounted || !editor) {
     return (
-      <div className="w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700">
+      <div className="w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
         <div className="bg-gray-50 dark:bg-gray-900 px-3 py-2">
           <div className="flex items-center gap-2">
             <div className="flex items-center bg-white dark:bg-gray-800 rounded-full px-1 py-1 gap-0.5">
@@ -74,7 +74,7 @@ export function ModernNotesEditor({ content, onChange, placeholder = 'Start typi
   }
 
   return (
-    <div className="w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700">
+    <div className="w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
       {/* Integrated Toolbar with pill-shaped button groups */}
       <div className="bg-gray-50 dark:bg-gray-900 px-3 py-2">
         <div className="flex items-center gap-2">
