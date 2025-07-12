@@ -25,7 +25,7 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { RichTextEditor } from '@/components/RichTextEditor';
+
 
 interface Todo {
   id: string;
@@ -248,15 +248,15 @@ function SortableTodoItem({
             animation: 'slideDown 0.2s ease-out',
           }}
         >
-          <RichTextEditor
-            content={notesContent}
-            onChange={(content) => {
-              setNotesContent(content);
-              onUpdateNotes(todo.id, content);
+          <textarea
+            value={notesContent}
+            onChange={(e) => {
+              setNotesContent(e.target.value);
+              onUpdateNotes(todo.id, e.target.value);
             }}
             placeholder="Add notes..."
-            className="notes-editor"
-            variant="things3"
+            className="w-full p-3 text-sm border border-gray-200 dark:border-gray-700 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-200"
+            rows={3}
           />
         </div>
       )}
