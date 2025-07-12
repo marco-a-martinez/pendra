@@ -18,7 +18,7 @@ import {
   FileText,
   ChevronDown
 } from 'lucide-react';
-import { NotesEditor } from './NotesEditor';
+
 
 interface TaskCardProps {
   task: Task;
@@ -213,7 +213,7 @@ export function TaskCard({ task, className }: TaskCardProps) {
           <span>Notes</span>
           {notes && !showNotes && (
             <span className="ml-auto text-xs text-gray-500 dark:text-gray-500 max-w-[200px] truncate">
-              {notes.replace(/<[^>]*>/g, '').trim()}
+              {notes.trim()}
             </span>
           )}
         </button>
@@ -224,11 +224,18 @@ export function TaskCard({ task, className }: TaskCardProps) {
           showNotes ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'
         )}>
           <div className="pt-3">
-            <NotesEditor
-              content={notes}
-              onChange={handleNotesUpdate}
+            <textarea
+              value={notes}
+              onChange={(e) => handleNotesUpdate(e.target.value)}
               placeholder="Add notes, ideas, or additional context..."
-              className=""
+              className={cn(
+                'w-full min-h-[120px] px-3 py-2 rounded-lg',
+                'bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700',
+                'text-sm text-gray-900 dark:text-gray-100',
+                'placeholder:text-gray-400 dark:placeholder:text-gray-500',
+                'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+                'resize-y transition-colors duration-200'
+              )}
             />
           </div>
         </div>
