@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Plus, Check, GripVertical, Calendar } from 'lucide-react';
+import { Plus, Check, GripVertical, Calendar, ChevronDown, FileText } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import {
@@ -25,12 +25,14 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { RichTextEditor } from '@/components/RichTextEditor';
 
 interface Todo {
   id: string;
   text: string;
   completed: boolean;
   dueDate?: string;
+  notes?: string;
 }
 
 // Sortable Todo Item Component
@@ -40,14 +42,18 @@ function SortableTodoItem({
   onUpdate, 
   onDelete,
   onUpdateDate,
+  onUpdateNotes,
 }: {
   todo: Todo;
   onToggle: (id: string) => void;
   onUpdate: (id: string, text: string) => void;
   onDelete: (id: string) => void;
   onUpdateDate: (id: string, date: string | undefined) => void;
+  onUpdateNotes: (id: string, notes: string) => void;
 }) {
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
+  const [notesContent, setNotesContent] = useState(todo.notes || '');
   const datePickerRef = useRef<DatePicker>(null);
   const calendarButtonRef = useRef<HTMLButtonElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -133,6 +139,17 @@ function SortableTodoItem({
           </span>
         )}
         
+        {/* Notes indicator */}
+        {todo.notes && !showNotes && (
+          <FileText 
+            size={14} 
+            style={{
+              color: 'var(--text-tertiary)',
+              marginRight: '8px',
+            }}
+          />
+        )}
+        
         {/* Calendar icon */}
         <button
           ref={calendarButtonRef}
@@ -154,6 +171,33 @@ function SortableTodoItem({
           aria-label="Set due date"
         >
           <Calendar size={18} />
+        </button>
+        
+        {/* Notes button - Apple HIG style */}
+        <button
+          onClick={() => setShowNotes(!showNotes)}
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '4px',
+            color: todo.notes ? 'var(--blue)' : 'var(--text-tertiary)',
+            display: 'flex',
+            alignItems: 'center',
+            opacity: todo.notes || showNotes ? 1 : 0,
+            transition: 'opacity 0.2s ease, transform 0.2s ease',
+            marginLeft: '4px',
+          }}
+          className="notes-button"
+          aria-label="Add notes"
+        >
+          <ChevronDown 
+            size={16} 
+            style={{
+              transform: showNotes ? 'rotate(180deg)' : 'rotate(0deg)',
+              transition: 'transform 0.2s ease',
+            }}
+          />
         </button>
         
         {/* Date picker - positioned relative to the todo item */}
@@ -206,6 +250,31 @@ function SortableTodoItem({
           </div>
         )}
       </div>
+      
+      {/* Notes section - Apple HIG style with smooth animation */}
+      {showNotes && (
+        <div
+          style={{
+            marginTop: '12px',
+            marginLeft: '56px',
+            marginRight: '12px',
+            padding: '12px',
+            backgroundColor: 'var(--gray-1)',
+            borderRadius: '8px',
+            animation: 'slideDown 0.2s ease-out',
+          }}
+        >
+          <RichTextEditor
+            content={notesContent}
+            onChange={(content) => {
+              setNotesContent(content);
+              onUpdateNotes(todo.id, content);
+            }}
+            placeholder="Add notes..."
+            className="notes-editor"
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -268,6 +337,12 @@ export default function HomePage() {
   const updateTodoDate = (id: string, date: string | undefined) => {
     setTodos(todos.map(todo => 
       todo.id === id ? { ...todo, dueDate: date } : todo
+    ));
+  };
+
+  const updateTodoNotes = (id: string, notes: string) => {
+    setTodos(todos.map(todo => 
+      todo.id === id ? { ...todo, notes } : todo
     ));
   };
 
@@ -385,6 +460,7 @@ export default function HomePage() {
                     onUpdate={updateTodo}
                     onDelete={deleteTodo}
                     onUpdateDate={updateTodoDate}
+                    onUpdateNotes={updateTodoNotes}
                   />
                 ))}
               </SortableContext>

@@ -91,6 +91,15 @@ body {
   color: var(--blue) !important;
 }
 
+/* Notes button styles */
+.todo-item:hover .notes-button {
+  opacity: 1 !important;
+}
+
+.notes-button:hover {
+  color: var(--blue) !important;
+}
+
 /* Checkbox styles */
 .checkbox {
   width: 22px;
