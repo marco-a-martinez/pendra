@@ -5,6 +5,7 @@ import { useAppStore } from '@/lib/store';
 import { Task } from '@/types';
 import { cn, priorityColors } from '@/lib/utils';
 import { formatDate, formatTime, isOverdue } from '@/lib/dateUtils';
+import { TaskNotes } from './TaskNotes';
 import { 
   Calendar, 
   Clock, 
@@ -15,8 +16,7 @@ import {
   CheckCircle2,
   Circle,
   FolderOpen,
-  FileText,
-  ChevronDown
+  Tag
 } from 'lucide-react';
 
 
@@ -28,8 +28,7 @@ interface TaskCardProps {
 export function TaskCard({ task, className }: TaskCardProps) {
   const { updateTask, deleteTask, setEditingTask, setTaskModalOpen, projects } = useAppStore();
   const [showMenu, setShowMenu] = useState(false);
-  const [showNotes, setShowNotes] = useState(false);
-  const [notes, setNotes] = useState(task.notes || '');
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const project = projects.find(p => p.id === task.project_id);
   const isCompleted = task.status === 'completed';
@@ -55,27 +54,37 @@ export function TaskCard({ task, className }: TaskCardProps) {
     setShowMenu(false);
   };
 
-  const handleNotesUpdate = (newNotes: string) => {
-    setNotes(newNotes);
-    updateTask(task.id, { notes: newNotes });
+  const handleTaskUpdate = (updates: Partial<Task>) => {
+    updateTask(task.id, updates);
   };
 
   return (
-    <div className={cn(
-      'task-card group relative',
-      isCompleted && 'task-completed',
-      className
-    )}>
+    <div 
+      className={cn(
+        'bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-2',
+        'hover:shadow-md transition-shadow duration-200',
+        isCompleted && 'opacity-60',
+        className
+      )}
+      onClick={() => setIsExpanded(!isExpanded)}
+    >
       <div className="flex items-start space-x-3">
-        {/* Completion Toggle */}
+        {/* Completion Toggle - Things 3 Style */}
         <button
-          onClick={handleToggleComplete}
-          className="mt-1 flex-shrink-0 transition-colors duration-200"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleToggleComplete();
+          }}
+          className="mt-0.5 flex-shrink-0 transition-all duration-200"
         >
           {isCompleted ? (
-            <CheckCircle2 className="w-5 h-5 text-green-500" />
+            <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center">
+              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
           ) : (
-            <Circle className="w-5 h-5 text-gray-400 hover:text-green-500" />
+            <div className="w-6 h-6 rounded-full border-2 border-gray-300 hover:border-blue-500 transition-colors" />
           )}
         </button>
 
@@ -84,41 +93,43 @@ export function TaskCard({ task, className }: TaskCardProps) {
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <h3 className={cn(
-                'text-sm font-medium text-gray-900 dark:text-white',
-                isCompleted && 'line-through text-gray-500 dark:text-gray-400'
+                'text-base font-medium text-gray-900',
+                isCompleted && 'line-through text-gray-500'
               )}>
                 {task.title}
               </h3>
-              
-              {task.description && (
-                <div 
-                  className="mt-1 text-sm text-gray-600 dark:text-gray-400 prose prose-sm dark:prose-invert max-w-none"
-                  dangerouslySetInnerHTML={{ __html: task.description }}
-                />
-              )}
             </div>
 
             {/* Actions Menu */}
             <div className="relative">
               <button
-                onClick={() => setShowMenu(!showMenu)}
-                className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowMenu(!showMenu);
+                }}
+                className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-gray-100 transition-all duration-200"
               >
-                <MoreHorizontal className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                <MoreHorizontal className="w-4 h-4 text-gray-500" />
               </button>
               
               {showMenu && (
-                <div className="absolute right-0 top-full mt-1 w-32 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-10">
+                <div className="absolute right-0 top-full mt-1 w-32 bg-white rounded-md shadow-lg border border-gray-200 z-10">
                   <button
-                    onClick={handleEdit}
-                    className="flex items-center w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEdit();
+                    }}
+                    className="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
                   >
                     <Edit className="w-4 h-4 mr-2" />
                     Edit
                   </button>
                   <button
-                    onClick={handleDelete}
-                    className="flex items-center w-full px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete();
+                    }}
+                    className="flex items-center w-full px-3 py-2 text-sm text-red-600 hover:bg-gray-100 transition-colors"
                   >
                     <Trash2 className="w-4 h-4 mr-2" />
                     Delete
@@ -129,7 +140,7 @@ export function TaskCard({ task, className }: TaskCardProps) {
           </div>
 
           {/* Task Meta */}
-          <div className="mt-2 flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
+          <div className="mt-2 flex items-center flex-wrap gap-3 text-xs text-gray-500">
             {/* Project */}
             {project && (
               <div className="flex items-center">
@@ -191,55 +202,12 @@ export function TaskCard({ task, className }: TaskCardProps) {
         </div>
       </div>
 
-      {/* Notes Section */}
-      <div className="mt-4">
-        <button
-          onClick={() => setShowNotes(!showNotes)}
-          className={cn(
-            'flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm font-medium',
-            'transition-all duration-200',
-            showNotes 
-              ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' 
-              : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
-          )}
-        >
-          <ChevronDown 
-            className={cn(
-              'w-4 h-4 transition-transform duration-200',
-              showNotes && 'rotate-180'
-            )} 
-          />
-          <FileText className="w-4 h-4" />
-          <span>Notes</span>
-          {notes && !showNotes && (
-            <span className="ml-auto text-xs text-gray-500 dark:text-gray-500 max-w-[200px] truncate">
-              {notes.trim()}
-            </span>
-          )}
-        </button>
-        
-        {/* Collapsible Notes Editor */}
-        <div className={cn(
-          'overflow-hidden transition-all duration-300',
-          showNotes ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'
-        )}>
-          <div className="pt-3">
-            <textarea
-              value={notes}
-              onChange={(e) => handleNotesUpdate(e.target.value)}
-              placeholder="Add notes, ideas, or additional context..."
-              className={cn(
-                'w-full min-h-[120px] px-3 py-2 rounded-lg',
-                'bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700',
-                'text-sm text-gray-900 dark:text-gray-100',
-                'placeholder:text-gray-400 dark:placeholder:text-gray-500',
-                'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-                'resize-y transition-colors duration-200'
-              )}
-            />
-          </div>
+      {/* Things 3 Style Notes - Show when expanded or when notes exist */}
+      {(isExpanded || task.notes) && (
+        <div onClick={(e) => e.stopPropagation()}>
+          <TaskNotes task={task} onUpdate={handleTaskUpdate} />
         </div>
-      </div>
+      )}
 
       {/* Color Indicator */}
       {task.color && (
