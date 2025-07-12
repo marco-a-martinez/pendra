@@ -25,7 +25,7 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-
+import { ModernNotesEditor } from '@/components/ModernNotesEditor';
 
 interface Todo {
   id: string;
@@ -248,15 +248,13 @@ function SortableTodoItem({
             animation: 'slideDown 0.2s ease-out',
           }}
         >
-          <textarea
-            value={notesContent}
-            onChange={(e) => {
-              setNotesContent(e.target.value);
-              onUpdateNotes(todo.id, e.target.value);
+          <ModernNotesEditor
+            content={notesContent}
+            onChange={(content) => {
+              setNotesContent(content);
+              onUpdateNotes(todo.id, content);
             }}
             placeholder="Add notes..."
-            className="w-full p-3 text-sm border border-gray-100 dark:border-gray-600 rounded-lg resize-none focus:outline-none focus:border-gray-100 dark:focus:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
-            rows={3}
           />
         </div>
       )}
