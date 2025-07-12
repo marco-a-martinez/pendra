@@ -11,40 +11,65 @@
 
 /* Basic editor styling */
 .ProseMirror {
-  min-height: 100px;
+  min-height: 120px;
   outline: none;
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+  color: #1f2937;
+}
+
+.dark .ProseMirror {
+  color: #f3f4f6;
 }
 
 .ProseMirror > * + * {
-  margin-top: 0.75em;
+  margin-top: 0.5em;
 }
 
 /* Headings */
 .ProseMirror h2 {
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 600;
-  line-height: 1.4;
+  line-height: 1.5;
   margin-top: 1em;
   margin-bottom: 0.5em;
+  color: #111827;
+}
+
+.dark .ProseMirror h2 {
+  color: #f9fafb;
 }
 
 .ProseMirror h3 {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
-  line-height: 1.4;
-  margin-top: 1em;
+  line-height: 1.5;
+  margin-top: 0.75em;
   margin-bottom: 0.5em;
+  color: #111827;
+}
+
+.dark .ProseMirror h3 {
+  color: #f9fafb;
 }
 
 /* Lists */
 .ProseMirror ul,
 .ProseMirror ol {
-  padding-left: 1.5rem;
+  padding-left: 1.25rem;
   margin: 0.5rem 0;
 }
 
 .ProseMirror li {
   margin: 0.25rem 0;
+}
+
+.ProseMirror ul {
+  list-style-type: disc;
+}
+
+.ProseMirror ol {
+  list-style-type: decimal;
 }
 
 /* Blockquotes */
@@ -66,9 +91,11 @@
   background: #f3f4f6;
   border-radius: 0.375rem;
   color: #1f2937;
-  font-family: 'JetBrainsMono', monospace;
+  font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+  font-size: 0.875rem;
   padding: 0.75rem 1rem;
   margin: 0.5rem 0;
+  overflow-x: auto;
 }
 
 .dark .ProseMirror pre {
@@ -80,22 +107,24 @@
   background: #f3f4f6;
   border-radius: 0.25rem;
   color: #1f2937;
+  font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
   font-size: 0.875rem;
   padding: 0.125rem 0.25rem;
 }
 
 .dark .ProseMirror code {
-  background: #1f2937;
+  background: #374151;
   color: #f3f4f6;
 }
 
 /* Selection */
 .ProseMirror ::selection {
-  background: #b4d5ff;
+  background: #dbeafe;
 }
 
 .dark .ProseMirror ::selection {
-  background: #4c6ef5;
+  background: #1e40af;
+  color: #f3f4f6;
 }
 
 /* Focus styles */
@@ -106,12 +135,25 @@
 /* Paragraph spacing */
 .ProseMirror p {
   margin: 0.5rem 0;
-  line-height: 1.6;
+  line-height: 1.5;
+}
+
+.ProseMirror p:first-child {
+  margin-top: 0;
+}
+
+.ProseMirror p:last-child {
+  margin-bottom: 0;
 }
 
 /* Strong and emphasis */
 .ProseMirror strong {
   font-weight: 600;
+  color: #111827;
+}
+
+.dark .ProseMirror strong {
+  color: #f9fafb;
 }
 
 .ProseMirror em {
@@ -127,4 +169,24 @@
 
 .dark .ProseMirror hr {
   border-top-color: #4b5563;
+}
+
+/* Remove default prose styles that conflict */
+.prose {
+  max-width: none;
+}
+
+.prose :where(p):not(:where([class~="not-prose"] *)) {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.prose :where(ul):not(:where([class~="not-prose"] *)) {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.prose :where(ol):not(:where([class~="not-prose"] *)) {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
 }

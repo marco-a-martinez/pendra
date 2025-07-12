@@ -238,23 +238,14 @@ function SortableTodoItem({
       
       {/* Notes section - Things 3 style with smooth animation */}
       {showNotes && (
-        <div
-          style={{
-            marginTop: '8px',
-            marginLeft: '44px',
-            marginRight: '0',
-            paddingTop: '8px',
-            paddingBottom: '4px',
-            animation: 'slideDown 0.2s ease-out',
-          }}
-        >
+        <div className="mt-3 ml-11 mr-0 transition-all duration-200 ease-out">
           <ModernNotesEditor
             content={notesContent}
             onChange={(content) => {
               setNotesContent(content);
               onUpdateNotes(todo.id, content);
             }}
-            placeholder="Add notes..."
+            placeholder="Write your notes here..."
           />
         </div>
       )}
