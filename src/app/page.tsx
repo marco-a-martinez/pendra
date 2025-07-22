@@ -40,12 +40,14 @@ function SortableTodoItem({
   onUpdate, 
   onDelete,
   onUpdateDate,
+  mounted,
 }: {
   todo: Todo;
   onToggle: (id: string) => void;
   onUpdate: (id: string, text: string) => void;
   onDelete: (id: string) => void;
   onUpdateDate: (id: string, date: string | undefined) => void;
+  mounted: boolean;
 }) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const datePickerRef = useRef<DatePicker>(null);
@@ -129,7 +131,7 @@ function SortableTodoItem({
             color: 'var(--text-secondary)',
             marginRight: '8px',
           }}>
-            {new Date(todo.dueDate).toLocaleDateString()}
+            {mounted ? new Date(todo.dueDate).toLocaleDateString() : ''}
           </span>
         )}
         
@@ -220,6 +222,7 @@ export default function HomePage() {
   const [newTodo, setNewTodo] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [activeTodoId, setActiveTodoId] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const sensors = useSensors(
@@ -232,6 +235,10 @@ export default function HomePage() {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (isAdding && inputRef.current) {
@@ -321,7 +328,7 @@ export default function HomePage() {
             color: 'var(--text-secondary)',
             margin: 0
           }}>
-            {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+            {mounted ? new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }) : ''}
           </p>
         </div>
 
@@ -385,6 +392,7 @@ export default function HomePage() {
                     onUpdate={updateTodo}
                     onDelete={deleteTodo}
                     onUpdateDate={updateTodoDate}
+                    mounted={mounted}
                   />
                 ))}
               </SortableContext>
