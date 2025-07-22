@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Plus, Check, GripVertical, Calendar } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { useAppStore } from '@/lib/store';
 import {
   DndContext,
   closestCenter,
@@ -213,6 +214,7 @@ function SortableTodoItem({
 }
 
 export default function HomePage() {
+  const { setTaskModalOpen } = useAppStore();
   const [todos, setTodos] = useState<Todo[]>([
     { id: '1', text: 'Welcome to your simple todo app!', completed: false },
     { id: '2', text: 'Click the circle to complete a todo', completed: false },
@@ -420,8 +422,9 @@ export default function HomePage() {
 
         {/* Floating add button */}
         <button
-          onClick={startAdding}
+          onClick={() => setTaskModalOpen(true)}
           className="floating-add-button"
+          title="Create a new task with rich text editor"
           style={{
             position: 'fixed',
             bottom: '24px',
