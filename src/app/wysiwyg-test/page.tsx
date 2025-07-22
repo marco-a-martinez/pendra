@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ModernRichTextEditor } from '@/components/ModernRichTextEditor';
+import { NotionStyleEditor } from '@/components/NotionStyleEditor';
 
 export default function WysiwygTestPage() {
   const [content, setContent] = useState('<p>This is a <strong>rich text</strong> todo description with <em>formatting</em>!</p>');
@@ -34,10 +34,10 @@ export default function WysiwygTestPage() {
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
                 Edit your todo description with rich formatting:
               </p>
-              <ModernRichTextEditor
+              <NotionStyleEditor
                 content={content}
                 onChange={setContent}
-                placeholder="Describe your todo..."
+                placeholder="Type / for commands..."
               />
             </div>
           ) : (
