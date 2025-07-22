@@ -6,7 +6,7 @@ import { Task } from '@/types';
 import { generateId, projectColors } from '@/lib/utils';
 import { generateTimeSlots } from '@/lib/dateUtils';
 import { X, Calendar, Clock, Flag, Tag, FolderOpen } from 'lucide-react';
-// import { RichTextEditor } from './RichTextEditor';
+import { CompactRichTextEditor } from './CompactRichTextEditor';
 import { createTask as createTaskSupabase, updateTask as updateTaskSupabase } from '@/lib/supabase-tasks';
 import { useToast } from '@/hooks/use-toast';
 
@@ -188,12 +188,11 @@ export function TaskModal() {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Description
             </label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+            <CompactRichTextEditor
+              content={formData.description}
+              onChange={(content) => setFormData(prev => ({ ...prev, description: content }))}
               placeholder="Add more details..."
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white min-h-[100px] resize-none"
-              rows={4}
+              className="border border-gray-300 dark:border-gray-600"
             />
           </div>
 
