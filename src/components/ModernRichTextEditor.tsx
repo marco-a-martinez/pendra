@@ -65,6 +65,7 @@ export function ModernRichTextEditor({
         class: 'prose prose-sm dark:prose-invert max-w-none focus:outline-none min-h-[80px] text-gray-700 dark:text-gray-300',
       },
     },
+    immediatelyRender: false,
   });
 
   if (!editor) {
