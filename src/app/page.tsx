@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Plus, Check, Calendar, ChevronDown, FileText } from 'lucide-react';
+import { Plus, Check, GripVertical, Calendar } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { useAppStore } from '@/lib/store';
 import {
   DndContext,
   closestCenter,
@@ -25,14 +26,12 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { ModernNotesEditor } from '@/components/ModernNotesEditor';
 
 interface Todo {
   id: string;
   text: string;
   completed: boolean;
   dueDate?: string;
-  notes?: string;
 }
 
 // Sortable Todo Item Component
@@ -42,18 +41,16 @@ function SortableTodoItem({
   onUpdate, 
   onDelete,
   onUpdateDate,
-  onUpdateNotes,
+  mounted,
 }: {
   todo: Todo;
   onToggle: (id: string) => void;
   onUpdate: (id: string, text: string) => void;
   onDelete: (id: string) => void;
   onUpdateDate: (id: string, date: string | undefined) => void;
-  onUpdateNotes: (id: string, notes: string) => void;
+  mounted: boolean;
 }) {
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showNotes, setShowNotes] = useState(false);
-  const [notesContent, setNotesContent] = useState(todo.notes || '');
   const datePickerRef = useRef<DatePicker>(null);
   const calendarButtonRef = useRef<HTMLButtonElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -80,30 +77,21 @@ function SortableTodoItem({
       className="todo-item sortable-item"
       {...attributes}
     >
-      <div ref={containerRef} style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
-        <div
+      <div ref={containerRef} style={{ display: 'flex', alignItems: 'center', gap: '12px', position: 'relative' }}>
+        <button
           className="drag-handle"
           {...listeners}
           style={{
             cursor: 'grab',
-            padding: '2px 4px',
-            color: '#D1D5DB',
+            padding: '4px',
+            color: 'var(--text-tertiary)',
             display: 'flex',
             alignItems: 'center',
-            opacity: 0,
-            transition: 'opacity 0.2s ease',
           }}
           aria-label="Drag to reorder"
         >
-          <svg width="12" height="20" viewBox="0 0 12 20" fill="currentColor">
-            <circle cx="3" cy="4" r="1.5" />
-            <circle cx="9" cy="4" r="1.5" />
-            <circle cx="3" cy="10" r="1.5" />
-            <circle cx="9" cy="10" r="1.5" />
-            <circle cx="3" cy="16" r="1.5" />
-            <circle cx="9" cy="16" r="1.5" />
-          </svg>
-        </div>
+          <GripVertical size={20} />
+        </button>
         
         <button
           onClick={() => onToggle(todo.id)}
@@ -144,19 +132,8 @@ function SortableTodoItem({
             color: 'var(--text-secondary)',
             marginRight: '8px',
           }}>
-            {new Date(todo.dueDate).toLocaleDateString()}
+            {mounted ? new Date(todo.dueDate).toLocaleDateString() : ''}
           </span>
-        )}
-        
-        {/* Notes indicator */}
-        {todo.notes && !showNotes && (
-          <FileText 
-            size={14} 
-            style={{
-              color: 'var(--text-tertiary)',
-              marginRight: '8px',
-            }}
-          />
         )}
         
         {/* Calendar icon */}
@@ -180,33 +157,6 @@ function SortableTodoItem({
           aria-label="Set due date"
         >
           <Calendar size={18} />
-        </button>
-        
-        {/* Notes button - Apple HIG style */}
-        <button
-          onClick={() => setShowNotes(!showNotes)}
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            padding: '4px',
-            color: todo.notes ? 'var(--blue)' : 'var(--text-tertiary)',
-            display: 'flex',
-            alignItems: 'center',
-            opacity: todo.notes || showNotes ? 1 : 0,
-            transition: 'opacity 0.2s ease, transform 0.2s ease',
-            marginLeft: '4px',
-          }}
-          className="notes-button"
-          aria-label="Add notes"
-        >
-          <ChevronDown 
-            size={16} 
-            style={{
-              transform: showNotes ? 'rotate(180deg)' : 'rotate(0deg)',
-              transition: 'transform 0.2s ease',
-            }}
-          />
         </button>
         
         {/* Date picker - positioned relative to the todo item */}
@@ -240,29 +190,31 @@ function SortableTodoItem({
               inline
               autoFocus
               popperPlacement="right-start"
+              popperModifiers={[
+                {
+                  name: 'preventOverflow',
+                  options: {
+                    boundary: 'viewport',
+                    padding: 20,
+                  },
+                },
+                {
+                  name: 'flip',
+                  options: {
+                    fallbackPlacements: ['left-start', 'bottom', 'top'],
+                  },
+                },
+              ]}
             />
           </div>
         )}
       </div>
-      
-      {/* Notes section - Things 3 style with smooth animation */}
-      {showNotes && (
-        <div className="mt-4 ml-11 mr-0 mb-2 transition-all duration-200 ease-out">
-          <ModernNotesEditor
-            content={notesContent}
-            onChange={(content) => {
-              setNotesContent(content);
-              onUpdateNotes(todo.id, content);
-            }}
-            placeholder="Write your notes here..."
-          />
-        </div>
-      )}
     </div>
   );
 }
 
 export default function HomePage() {
+  const { setTaskModalOpen } = useAppStore();
   const [todos, setTodos] = useState<Todo[]>([
     { id: '1', text: 'Welcome to your simple todo app!', completed: false },
     { id: '2', text: 'Click the circle to complete a todo', completed: false },
@@ -272,6 +224,7 @@ export default function HomePage() {
   const [newTodo, setNewTodo] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [activeTodoId, setActiveTodoId] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const sensors = useSensors(
@@ -284,6 +237,10 @@ export default function HomePage() {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (isAdding && inputRef.current) {
@@ -320,12 +277,6 @@ export default function HomePage() {
   const updateTodoDate = (id: string, date: string | undefined) => {
     setTodos(todos.map(todo => 
       todo.id === id ? { ...todo, dueDate: date } : todo
-    ));
-  };
-
-  const updateTodoNotes = (id: string, notes: string) => {
-    setTodos(todos.map(todo => 
-      todo.id === id ? { ...todo, notes } : todo
     ));
   };
 
@@ -379,7 +330,7 @@ export default function HomePage() {
             color: 'var(--text-secondary)',
             margin: 0
           }}>
-            {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+            {mounted ? new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }) : ''}
           </p>
         </div>
 
@@ -443,7 +394,7 @@ export default function HomePage() {
                     onUpdate={updateTodo}
                     onDelete={deleteTodo}
                     onUpdateDate={updateTodoDate}
-                    onUpdateNotes={updateTodoNotes}
+                    mounted={mounted}
                   />
                 ))}
               </SortableContext>
@@ -471,8 +422,9 @@ export default function HomePage() {
 
         {/* Floating add button */}
         <button
-          onClick={startAdding}
+          onClick={() => setTaskModalOpen(true)}
           className="floating-add-button"
+          title="Create a new task with rich text editor"
           style={{
             position: 'fixed',
             bottom: '24px',

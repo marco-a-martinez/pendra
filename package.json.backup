@@ -20,6 +20,13 @@
     "@supabase/auth-ui-react": "^0.4.7",
     "@supabase/auth-ui-shared": "^0.1.8",
     "@supabase/supabase-js": "^2.50.4",
+<<<<<<< HEAD
+    "@tiptap/extension-bubble-menu": "^3.0.1",
+    "@tiptap/extension-floating-menu": "^3.0.1",
+    "@tiptap/extension-placeholder": "^3.0.1",
+    "@tiptap/react": "^3.0.1",
+    "@tiptap/starter-kit": "^3.0.1",
+=======
     "@tiptap/extension-color": "^2.26.1",
     "@tiptap/extension-font-family": "^2.26.1",
     "@tiptap/extension-highlight": "^2.26.1",
@@ -32,6 +39,7 @@
     "@tiptap/extension-underline": "^2.26.1",
     "@tiptap/react": "^2.25.0",
     "@tiptap/starter-kit": "^2.25.0",
+>>>>>>> feature/wysiwyg-todo-editor
     "@types/react-datepicker": "^6.2.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

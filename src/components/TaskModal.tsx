@@ -6,7 +6,7 @@ import { Task } from '@/types';
 import { generateId, projectColors } from '@/lib/utils';
 import { generateTimeSlots } from '@/lib/dateUtils';
 import { X, Calendar, Clock, Flag, Tag, FolderOpen } from 'lucide-react';
-
+import { BeautifulEditor } from './BeautifulEditor';
 import { createTask as createTaskSupabase, updateTask as updateTaskSupabase } from '@/lib/supabase-tasks';
 import { useToast } from '@/hooks/use-toast';
 
@@ -188,12 +188,10 @@ export function TaskModal() {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Description
             </label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              placeholder="Add more details..."
-              className="w-full p-3 text-sm border border-gray-100 dark:border-gray-600 rounded-lg resize-none focus:outline-none focus:border-gray-100 dark:focus:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
-              rows={4}
+            <BeautifulEditor
+              content={formData.description}
+              onChange={(content) => setFormData(prev => ({ ...prev, description: content }))}
+              placeholder="Describe your task in detail..."
             />
           </div>
 
