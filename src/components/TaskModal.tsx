@@ -6,7 +6,7 @@ import { Task } from '@/types';
 import { generateId, projectColors } from '@/lib/utils';
 import { generateTimeSlots } from '@/lib/dateUtils';
 import { X, Calendar, Clock, Flag, Tag, FolderOpen } from 'lucide-react';
-import { NotionStyleEditor } from './NotionStyleEditor';
+import { BeautifulEditor } from './BeautifulEditor';
 import { createTask as createTaskSupabase, updateTask as updateTaskSupabase } from '@/lib/supabase-tasks';
 import { useToast } from '@/hooks/use-toast';
 
@@ -188,10 +188,10 @@ export function TaskModal() {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Description
             </label>
-            <NotionStyleEditor
+            <BeautifulEditor
               content={formData.description}
               onChange={(content) => setFormData(prev => ({ ...prev, description: content }))}
-              placeholder="Type / for commands..."
+              placeholder="Describe your task in detail..."
             />
           </div>
 
