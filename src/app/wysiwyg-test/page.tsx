@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { CompactRichTextEditor } from '@/components/CompactRichTextEditor';
+import { ModernRichTextEditor } from '@/components/ModernRichTextEditor';
 
 export default function WysiwygTestPage() {
   const [content, setContent] = useState('<p>This is a <strong>rich text</strong> todo description with <em>formatting</em>!</p>');
@@ -34,11 +34,10 @@ export default function WysiwygTestPage() {
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
                 Edit your todo description with rich formatting:
               </p>
-              <CompactRichTextEditor
+              <ModernRichTextEditor
                 content={content}
                 onChange={setContent}
                 placeholder="Describe your todo..."
-                className="border border-gray-300 dark:border-gray-600"
               />
             </div>
           ) : (

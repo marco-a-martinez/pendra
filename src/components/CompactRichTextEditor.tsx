@@ -56,7 +56,7 @@ export function CompactRichTextEditor({
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-sm dark:prose-invert max-w-none focus:outline-none px-3 py-2 min-h-[100px]',
+        class: 'prose prose-sm dark:prose-invert max-w-none focus:outline-none px-4 py-3 min-h-[100px] text-gray-700 dark:text-gray-300',
       },
     },
   });
@@ -87,8 +87,11 @@ export function CompactRichTextEditor({
       onClick={onClick}
       title={title}
       className={cn(
-        'p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors',
-        isActive && 'bg-gray-100 dark:bg-gray-700 text-blue-600 dark:text-blue-400'
+        'p-1.5 rounded-md transition-all duration-200',
+        'hover:bg-gray-100 dark:hover:bg-gray-700',
+        'text-gray-600 dark:text-gray-400',
+        'hover:text-gray-900 dark:hover:text-gray-100',
+        isActive && 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
       )}
       type="button"
     >
@@ -97,9 +100,9 @@ export function CompactRichTextEditor({
   );
 
   return (
-    <div className={cn('bg-white dark:bg-gray-800 rounded-lg', className)}>
+    <div className={cn('bg-white dark:bg-gray-800 rounded-lg shadow-sm', className)}>
       {/* Compact Toolbar */}
-      <div className="flex items-center gap-1 p-2 border-b border-gray-200 dark:border-gray-700">
+      <div className="flex items-center gap-0.5 p-1.5 border-b border-gray-100 dark:border-gray-700/50">
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBold().run()}
           isActive={editor.isActive('bold')}
@@ -124,7 +127,7 @@ export function CompactRichTextEditor({
           <UnderlineIcon className="w-4 h-4" />
         </ToolbarButton>
 
-        <div className="w-px h-5 bg-gray-300 dark:bg-gray-600 mx-1" />
+        <div className="w-px h-4 bg-gray-200 dark:bg-gray-700 mx-1" />
         
         <ToolbarButton
           onClick={addLink}
@@ -150,7 +153,7 @@ export function CompactRichTextEditor({
           <ListOrdered className="w-4 h-4" />
         </ToolbarButton>
 
-        <div className="w-px h-5 bg-gray-300 dark:bg-gray-600 mx-1" />
+        <div className="w-px h-4 bg-gray-200 dark:bg-gray-700 mx-1" />
         
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleCode().run()}
