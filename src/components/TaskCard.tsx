@@ -5,8 +5,7 @@ import { useAppStore } from '@/lib/store';
 import { Task } from '@/types';
 import { cn, priorityColors } from '@/lib/utils';
 import { formatDate, formatTime, isOverdue } from '@/lib/dateUtils';
-import { TaskNotes } from './TaskNotes';
-import { TaskDescription } from './TaskDescription';
+
 import { 
   Calendar, 
   Clock, 
@@ -99,8 +98,7 @@ export function TaskCard({ task, className }: TaskCardProps) {
               )}>
                 {task.title}
               </h3>
-              {/* Task Description */}
-              <TaskDescription description={task.description} />
+
             </div>
 
             {/* Actions Menu */}
@@ -205,12 +203,7 @@ export function TaskCard({ task, className }: TaskCardProps) {
         </div>
       </div>
 
-      {/* Things 3 Style Notes - Show when expanded or when notes exist */}
-      {(isExpanded || task.notes) && (
-        <div onClick={(e) => e.stopPropagation()}>
-          <TaskNotes task={task} onUpdate={handleTaskUpdate} />
-        </div>
-      )}
+
 
       {/* Color Indicator */}
       {task.color && (
