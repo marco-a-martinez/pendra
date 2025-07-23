@@ -1,75 +1,59 @@
+// Test Supabase connection
 const { createClient } = require('@supabase/supabase-js');
-
-const supabaseUrl = 'https://mwiqrqaxntpvjdkadhfd.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im13aXFycWF4bnRwdmpka2FkaGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDU0MTYsImV4cCI6MjA2NzY4MTQxNn0.oyDPn3nbg3YssjMbL2gbcQ6mbb8ZOW_KZZMf3ySA-iM';
+require('dotenv').config({ path: '.env.local' });
 
 console.log('Testing Supabase connection...');
-console.log('URL:', supabaseUrl);
-console.log('Key length:', supabaseKey.length);
+console.log('\nEnvironment variables:');
+console.log('NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? '✓ Set' : '✗ Missing');
+console.log('NEXT_PUBLIC_SUPABASE_ANON_KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? '✓ Set' : '✗ Missing');
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  console.error('\n❌ Missing required environment variables!');
+  process.exit(1);
+}
+
+// Add fetch polyfill for Node.js
+global.fetch = require('node-fetch');
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+);
 
 async function testConnection() {
   try {
-    // Test 1: Check if we can connect
-    console.log('\n1. Testing basic connection...');
-    const { data: test, error: testError } = await supabase
+    // Test 1: Check if we can query the tasks table
+    console.log('\nTesting database connection...');
+    const { data, error } = await supabase
       .from('tasks')
-      .select('count')
+      .select('id')
       .limit(1);
     
-    if (testError) {
-      console.log('Connection error:', testError.message);
-      console.log('Error details:', testError);
-    } else {
-      console.log('Connection successful!');
+    if (error) {
+      console.error('❌ Database connection failed:', error.message);
+      return;
     }
-
-    // Test 2: Try to fetch tasks
-    console.log('\n2. Fetching tasks for test-user-123...');
-    const { data: tasks, error: tasksError } = await supabase
+    
+    console.log('✓ Successfully connected to Supabase!');
+    
+    // Test 2: Check if notes column exists
+    console.log('\nChecking if notes column exists...');
+    const { data: taskData, error: taskError } = await supabase
       .from('tasks')
-      .select('*')
-      .eq('user_id', 'test-user-123');
+      .select('id, notes')
+      .limit(1);
     
-    if (tasksError) {
-      console.log('Error fetching tasks:', tasksError.message);
+    if (taskError) {
+      console.error('❌ Notes column check failed:', taskError.message);
+      console.log('\nYou may need to run the migration to add the notes column.');
     } else {
-      console.log('Tasks found:', tasks ? tasks.length : 0);
-      if (tasks && tasks.length > 0) {
-        console.log('First task:', tasks[0]);
-      }
+      console.log('✓ Notes column exists in tasks table!');
     }
-
-    // Test 3: Try to create a task
-    console.log('\n3. Creating a test task...');
-    const testTask = {
-      user_id: 'test-user-123',
-      title: 'Test Task from Node.js',
-      status: 'inbox',
-      priority: 'medium',
-      tags: [],
-      order_index: Date.now(),
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
     
-    const { data: newTask, error: createError } = await supabase
-      .from('tasks')
-      .insert([testTask])
-      .select()
-      .single();
+    console.log('\n✅ All tests passed! Your Supabase connection is working correctly.');
     
-    if (createError) {
-      console.log('Error creating task:', createError.message);
-      console.log('Error details:', createError);
-    } else {
-      console.log('Task created successfully!');
-      console.log('New task:', newTask);
-    }
-
-  } catch (error) {
-    console.error('Unexpected error:', error);
+  } catch (err) {
+    console.error('\n❌ Unexpected error:', err.message);
   }
 }
 

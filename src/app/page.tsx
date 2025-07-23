@@ -432,7 +432,7 @@ export default function HomePage() {
             width: '56px',
             height: '56px',
             borderRadius: '50%',
-            backgroundColor: 'var(--blue)',
+            backgroundColor: '#007AFF',
             color: 'white',
             border: 'none',
             display: 'flex',
