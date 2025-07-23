@@ -424,7 +424,7 @@ export default function HomePage() {
         <button
           onClick={() => setTaskModalOpen(true)}
           className="floating-add-button"
-          title="Create a new task with rich text editor"
+          title="Create a new task"
           style={{
             position: 'fixed',
             bottom: '24px',
