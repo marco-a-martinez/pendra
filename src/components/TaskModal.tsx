@@ -10,7 +10,7 @@ import { X, Calendar, Clock, Flag, Tag, FolderOpen } from 'lucide-react';
 import { createTask as createTaskSupabase, updateTask as updateTaskSupabase } from '@/lib/supabase-tasks';
 import { useToast } from '@/hooks/use-toast';
 
-// Force deployment - WYSIWYG editors completely removed
+// Force deployment - WYSIWYG editors completely removed - Trigger rebuild
 export function TaskModal() {
   const {
     taskModalOpen,
