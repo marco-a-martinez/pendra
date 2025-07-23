@@ -450,7 +450,7 @@ export default function HomePage() {
         {/* Add task inline button */}
         {!isAdding && todos.length > 0 && (
           <button
-            onClick={startAdding}
+            onClick={() => setTaskModalOpen(true)}
             className="add-task-inline"
             style={{
               display: 'flex',
