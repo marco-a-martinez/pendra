@@ -2,8 +2,6 @@
 
 import { useState, useCallback } from 'react';
 import { Task } from '@/types';
-import { RichTextDisplay } from './RichTextDisplay';
-import { BeautifulEditor } from './BeautifulEditor';
 
 interface TaskNotesProps {
   task: Task;
@@ -144,7 +142,9 @@ export function TaskNotes({ task, onUpdate }: TaskNotesProps) {
                      hover:bg-gray-50 transition-colors duration-150"
         >
           {notes ? (
-            <RichTextDisplay content={notes} />
+            <div className="space-y-0.5">
+              {renderNotes(notes)}
+            </div>
           ) : (
             <span className="text-sm text-gray-400">
               Add notes, details, or checklists...

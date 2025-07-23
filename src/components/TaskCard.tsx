@@ -6,6 +6,7 @@ import { Task } from '@/types';
 import { cn, priorityColors } from '@/lib/utils';
 import { formatDate, formatTime, isOverdue } from '@/lib/dateUtils';
 import { TaskNotes } from './TaskNotes';
+import { TaskDescription } from './TaskDescription';
 import { 
   Calendar, 
   Clock, 
@@ -98,6 +99,8 @@ export function TaskCard({ task, className }: TaskCardProps) {
               )}>
                 {task.title}
               </h3>
+              {/* Task Description */}
+              <TaskDescription description={task.description} />
             </div>
 
             {/* Actions Menu */}
