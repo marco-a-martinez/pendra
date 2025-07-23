@@ -25,6 +25,7 @@ export function TaskModal() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
+    notes: '',
     due_date: '',
     scheduled_time: '',
     estimated_duration: '',
@@ -42,6 +43,7 @@ export function TaskModal() {
       setFormData({
         title: editingTask.title,
         description: editingTask.description || '',
+        notes: editingTask.notes || '',
         due_date: editingTask.due_date ? editingTask.due_date.split('T')[0] : '',
         scheduled_time: editingTask.scheduled_time ? editingTask.scheduled_time.split('T')[1].slice(0, 5) : '',
         estimated_duration: editingTask.estimated_duration?.toString() || '',
@@ -54,6 +56,7 @@ export function TaskModal() {
       setFormData({
         title: '',
         description: '',
+        notes: '',
         due_date: '',
         scheduled_time: '',
         estimated_duration: '',
@@ -81,6 +84,7 @@ export function TaskModal() {
       user_id: user.id,
       title: formData.title.trim(),
       description: formData.description || undefined,
+      notes: formData.notes || undefined,
       due_date: formData.due_date || undefined,
       scheduled_time: formData.due_date && formData.scheduled_time 
         ? `${formData.due_date}T${formData.scheduled_time}:00.000Z`
@@ -193,6 +197,26 @@ export function TaskModal() {
               onChange={(content) => setFormData(prev => ({ ...prev, description: content }))}
               placeholder="Describe your task in detail..."
             />
+          </div>
+
+          {/* Notes */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Notes
+              <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
+                (Track progress, learnings, and context)
+              </span>
+            </label>
+            <textarea
+              value={formData.notes}
+              onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+              placeholder="Add notes, progress updates, links, or any relevant information..."
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white min-h-[150px] resize-y"
+              rows={6}
+            />
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              Supports basic markdown: **bold**, *italic*, - lists
+            </p>
           </div>
 
           {/* Date and Time */}
