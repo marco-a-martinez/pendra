@@ -426,14 +426,6 @@ export function TodoItem({ todo, onToggle, onDelete, onUpdateTodo }: TodoItemPro
                 >
                   {todo.note}
                 </div>
-              ) : todo.note ? (
-                <div
-                  className="text-xs text-gray-700 px-2 py-1 bg-gray-50 rounded cursor-pointer hover:bg-gray-100 transition-colors truncate"
-                  onClick={startEditingNote}
-                  title={todo.note}
-                >
-                  {todo.note}
-                </div>
               ) : null}
             </div>
           ) : (
