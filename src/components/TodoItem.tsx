@@ -209,7 +209,14 @@ export function TodoItem({ todo, onToggle, onDelete, onUpdateTodo }: TodoItemPro
   const handleEditNote = () => {
     if (isEditingNote) {
       if (editNote.trim() !== (todo.note || '')) {
-        onUpdateTodo(todo.id, { note: editNote.trim() || undefined });
+        // When saving a note, collapse it by default
+        onUpdateTodo(todo.id, { 
+          note: editNote.trim() || undefined,
+          noteExpanded: false
+        });
+      } else {
+        // If no changes, just collapse the note
+        onUpdateTodo(todo.id, { noteExpanded: false });
       }
     }
     setIsEditingNote(false);
@@ -227,9 +234,8 @@ export function TodoItem({ todo, onToggle, onDelete, onUpdateTodo }: TodoItemPro
   const startEditingNote = () => {
     setEditNote(todo.note || '');
     setIsEditingNote(true);
-    if (!todo.noteExpanded) {
-      onUpdateTodo(todo.id, { noteExpanded: true });
-    }
+    // Always expand when starting to edit
+    onUpdateTodo(todo.id, { noteExpanded: true });
   };
 
   const clearNote = (e: React.MouseEvent) => {
