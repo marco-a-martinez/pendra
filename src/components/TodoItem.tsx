@@ -1,7 +1,7 @@
 'use client';
 
 import { Todo, ChecklistItem as ChecklistItemType } from '@/lib/types';
-import { Trash2, Check, GripVertical, Calendar, ChevronDown, ChevronRight, Plus } from 'lucide-react';
+import { Trash2, Check, GripVertical, Calendar, ChevronDown, ChevronRight, Plus, FileText } from 'lucide-react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { formatDueDate, getDueDateStatus, getDueDateColor, formatDateForInput, parseDateFromInput } from '@/lib/dateUtils';
@@ -37,6 +37,8 @@ export function TodoItem({ todo, onToggle, onDelete, onUpdateTodo }: TodoItemPro
   const [editTodoText, setEditTodoText] = useState(todo.text);
   const [isEditingDate, setIsEditingDate] = useState(false);
   const [editDate, setEditDate] = useState(todo.dueDate ? formatDateForInput(todo.dueDate) : '');
+  const [isEditingNote, setIsEditingNote] = useState(false);
+  const [editNote, setEditNote] = useState(todo.note || '');
 
   const {
     attributes,
@@ -199,6 +201,42 @@ export function TodoItem({ todo, onToggle, onDelete, onUpdateTodo }: TodoItemPro
     onUpdateTodo(todo.id, { dueDate: undefined });
   };
 
+  // Note editing handlers
+  const toggleNoteExpanded = () => {
+    onUpdateTodo(todo.id, { noteExpanded: !todo.noteExpanded });
+  };
+
+  const handleEditNote = () => {
+    if (isEditingNote) {
+      if (editNote.trim() !== (todo.note || '')) {
+        onUpdateTodo(todo.id, { note: editNote.trim() || undefined });
+      }
+    }
+    setIsEditingNote(false);
+  };
+
+  const handleNoteKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && e.ctrlKey) {
+      handleEditNote();
+    } else if (e.key === 'Escape') {
+      setEditNote(todo.note || '');
+      setIsEditingNote(false);
+    }
+  };
+
+  const startEditingNote = () => {
+    setEditNote(todo.note || '');
+    setIsEditingNote(true);
+    if (!todo.noteExpanded) {
+      onUpdateTodo(todo.id, { noteExpanded: true });
+    }
+  };
+
+  const clearNote = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onUpdateTodo(todo.id, { note: undefined, noteExpanded: false });
+  };
+
   return (
     <div className="space-y-2">
       {/* Main Todo Item */}
@@ -320,6 +358,72 @@ export function TodoItem({ todo, onToggle, onDelete, onUpdateTodo }: TodoItemPro
               >
                 <Calendar size={12} />
                 Add due date
+              </button>
+            </div>
+          )}
+
+          {/* Note */}
+          {todo.note || isEditingNote ? (
+            <div className="mt-1">
+              <div className="flex items-center gap-1 mb-1">
+                <FileText size={12} className="text-gray-400" />
+                <span className="text-xs text-gray-500">Note</span>
+                {todo.note && !isEditingNote && (
+                  <div className="flex items-center gap-1 ml-auto">
+                    <button
+                      onClick={toggleNoteExpanded}
+                      className="text-gray-400 hover:text-gray-600 transition-colors"
+                      title={todo.noteExpanded ? "Collapse note" : "Expand note"}
+                    >
+                      {todo.noteExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+                    </button>
+                    <button
+                      onClick={clearNote}
+                      className="text-gray-400 hover:text-red-500 transition-colors"
+                      title="Remove note"
+                    >
+                      ×
+                    </button>
+                  </div>
+                )}
+              </div>
+              {isEditingNote ? (
+                <textarea
+                  value={editNote}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setEditNote(e.target.value)}
+                  onBlur={handleEditNote}
+                  onKeyDown={handleNoteKeyDown}
+                  placeholder="Add a note... (Ctrl+Enter to save, Esc to cancel)"
+                  className="w-full text-xs px-2 py-1 border border-gray-300 rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  rows={3}
+                  autoFocus
+                />
+              ) : todo.note && todo.noteExpanded ? (
+                <div
+                  className="text-xs text-gray-700 px-2 py-1 bg-gray-50 rounded cursor-pointer hover:bg-gray-100 transition-colors whitespace-pre-wrap"
+                  onClick={startEditingNote}
+                >
+                  {todo.note}
+                </div>
+              ) : todo.note ? (
+                <div
+                  className="text-xs text-gray-700 px-2 py-1 bg-gray-50 rounded cursor-pointer hover:bg-gray-100 transition-colors truncate"
+                  onClick={startEditingNote}
+                  title={todo.note}
+                >
+                  {todo.note}
+                </div>
+              ) : null}
+            </div>
+          ) : (
+            <div className="flex items-center gap-1 mt-1">
+              <button
+                onClick={startEditingNote}
+                className="flex items-center gap-1 text-xs text-gray-500 hover:text-blue-500 transition-colors"
+                title="Add note"
+              >
+                <FileText size={12} />
+                Add note
               </button>
             </div>
           )}

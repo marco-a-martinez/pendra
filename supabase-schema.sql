@@ -20,7 +20,9 @@ CREATE TABLE IF NOT EXISTS todos (
   due_date TIMESTAMP WITH TIME ZONE,
   section_id TEXT NOT NULL REFERENCES sections(id) ON DELETE CASCADE,
   checklist JSONB,
-  checklist_expanded BOOLEAN DEFAULT FALSE
+  checklist_expanded BOOLEAN DEFAULT FALSE,
+  note TEXT,
+  note_expanded BOOLEAN DEFAULT FALSE
 );
 
 -- Create indexes for better performance

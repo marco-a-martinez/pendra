@@ -17,6 +17,8 @@ export interface DatabaseTodo {
   section_id: string;
   checklist?: any[] | null;
   checklist_expanded?: boolean;
+  note?: string | null;
+  note_expanded?: boolean;
 }
 
 export interface DatabaseSection {
@@ -39,6 +41,8 @@ export function dbTodoToTodo(dbTodo: DatabaseTodo): Todo {
     sectionId: dbTodo.section_id,
     checklist: dbTodo.checklist || undefined,
     checklistExpanded: dbTodo.checklist_expanded || false,
+    note: dbTodo.note || undefined,
+    noteExpanded: dbTodo.note_expanded || false,
   };
 }
 
@@ -53,6 +57,8 @@ export function todoToDbTodo(todo: Todo): Omit<DatabaseTodo, 'created_at'> {
     section_id: todo.sectionId,
     checklist: todo.checklist || null,
     checklist_expanded: todo.checklistExpanded || false,
+    note: todo.note || null,
+    note_expanded: todo.noteExpanded || false,
   };
 }
 
