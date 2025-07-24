@@ -237,8 +237,10 @@ export function TodoItem({ todo, onToggle, onDelete, onUpdateTodo }: TodoItemPro
   const startEditingNote = () => {
     setEditNote(todo.note || '');
     setIsEditingNote(true);
-    // Always expand when starting to edit
-    onUpdateTodo(todo.id, { noteExpanded: true });
+    // Only expand if note already exists, otherwise keep collapsed for new notes
+    if (todo.note) {
+      onUpdateTodo(todo.id, { noteExpanded: true });
+    }
   };
 
   const clearNote = (e: React.MouseEvent) => {
