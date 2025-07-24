@@ -20,7 +20,9 @@ export function loadTodos(): Todo[] {
       ...todo,
       createdAt: new Date(todo.createdAt),
       // Migrate old todos without order field
-      order: todo.order ?? index
+      order: todo.order ?? index,
+      // Migrate old todos without due date field
+      dueDate: todo.dueDate ? new Date(todo.dueDate) : null
     }));
   } catch {
     return [];
@@ -45,4 +47,22 @@ export function updateOrderValues(todos: Todo[]): Todo[] {
     ...todo,
     order: index
   }));
+}
+
+// Sort todos by due date and then by order
+export function sortTodosByDueDateAndOrder(todos: Todo[]): Todo[] {
+  return todos.sort((a, b) => {
+    // First, sort by due date (overdue first, then by date)
+    if (a.dueDate && b.dueDate) {
+      return a.dueDate.getTime() - b.dueDate.getTime();
+    }
+    if (a.dueDate && !b.dueDate) {
+      return -1; // Tasks with due dates come first
+    }
+    if (!a.dueDate && b.dueDate) {
+      return 1; // Tasks without due dates come last
+    }
+    // If neither has due date, sort by order
+    return a.order - b.order;
+  });
 }

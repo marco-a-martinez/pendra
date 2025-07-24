@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { Todo } from '@/lib/types';
-import { saveTodos, loadTodos, generateId, reorderArray, updateOrderValues } from '@/lib/storage';
+import { saveTodos, loadTodos, generateId, reorderArray, updateOrderValues, sortTodosByDueDateAndOrder } from '@/lib/storage';
 import { TodoItem } from '@/components/TodoItem';
 import { AddTodo } from '@/components/AddTodo';
-import { CheckSquare, Trash2 } from 'lucide-react';
+import { CheckSquare, Trash2, ArrowUpDown, Calendar } from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -21,10 +21,12 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
+import { getDueDateStatus } from '@/lib/dateUtils';
 
 export default function HomePage() {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
+  const [filter, setFilter] = useState<'all' | 'active' | 'completed' | 'overdue' | 'today'>('all');
+  const [sortBy, setSortBy] = useState<'manual' | 'dueDate'>('manual');
 
   // Load todos from localStorage on mount
   useEffect(() => {
@@ -43,13 +45,14 @@ export default function HomePage() {
     })
   );
 
-  const addTodo = (text: string) => {
+  const addTodo = (text: string, dueDate?: Date) => {
     const newTodo: Todo = {
       id: generateId(),
       text,
       completed: false,
       createdAt: new Date(),
       order: todos.length, // Add to end
+      dueDate: dueDate || null,
     };
     setTodos(prev => [...prev, newTodo]);
   };
@@ -100,6 +103,8 @@ export default function HomePage() {
         const otherTodos = prev.filter(todo => {
           if (filter === 'active') return todo.completed;
           if (filter === 'completed') return !todo.completed;
+          if (filter === 'overdue') return !isOverdue(todo);
+          if (filter === 'today') return !isDueToday(todo);
           return false;
         });
         
@@ -112,16 +117,50 @@ export default function HomePage() {
     }
   };
 
+  const isOverdue = (todo: Todo): boolean => {
+    if (!todo.dueDate || todo.completed) return false;
+    return getDueDateStatus(todo.dueDate) === 'overdue';
+  };
+
+  const isDueToday = (todo: Todo): boolean => {
+    if (!todo.dueDate || todo.completed) return false;
+    return getDueDateStatus(todo.dueDate) === 'today';
+  };
+
   const getFilteredTodos = (todoList: Todo[]) => {
-    const sorted = todoList.sort((a, b) => a.order - b.order);
-    if (filter === 'active') return sorted.filter(todo => !todo.completed);
-    if (filter === 'completed') return sorted.filter(todo => todo.completed);
-    return sorted;
+    let filtered = todoList;
+    
+    // Apply filter
+    switch (filter) {
+      case 'active':
+        filtered = todoList.filter(todo => !todo.completed);
+        break;
+      case 'completed':
+        filtered = todoList.filter(todo => todo.completed);
+        break;
+      case 'overdue':
+        filtered = todoList.filter(todo => isOverdue(todo));
+        break;
+      case 'today':
+        filtered = todoList.filter(todo => isDueToday(todo));
+        break;
+      default:
+        filtered = todoList;
+    }
+    
+    // Apply sorting
+    if (sortBy === 'dueDate') {
+      return sortTodosByDueDateAndOrder(filtered);
+    } else {
+      return filtered.sort((a, b) => a.order - b.order);
+    }
   };
 
   const filteredTodos = getFilteredTodos(todos);
   const activeCount = todos.filter(todo => !todo.completed).length;
   const completedCount = todos.filter(todo => todo.completed).length;
+  const overdueCount = todos.filter(todo => isOverdue(todo)).length;
+  const todayCount = todos.filter(todo => isDueToday(todo)).length;
 
   return (
     <div className="max-w-2xl mx-auto p-6">
@@ -130,9 +169,9 @@ export default function HomePage() {
         <h1 className="text-4xl font-bold text-gray-900 mb-2 flex items-center justify-center gap-3">
           <CheckSquare className="text-blue-500" size={40} />
           Pendra
-          <span className="text-lg font-normal text-blue-500">v0.1.1</span>
+          <span className="text-lg font-normal text-blue-500">v0.1.2</span>
         </h1>
-        <p className="text-gray-600">A simple, clean todo app with drag-and-drop reordering</p>
+        <p className="text-gray-600">A simple, clean todo app with drag-and-drop reordering and due dates</p>
       </div>
 
       {/* Add Todo */}
@@ -140,32 +179,71 @@ export default function HomePage() {
         <AddTodo onAdd={addTodo} />
       </div>
 
-      {/* Filter Tabs */}
+      {/* Filter Tabs and Sort Options */}
       {todos.length > 0 && (
-        <div className="flex gap-1 mb-6 bg-gray-100 p-1 rounded-lg">
-          {(['all', 'active', 'completed'] as const).map(filterType => (
+        <div className="mb-6">
+          {/* Filter Tabs */}
+          <div className="flex gap-1 mb-3 bg-gray-100 p-1 rounded-lg">
+            {(['all', 'active', 'completed', 'overdue', 'today'] as const).map(filterType => (
+              <button
+                key={filterType}
+                onClick={() => setFilter(filterType)}
+                className={`flex-1 py-2 px-2 rounded-md text-xs font-medium transition-colors ${
+                  filter === filterType
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                {filterType.charAt(0).toUpperCase() + filterType.slice(1)}
+                {filterType === 'active' && activeCount > 0 && (
+                  <span className="ml-1 text-xs bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-full">
+                    {activeCount}
+                  </span>
+                )}
+                {filterType === 'completed' && completedCount > 0 && (
+                  <span className="ml-1 text-xs bg-green-100 text-green-600 px-1.5 py-0.5 rounded-full">
+                    {completedCount}
+                  </span>
+                )}
+                {filterType === 'overdue' && overdueCount > 0 && (
+                  <span className="ml-1 text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">
+                    {overdueCount}
+                  </span>
+                )}
+                {filterType === 'today' && todayCount > 0 && (
+                  <span className="ml-1 text-xs bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded-full">
+                    {todayCount}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+          
+          {/* Sort Options */}
+          <div className="flex gap-2">
             <button
-              key={filterType}
-              onClick={() => setFilter(filterType)}
-              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                filter === filterType
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
+              onClick={() => setSortBy('manual')}
+              className={`flex items-center gap-1 px-3 py-1 text-sm rounded-md transition-colors ${
+                sortBy === 'manual'
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
-              {filterType.charAt(0).toUpperCase() + filterType.slice(1)}
-              {filterType === 'active' && activeCount > 0 && (
-                <span className="ml-1 text-xs bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-full">
-                  {activeCount}
-                </span>
-              )}
-              {filterType === 'completed' && completedCount > 0 && (
-                <span className="ml-1 text-xs bg-green-100 text-green-600 px-1.5 py-0.5 rounded-full">
-                  {completedCount}
-                </span>
-              )}
+              <ArrowUpDown size={14} />
+              Manual Order
             </button>
-          ))}
+            <button
+              onClick={() => setSortBy('dueDate')}
+              className={`flex items-center gap-1 px-3 py-1 text-sm rounded-md transition-colors ${
+                sortBy === 'dueDate'
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              <Calendar size={14} />
+              Due Date
+            </button>
+          </div>
         </div>
       )}
 
@@ -184,6 +262,12 @@ export default function HomePage() {
             )}
             {filter === 'completed' && completedCount === 0 && (
               <p>No completed tasks yet.</p>
+            )}
+            {filter === 'overdue' && overdueCount === 0 && (
+              <p>No overdue tasks! 👍</p>
+            )}
+            {filter === 'today' && todayCount === 0 && (
+              <p>No tasks due today.</p>
             )}
           </div>
         ) : (
@@ -212,9 +296,21 @@ export default function HomePage() {
       {/* Footer Stats */}
       {todos.length > 0 && (
         <div className="flex items-center justify-between text-sm text-gray-600 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-          <span>
-            {activeCount} {activeCount === 1 ? 'task' : 'tasks'} remaining
-          </span>
+          <div className="flex items-center gap-4">
+            <span>
+              {activeCount} {activeCount === 1 ? 'task' : 'tasks'} remaining
+            </span>
+            {overdueCount > 0 && (
+              <span className="text-red-600 font-medium">
+                {overdueCount} overdue
+              </span>
+            )}
+            {todayCount > 0 && (
+              <span className="text-orange-600 font-medium">
+                {todayCount} due today
+              </span>
+            )}
+          </div>
           
           {completedCount > 0 && (
             <button

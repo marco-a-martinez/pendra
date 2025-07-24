@@ -1,9 +1,10 @@
 'use client';
 
 import { Todo } from '@/lib/types';
-import { Trash2, Check, GripVertical } from 'lucide-react';
+import { Trash2, Check, GripVertical, Calendar } from 'lucide-react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { formatDueDate, getDueDateStatus, getDueDateColor } from '@/lib/dateUtils';
 
 interface TodoItemProps {
   todo: Todo;
@@ -26,6 +27,9 @@ export function TodoItem({ todo, onToggle, onDelete }: TodoItemProps) {
     transition,
     opacity: isDragging ? 0.5 : 1,
   };
+
+  const dueDateStatus = todo.dueDate ? getDueDateStatus(todo.dueDate) : null;
+  const dueDateColor = dueDateStatus ? getDueDateColor(dueDateStatus) : '';
 
   return (
     <div
@@ -56,16 +60,37 @@ export function TodoItem({ todo, onToggle, onDelete }: TodoItemProps) {
         {todo.completed && <Check size={14} />}
       </button>
       
-      {/* Todo Text */}
-      <span
-        className={`flex-1 ${
-          todo.completed
-            ? 'text-gray-500 line-through'
-            : 'text-gray-900'
-        }`}
-      >
-        {todo.text}
-      </span>
+      {/* Todo Content */}
+      <div className="flex-1 min-w-0">
+        {/* Todo Text */}
+        <span
+          className={`block ${
+            todo.completed
+              ? 'text-gray-500 line-through'
+              : 'text-gray-900'
+          }`}
+        >
+          {todo.text}
+        </span>
+        
+        {/* Due Date */}
+        {todo.dueDate && (
+          <div className="flex items-center gap-1 mt-1">
+            <Calendar size={12} className="text-gray-400" />
+            <span
+              className={`text-xs px-2 py-0.5 rounded-md border ${
+                todo.completed ? 'opacity-50' : ''
+              } ${dueDateColor}`}
+            >
+              {dueDateStatus === 'overdue' && 'Overdue: '}
+              {dueDateStatus === 'today' && 'Due: '}
+              {dueDateStatus === 'tomorrow' && 'Due: '}
+              {dueDateStatus === 'upcoming' && 'Due: '}
+              {formatDueDate(todo.dueDate)}
+            </span>
+          </div>
+        )}
+      </div>
       
       {/* Delete Button */}
       <button

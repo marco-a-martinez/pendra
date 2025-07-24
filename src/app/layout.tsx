@@ -1,8 +1,8 @@
 import './globals.css'
 
 export const metadata = {
-  title: 'Pendra App v0.1.1 - Simple Todo App',
-  description: 'Pendra App v0.1.1 - A clean, simple todo application with drag-and-drop reordering',
+  title: 'Pendra App v0.1.2 - Simple Todo App',
+  description: 'Pendra App v0.1.2 - A clean, simple todo application with drag-and-drop reordering and due dates',
 }
 
 export default function RootLayout({

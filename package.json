@@ -1,7 +1,7 @@
 {
   "name": "pendra",
-  "version": "0.1.1",
-  "description": "Pendra App v0.1.1 - A simple, clean todo application with drag-and-drop reordering",
+  "version": "0.1.2",
+  "description": "Pendra App v0.1.2 - A simple, clean todo application with drag-and-drop reordering and due dates",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -16,7 +16,8 @@
     "next": "15.3.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "lucide-react": "^0.525.0"
+    "lucide-react": "^0.525.0",
+    "date-fns": "^3.6.0"
   },
   "devDependencies": {
     "@types/node": "^20",
