@@ -39,6 +39,11 @@ export function TodoItem({ todo, onToggle, onDelete, onUpdateTodo }: TodoItemPro
   const [editDate, setEditDate] = useState(todo.dueDate ? formatDateForInput(todo.dueDate) : '');
   const [isEditingNote, setIsEditingNote] = useState(false);
   const [editNote, setEditNote] = useState(todo.note || '');
+  
+  // Swipe gesture state
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const [isSwipeActive, setIsSwipeActive] = useState(false);
+  const [touchStartX, setTouchStartX] = useState(0);
 
   const {
     attributes,
@@ -247,45 +252,103 @@ export function TodoItem({ todo, onToggle, onDelete, onUpdateTodo }: TodoItemPro
     e.stopPropagation();
     onUpdateTodo(todo.id, { note: undefined, noteExpanded: false });
   };
+  
+  // Swipe gesture handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (isEditingTodoText || isEditingDate || isEditingNote) return;
+    setTouchStartX(e.touches[0].clientX);
+    setIsSwipeActive(true);
+  };
+  
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isSwipeActive || isEditingTodoText || isEditingDate || isEditingNote) return;
+    
+    const currentX = e.touches[0].clientX;
+    const diff = currentX - touchStartX;
+    
+    // Only allow left swipe (negative diff)
+    if (diff < 0) {
+      setSwipeOffset(Math.max(diff, -120)); // Limit swipe to 120px
+    }
+  };
+  
+  const handleTouchEnd = () => {
+    if (!isSwipeActive) return;
+    
+    setIsSwipeActive(false);
+    
+    if (swipeOffset < -60) {
+      // Swipe threshold reached - trigger action
+      if (swipeOffset < -90) {
+        // Far swipe - delete
+        onDelete(todo.id);
+      } else {
+        // Medium swipe - toggle complete
+        onToggle(todo.id);
+      }
+    }
+    
+    // Reset swipe offset
+    setSwipeOffset(0);
+  };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 relative">
+      {/* Swipe Action Indicators */}
+      {swipeOffset < 0 && (
+        <div className="absolute inset-0 flex items-center justify-end pr-4 bg-gradient-to-l from-red-500 to-orange-500 rounded-lg">
+          <div className="flex items-center gap-2 text-white font-medium">
+            {swipeOffset < -90 ? (
+              <><Trash2 size={20} /> Delete</>
+            ) : (
+              <><Check size={20} /> Complete</>
+            )}
+          </div>
+        </div>
+      )}
+      
       {/* Main Todo Item */}
       <div
         ref={setNodeRef}
-        style={style}
-        className={`flex items-center gap-3 p-4 bg-white rounded-lg shadow-sm border border-gray-200 ${
-          isDragging ? 'shadow-lg ring-2 ring-blue-500 ring-opacity-50' : ''
-        }`}
+        style={{
+          ...style,
+          transform: `${style?.transform || ''} translateX(${swipeOffset}px)`,
+        }}
+        className={`flex items-center gap-3 p-3 sm:p-4 bg-white rounded-lg shadow-sm border border-gray-200 transition-all duration-200 relative ${
+          isDragging ? 'shadow-xl ring-2 ring-blue-500 ring-opacity-50 scale-105 rotate-1 z-50' : 'hover:shadow-md'
+        } ${swipeOffset < 0 ? 'shadow-lg' : ''}`}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
         {/* Drag Handle */}
         <button
-          className="flex-shrink-0 p-1 text-gray-400 hover:text-gray-600 cursor-grab active:cursor-grabbing transition-colors"
+          className="flex-shrink-0 p-2 sm:p-1 text-gray-400 hover:text-gray-600 cursor-grab active:cursor-grabbing transition-colors touch-manipulation"
           {...attributes}
           {...listeners}
         >
-          <GripVertical size={16} />
+          <GripVertical size={20} className="sm:w-4 sm:h-4" />
         </button>
         
         {/* Complete Button */}
         <button
           onClick={() => onToggle(todo.id)}
-          className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+          className={`flex-shrink-0 w-8 h-8 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center transition-colors touch-manipulation ${
             todo.completed
               ? 'bg-green-500 border-green-500 text-white'
               : 'border-gray-300 hover:border-green-400'
           }`}
         >
-          {todo.completed && <Check size={14} />}
+          {todo.completed && <Check size={16} className="sm:w-3.5 sm:h-3.5" />}
         </button>
         
         {/* Checklist Expand/Collapse Button */}
         {hasChecklist && (
           <button
             onClick={toggleChecklistExpanded}
-            className="flex-shrink-0 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+            className="flex-shrink-0 p-2 sm:p-1 text-gray-400 hover:text-gray-600 transition-colors touch-manipulation"
           >
-            {todo.checklistExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+            {todo.checklistExpanded ? <ChevronDown size={20} className="sm:w-4 sm:h-4" /> : <ChevronRight size={20} className="sm:w-4 sm:h-4" />}
           </button>
         )}
         
@@ -445,18 +508,18 @@ export function TodoItem({ todo, onToggle, onDelete, onUpdateTodo }: TodoItemPro
         {/* Add Checklist Item Button */}
         <button
           onClick={() => setIsAddingChecklistItem(true)}
-          className="flex-shrink-0 p-1 text-gray-400 hover:text-blue-500 transition-colors"
+          className="flex-shrink-0 p-2 sm:p-1 text-gray-400 hover:text-blue-500 transition-colors touch-manipulation"
           title="Add checklist item"
         >
-          <Plus size={16} />
+          <Plus size={20} className="sm:w-4 sm:h-4" />
         </button>
         
         {/* Delete Button */}
         <button
           onClick={() => onDelete(todo.id)}
-          className="flex-shrink-0 p-1 text-gray-400 hover:text-red-500 transition-colors"
+          className="flex-shrink-0 p-2 sm:p-1 text-gray-400 hover:text-red-500 transition-colors touch-manipulation"
         >
-          <Trash2 size={16} />
+          <Trash2 size={20} className="sm:w-4 sm:h-4" />
         </button>
       </div>
 

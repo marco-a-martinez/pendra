@@ -51,10 +51,10 @@ export function AddTodo({ onAdd, sections, defaultSectionId }: AddTodoProps) {
     return (
       <button
         onClick={() => setIsExpanded(true)}
-        className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-400 hover:text-blue-500 transition-colors flex items-center justify-center gap-2"
+        className="w-full p-4 sm:p-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-400 hover:text-blue-500 transition-colors flex items-center justify-center gap-2 touch-manipulation min-h-[56px]"
       >
-        <Plus size={20} />
-        Add a new task...
+        <Plus size={24} className="sm:w-5 sm:h-5" />
+        <span className="text-base sm:text-sm">Add a new task...</span>
       </button>
     );
   }

@@ -293,9 +293,9 @@ export default function HomePage() {
   const todayCount = todos.filter(todo => isDueToday(todo)).length;
 
   return (
-    <div className="max-w-4xl mx-auto p-4 sm:p-6">
+    <div className="max-w-4xl mx-auto p-3 sm:p-6">
       {/* Header */}
-      <div className="text-center mb-6 sm:mb-8">
+      <div className="text-center mb-4 sm:mb-8">
         <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 flex items-center justify-center gap-2 sm:gap-3">
           <CheckSquare className="text-blue-500" size={32} />
           Pendra
@@ -305,19 +305,19 @@ export default function HomePage() {
       </div>
 
       {/* Add Todo */}
-      <div className="mb-6">
+      <div className="mb-4 sm:mb-6">
         <AddTodo onAdd={addTodo} sections={sections} />
       </div>
 
       {/* Filter Tabs */}
       {todos.length > 0 && (
-        <div className="mb-6">
+        <div className="mb-4 sm:mb-6">
           <div className="flex gap-1 mb-3 bg-gray-100 p-1 rounded-lg overflow-x-auto">
             {(['all', 'active', 'completed', 'overdue', 'today'] as const).map(filterType => (
               <button
                 key={filterType}
                 onClick={() => setFilter(filterType)}
-                className={`flex-shrink-0 py-2 px-3 rounded-md text-xs font-medium transition-colors ${
+                className={`flex-shrink-0 py-3 px-4 sm:py-2 sm:px-3 rounded-md text-sm sm:text-xs font-medium transition-colors touch-manipulation ${
                   filter === filterType
                     ? 'bg-white text-blue-600 shadow-sm'
                     : 'text-gray-600 hover:text-gray-900'
