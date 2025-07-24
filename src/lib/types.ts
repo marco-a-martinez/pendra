@@ -1,3 +1,10 @@
+export interface ChecklistItem {
+  id: string;
+  text: string;
+  completed: boolean;
+  order: number;
+}
+
 export interface Todo {
   id: string;
   text: string;
@@ -6,6 +13,8 @@ export interface Todo {
   order: number;
   dueDate?: Date | null;
   sectionId: string;
+  checklist?: ChecklistItem[];
+  checklistExpanded?: boolean;
 }
 
 export interface Section {

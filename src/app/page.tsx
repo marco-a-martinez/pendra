@@ -105,6 +105,14 @@ export default function HomePage() {
     setTodos(prev => prev.filter(todo => todo.id !== id));
   };
 
+  const updateTodo = (id: string, updates: Partial<Todo>) => {
+    setTodos(prev =>
+      prev.map(todo =>
+        todo.id === id ? { ...todo, ...updates } : todo
+      )
+    );
+  };
+
   const toggleSectionCollapse = (sectionId: string) => {
     setSections(prev =>
       prev.map(section =>
@@ -350,6 +358,7 @@ export default function HomePage() {
                   onDeleteSection={deleteSection}
                   onToggleTodo={toggleTodo}
                   onDeleteTodo={deleteTodo}
+                  onUpdateTodo={updateTodo}
                   canDeleteSection={sections.length > 1}
                 />
               );
@@ -364,6 +373,7 @@ export default function HomePage() {
                   todo={draggedItem as Todo}
                   onToggle={() => {}}
                   onDelete={() => {}}
+                  onUpdateTodo={() => {}}
                 />
               ) : draggedItem && 'name' in draggedItem ? (
                 <SectionHeader

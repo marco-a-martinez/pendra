@@ -15,6 +15,7 @@ interface SectionContainerProps {
   onDeleteSection: (sectionId: string) => void;
   onToggleTodo: (todoId: string) => void;
   onDeleteTodo: (todoId: string) => void;
+  onUpdateTodo: (todoId: string, updates: Partial<Todo>) => void;
   canDeleteSection: boolean;
 }
 
@@ -27,6 +28,7 @@ export function SectionContainer({
   onDeleteSection,
   onToggleTodo,
   onDeleteTodo,
+  onUpdateTodo,
   canDeleteSection
 }: SectionContainerProps) {
   const { setNodeRef } = useDroppable({
@@ -69,6 +71,7 @@ export function SectionContainer({
                   todo={todo}
                   onToggle={onToggleTodo}
                   onDelete={onDeleteTodo}
+                  onUpdateTodo={onUpdateTodo}
                 />
               ))}
             </SortableContext>
