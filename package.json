@@ -1,7 +1,7 @@
 {
   "name": "pendra",
-  "version": "0.1.7",
-  "description": "Pendra App v0.1.7 - A simple, clean todo application with drag-and-drop reordering, due dates, and sections",
+  "version": "0.1.8",
+  "description": "Pendra App v0.1.8 - A simple, clean todo application with drag-and-drop reordering, due dates, and sections",
   "private": true,
   "scripts": {
     "dev": "next dev",

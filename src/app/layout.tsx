@@ -1,8 +1,8 @@
 import './globals.css'
 
 export const metadata = {
-  title: 'Pendra App v0.1.7 - Simple Todo App',
-  description: 'Pendra App v0.1.7 - A clean, simple todo application with drag-and-drop reordering, due dates, sections, checklists, and inline editing',
+  title: 'Pendra App v0.1.8 - Simple Todo App',
+  description: 'Pendra App v0.1.8 - A clean, simple todo application with drag-and-drop reordering, due dates, sections, checklists, and inline editing',
   manifest: '/manifest.json',
   themeColor: '#3b82f6',
   appleWebApp: {
