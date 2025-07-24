@@ -34,6 +34,15 @@ export function AddTodo({ onAdd }: AddTodoProps) {
     setDueDate(dateString);
   };
 
+  const handleDateContainerClick = () => {
+    // Focus the date input to trigger calendar popup
+    const dateInput = document.getElementById('due-date-input') as HTMLInputElement;
+    if (dateInput) {
+      dateInput.focus();
+      dateInput.showPicker?.(); // Modern browsers support this method
+    }
+  };
+
   if (!isExpanded) {
     return (
       <button
@@ -92,13 +101,19 @@ export function AddTodo({ onAdd }: AddTodoProps) {
           </button>
         </div>
         
-        {/* Date Input */}
-        <input
-          type="date"
-          value={dueDate}
-          onChange={(e) => setDueDate(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-        />
+        {/* Date Input Container - Make entire area clickable */}
+        <div 
+          className="relative cursor-pointer"
+          onClick={handleDateContainerClick}
+        >
+          <input
+            id="due-date-input"
+            type="date"
+            value={dueDate}
+            onChange={(e) => setDueDate(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm cursor-pointer"
+          />
+        </div>
       </div>
       
       {/* Action Buttons */}
