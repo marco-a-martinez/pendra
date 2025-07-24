@@ -2,10 +2,25 @@
 
 import { useState, useEffect } from 'react';
 import { Todo } from '@/lib/types';
-import { saveTodos, loadTodos, generateId } from '@/lib/storage';
+import { saveTodos, loadTodos, generateId, reorderArray, updateOrderValues } from '@/lib/storage';
 import { TodoItem } from '@/components/TodoItem';
 import { AddTodo } from '@/components/AddTodo';
 import { CheckSquare, Trash2 } from 'lucide-react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 
 export default function HomePage() {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -21,14 +36,22 @@ export default function HomePage() {
     saveTodos(todos);
   }, [todos]);
 
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
   const addTodo = (text: string) => {
     const newTodo: Todo = {
       id: generateId(),
       text,
       completed: false,
       createdAt: new Date(),
+      order: todos.length, // Add to end
     };
-    setTodos(prev => [newTodo, ...prev]);
+    setTodos(prev => [...prev, newTodo]);
   };
 
   const toggleTodo = (id: string) => {
@@ -40,19 +63,63 @@ export default function HomePage() {
   };
 
   const deleteTodo = (id: string) => {
-    setTodos(prev => prev.filter(todo => todo.id !== id));
+    setTodos(prev => {
+      const filtered = prev.filter(todo => todo.id !== id);
+      // Update order values after deletion
+      return updateOrderValues(filtered);
+    });
   };
 
   const clearCompleted = () => {
-    setTodos(prev => prev.filter(todo => !todo.completed));
+    setTodos(prev => {
+      const filtered = prev.filter(todo => !todo.completed);
+      // Update order values after clearing
+      return updateOrderValues(filtered);
+    });
   };
 
-  const filteredTodos = todos.filter(todo => {
-    if (filter === 'active') return !todo.completed;
-    if (filter === 'completed') return todo.completed;
-    return true;
-  });
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
 
+    if (over && active.id !== over.id) {
+      setTodos(prev => {
+        // Only reorder within the current filter
+        const filteredTodos = getFilteredTodos(prev);
+        const oldIndex = filteredTodos.findIndex(todo => todo.id === active.id);
+        const newIndex = filteredTodos.findIndex(todo => todo.id === over.id);
+        
+        if (oldIndex === -1 || newIndex === -1) return prev;
+        
+        // Reorder the filtered todos
+        const reorderedFiltered = arrayMove(filteredTodos, oldIndex, newIndex);
+        
+        // Update order values for the reordered items
+        const updatedFiltered = updateOrderValues(reorderedFiltered);
+        
+        // Merge back with the rest of the todos
+        const otherTodos = prev.filter(todo => {
+          if (filter === 'active') return todo.completed;
+          if (filter === 'completed') return !todo.completed;
+          return false;
+        });
+        
+        // Combine and sort by order
+        const allTodos = [...updatedFiltered, ...otherTodos].sort((a, b) => a.order - b.order);
+        
+        // Re-normalize all order values
+        return updateOrderValues(allTodos);
+      });
+    }
+  };
+
+  const getFilteredTodos = (todoList: Todo[]) => {
+    const sorted = todoList.sort((a, b) => a.order - b.order);
+    if (filter === 'active') return sorted.filter(todo => !todo.completed);
+    if (filter === 'completed') return sorted.filter(todo => todo.completed);
+    return sorted;
+  };
+
+  const filteredTodos = getFilteredTodos(todos);
   const activeCount = todos.filter(todo => !todo.completed).length;
   const completedCount = todos.filter(todo => todo.completed).length;
 
@@ -63,9 +130,9 @@ export default function HomePage() {
         <h1 className="text-4xl font-bold text-gray-900 mb-2 flex items-center justify-center gap-3">
           <CheckSquare className="text-blue-500" size={40} />
           Pendra
-          <span className="text-lg font-normal text-blue-500">v0.1</span>
+          <span className="text-lg font-normal text-blue-500">v0.1.1</span>
         </h1>
-        <p className="text-gray-600">A simple, clean todo app that actually works</p>
+        <p className="text-gray-600">A simple, clean todo app with drag-and-drop reordering</p>
       </div>
 
       {/* Add Todo */}
@@ -102,7 +169,7 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* Todo List */}
+      {/* Todo List with Drag and Drop */}
       <div className="space-y-2 mb-6">
         {filteredTodos.length === 0 ? (
           <div className="text-center py-12 text-gray-500">
@@ -120,14 +187,25 @@ export default function HomePage() {
             )}
           </div>
         ) : (
-          filteredTodos.map(todo => (
-            <TodoItem
-              key={todo.id}
-              todo={todo}
-              onToggle={toggleTodo}
-              onDelete={deleteTodo}
-            />
-          ))
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={filteredTodos.map(todo => todo.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {filteredTodos.map(todo => (
+                <TodoItem
+                  key={todo.id}
+                  todo={todo}
+                  onToggle={toggleTodo}
+                  onDelete={deleteTodo}
+                />
+              ))}
+            </SortableContext>
+          </DndContext>
         )}
       </div>
 
