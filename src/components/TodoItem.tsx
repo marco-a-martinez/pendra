@@ -366,19 +366,25 @@ export function TodoItem({ todo, onToggle, onDelete, onUpdateTodo }: TodoItemPro
           {todo.note || isEditingNote ? (
             <div className="mt-1">
               <div className="flex items-center gap-1 mb-1">
-                <button
-                  onClick={toggleNoteExpanded}
-                  className="flex items-center gap-1 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
-                  title={todo.noteExpanded ? "Collapse note" : "Expand note"}
-                >
-                  <FileText size={12} />
-                  <span className="text-xs text-gray-500 hover:text-gray-700 transition-colors">Note</span>
-                  {todo.note && !isEditingNote && (
+                {todo.note && (
+                  <button
+                    onClick={toggleNoteExpanded}
+                    className="flex items-center gap-1 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+                    title={todo.noteExpanded ? "Collapse note" : "Expand note"}
+                  >
+                    <FileText size={12} />
+                    <span className="text-xs text-gray-500 hover:text-gray-700 transition-colors">Note</span>
                     <span className="ml-1">
                       {todo.noteExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
                     </span>
-                  )}
-                </button>
+                  </button>
+                )}
+                {!todo.note && (
+                  <div className="flex items-center gap-1">
+                    <FileText size={12} className="text-gray-400" />
+                    <span className="text-xs text-gray-500">Note</span>
+                  </div>
+                )}
                 {todo.note && !isEditingNote && (
                   <div className="flex items-center gap-1 ml-auto">
                     <button
