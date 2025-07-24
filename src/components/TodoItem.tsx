@@ -4,7 +4,7 @@ import { Todo, ChecklistItem as ChecklistItemType } from '@/lib/types';
 import { Trash2, Check, GripVertical, Calendar, ChevronDown, ChevronRight, Plus } from 'lucide-react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { formatDueDate, getDueDateStatus, getDueDateColor } from '@/lib/dateUtils';
+import { formatDueDate, getDueDateStatus, getDueDateColor, formatDateForInput, parseDateFromInput } from '@/lib/dateUtils';
 import { ChecklistItem } from './ChecklistItem';
 import { useState } from 'react';
 import {
@@ -35,6 +35,8 @@ export function TodoItem({ todo, onToggle, onDelete, onUpdateTodo }: TodoItemPro
   const [isAddingChecklistItem, setIsAddingChecklistItem] = useState(false);
   const [isEditingTodoText, setIsEditingTodoText] = useState(false);
   const [editTodoText, setEditTodoText] = useState(todo.text);
+  const [isEditingDate, setIsEditingDate] = useState(false);
+  const [editDate, setEditDate] = useState(todo.dueDate ? formatDateForInput(todo.dueDate) : '');
 
   const {
     attributes,
@@ -164,6 +166,39 @@ export function TodoItem({ todo, onToggle, onDelete, onUpdateTodo }: TodoItemPro
     setIsEditingTodoText(true);
   };
 
+  // Date editing handlers
+  const handleEditDate = () => {
+    if (isEditingDate) {
+      if (editDate.trim()) {
+        const newDate = parseDateFromInput(editDate);
+        onUpdateTodo(todo.id, { dueDate: newDate });
+      } else {
+        // If date is cleared, remove the due date
+        onUpdateTodo(todo.id, { dueDate: undefined });
+      }
+    }
+    setIsEditingDate(false);
+  };
+
+  const handleDateKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleEditDate();
+    } else if (e.key === 'Escape') {
+      setEditDate(todo.dueDate ? formatDateForInput(todo.dueDate) : '');
+      setIsEditingDate(false);
+    }
+  };
+
+  const startEditingDate = () => {
+    setEditDate(todo.dueDate ? formatDateForInput(todo.dueDate) : '');
+    setIsEditingDate(true);
+  };
+
+  const clearDate = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onUpdateTodo(todo.id, { dueDate: undefined });
+  };
+
   return (
     <div className="space-y-2">
       {/* Main Todo Item */}
@@ -239,20 +274,53 @@ export function TodoItem({ todo, onToggle, onDelete, onUpdateTodo }: TodoItemPro
           </div>
           
           {/* Due Date */}
-          {todo.dueDate && (
+          {todo.dueDate || isEditingDate ? (
             <div className="flex items-center gap-1 mt-1">
               <Calendar size={12} className="text-gray-400" />
-              <span
-                className={`text-xs px-2 py-0.5 rounded-md border ${
-                  todo.completed ? 'opacity-50' : ''
-                } ${dueDateColor}`}
+              {isEditingDate ? (
+                <input
+                  type="date"
+                  value={editDate}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditDate(e.target.value)}
+                  onBlur={handleEditDate}
+                  onKeyDown={handleDateKeyDown}
+                  className="text-xs px-2 py-0.5 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  autoFocus
+                />
+              ) : (
+                <div className="flex items-center gap-1">
+                  <span
+                    className={`text-xs px-2 py-0.5 rounded-md border cursor-pointer hover:bg-gray-50 transition-colors ${
+                      todo.completed ? 'opacity-50' : ''
+                    } ${dueDateColor}`}
+                    onClick={startEditingDate}
+                  >
+                    {dueDateStatus === 'overdue' && 'Overdue: '}
+                    {dueDateStatus === 'today' && 'Due: '}
+                    {dueDateStatus === 'tomorrow' && 'Due: '}
+                    {dueDateStatus === 'upcoming' && 'Due: '}
+                    {formatDueDate(todo.dueDate!)}
+                  </span>
+                  <button
+                    onClick={clearDate}
+                    className="text-gray-400 hover:text-red-500 transition-colors ml-1"
+                    title="Remove due date"
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="flex items-center gap-1 mt-1">
+              <button
+                onClick={startEditingDate}
+                className="flex items-center gap-1 text-xs text-gray-500 hover:text-blue-500 transition-colors"
+                title="Add due date"
               >
-                {dueDateStatus === 'overdue' && 'Overdue: '}
-                {dueDateStatus === 'today' && 'Due: '}
-                {dueDateStatus === 'tomorrow' && 'Due: '}
-                {dueDateStatus === 'upcoming' && 'Due: '}
-                {formatDueDate(todo.dueDate)}
-              </span>
+                <Calendar size={12} />
+                Add due date
+              </button>
             </div>
           )}
         </div>
