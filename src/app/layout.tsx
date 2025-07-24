@@ -1,27 +1,20 @@
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import './globals.css';
-import { AppWrapper } from '@/components/AppWrapper';
+import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] });
-
-export const metadata: Metadata = {
-  title: 'Simple Todo App',
-  description: 'A clean and simple todo list application',
-};
+export const metadata = {
+  title: 'Pendra - Simple Todo App',
+  description: 'A clean, simple todo application',
+}
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <AppWrapper>
-          {children}
-        </AppWrapper>
+      <body className="bg-gray-50 min-h-screen">
+        {children}
       </body>
     </html>
-  );
+  )
 }

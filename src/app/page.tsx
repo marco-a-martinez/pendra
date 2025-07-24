@@ -1,507 +1,153 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { Plus, Check, GripVertical, Calendar } from 'lucide-react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { useAppStore } from '@/lib/store';
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-  DragStartEvent,
-  DragOverlay,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import {
-  useSortable,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-
-interface Todo {
-  id: string;
-  text: string;
-  completed: boolean;
-  dueDate?: string;
-}
-
-// Sortable Todo Item Component
-function SortableTodoItem({ 
-  todo, 
-  onToggle, 
-  onUpdate, 
-  onDelete,
-  onUpdateDate,
-  mounted,
-}: {
-  todo: Todo;
-  onToggle: (id: string) => void;
-  onUpdate: (id: string, text: string) => void;
-  onDelete: (id: string) => void;
-  onUpdateDate: (id: string, date: string | undefined) => void;
-  mounted: boolean;
-}) {
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const datePickerRef = useRef<DatePicker>(null);
-  const calendarButtonRef = useRef<HTMLButtonElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: todo.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className="todo-item sortable-item"
-      {...attributes}
-    >
-      <div ref={containerRef} style={{ display: 'flex', alignItems: 'center', gap: '12px', position: 'relative' }}>
-        <button
-          className="drag-handle"
-          {...listeners}
-          style={{
-            cursor: 'grab',
-            padding: '4px',
-            color: 'var(--text-tertiary)',
-            display: 'flex',
-            alignItems: 'center',
-          }}
-          aria-label="Drag to reorder"
-        >
-          <GripVertical size={20} />
-        </button>
-        
-        <button
-          onClick={() => onToggle(todo.id)}
-          className={`checkbox ${todo.completed ? 'checked' : ''}`}
-          aria-label={todo.completed ? 'Mark as incomplete' : 'Mark as complete'}
-        >
-          {todo.completed && <Check size={16} strokeWidth={3} />}
-        </button>
-        
-        <input
-          type="text"
-          value={todo.text}
-          onChange={(e) => onUpdate(todo.id, e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.currentTarget.blur();
-            } else if (e.key === 'Backspace' && todo.text === '') {
-              e.preventDefault();
-              onDelete(todo.id);
-            }
-          }}
-          className={`todo-text ${todo.completed ? 'completed' : ''}`}
-          style={{
-            flex: 1,
-            background: 'transparent',
-            border: 'none',
-            outline: 'none',
-            fontSize: '17px',
-            color: todo.completed ? 'var(--text-tertiary)' : 'var(--text)',
-            textDecoration: todo.completed ? 'line-through' : 'none',
-          }}
-        />
-        
-        {/* Date display */}
-        {todo.dueDate && (
-          <span style={{
-            fontSize: '14px',
-            color: 'var(--text-secondary)',
-            marginRight: '8px',
-          }}>
-            {mounted ? new Date(todo.dueDate).toLocaleDateString() : ''}
-          </span>
-        )}
-        
-        {/* Calendar icon */}
-        <button
-          ref={calendarButtonRef}
-          onClick={() => {
-            setShowDatePicker(!showDatePicker);
-          }}
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            padding: '4px',
-            color: todo.dueDate ? 'var(--blue)' : 'var(--text-tertiary)',
-            display: 'flex',
-            alignItems: 'center',
-            opacity: todo.dueDate ? 1 : 0,
-            transition: 'opacity 0.2s ease',
-          }}
-          className="calendar-button"
-          aria-label="Set due date"
-        >
-          <Calendar size={18} />
-        </button>
-        
-        {/* Date picker - positioned relative to the todo item */}
-        {showDatePicker && (
-          <div 
-            style={{
-              position: 'absolute',
-              top: '50%',
-              left: '100%',
-              transform: 'translateY(-50%)',
-              marginLeft: '20px',
-              zIndex: 1000,
-            }}
-          >
-            <DatePicker
-              ref={datePickerRef}
-              selected={todo.dueDate ? new Date(todo.dueDate) : null}
-              onChange={(date: Date | null) => {
-                if (date) {
-                  const dateString = date.toISOString().split('T')[0];
-                  onUpdateDate(todo.id, dateString);
-                  setShowDatePicker(false);
-                }
-              }}
-              onClickOutside={() => setShowDatePicker(false)}
-              onKeyDown={(e) => {
-                if (e.key === 'Escape') {
-                  setShowDatePicker(false);
-                }
-              }}
-              inline
-              autoFocus
-              popperPlacement="right-start"
-              popperModifiers={[
-                {
-                  name: 'preventOverflow',
-                  options: {
-                    boundary: 'viewport',
-                    padding: 20,
-                  },
-                },
-                {
-                  name: 'flip',
-                  options: {
-                    fallbackPlacements: ['left-start', 'bottom', 'top'],
-                  },
-                },
-              ]}
-            />
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
+import { useState, useEffect } from 'react';
+import { Todo } from '@/lib/types';
+import { saveTodos, loadTodos, generateId } from '@/lib/storage';
+import { TodoItem } from '@/components/TodoItem';
+import { AddTodo } from '@/components/AddTodo';
+import { CheckSquare, Trash2 } from 'lucide-react';
 
 export default function HomePage() {
-  const { addTask, user } = useAppStore();
-  
-  const createQuickTask = async (title: string) => {
-    if (!title.trim() || !user) return;
-    
-    try {
-      const { createTask } = await import('@/lib/supabase-tasks');
-      const taskData = {
-        user_id: user.id,
-        title: title.trim(),
-        status: 'inbox' as const,
-        priority: 'medium' as const,
-        tags: [],
-        order_index: Date.now(),
-      };
-      
-      const { data, error } = await createTask(taskData);
-      if (error) throw error;
-      
-      if (data) {
-        addTask(data);
-      }
-    } catch (error) {
-      console.error('Error creating task:', error);
-    }
-  };
-  const [todos, setTodos] = useState<Todo[]>([
-    { id: '1', text: 'Welcome to your simple todo app!', completed: false },
-    { id: '2', text: 'Click the circle to complete a todo', completed: false },
-    { id: '3', text: 'Press the blue + button to add a new todo', completed: false },
-    { id: '4', text: 'Drag tasks to reorder them', completed: false },
-  ]);
-  const [newTodo, setNewTodo] = useState('');
-  const [isAdding, setIsAdding] = useState(false);
-  const [activeTodoId, setActiveTodoId] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
+  // Load todos from localStorage on mount
   useEffect(() => {
-    setMounted(true);
+    setTodos(loadTodos());
   }, []);
 
+  // Save todos to localStorage whenever todos change
   useEffect(() => {
-    if (isAdding && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isAdding]);
+    saveTodos(todos);
+  }, [todos]);
 
-  const addTodo = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newTodo.trim()) {
-      const newTodoItem: Todo = {
-        id: Date.now().toString(),
-        text: newTodo.trim(),
-        completed: false,
-      };
-      setTodos([...todos, newTodoItem]);
-      setNewTodo('');
-      setIsAdding(false);
-    }
+  const addTodo = (text: string) => {
+    const newTodo: Todo = {
+      id: generateId(),
+      text,
+      completed: false,
+      createdAt: new Date(),
+    };
+    setTodos(prev => [newTodo, ...prev]);
   };
 
   const toggleTodo = (id: string) => {
-    setTodos(todos.map(todo => 
-      todo.id === id ? { ...todo, completed: !todo.completed } : todo
-    ));
-  };
-
-  const updateTodo = (id: string, text: string) => {
-    setTodos(todos.map(todo => 
-      todo.id === id ? { ...todo, text } : todo
-    ));
-  };
-
-  const updateTodoDate = (id: string, date: string | undefined) => {
-    setTodos(todos.map(todo => 
-      todo.id === id ? { ...todo, dueDate: date } : todo
-    ));
+    setTodos(prev =>
+      prev.map(todo =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
+    );
   };
 
   const deleteTodo = (id: string) => {
-    setTodos(todos.filter(todo => todo.id !== id));
+    setTodos(prev => prev.filter(todo => todo.id !== id));
   };
 
-  const handleDragStart = (event: DragStartEvent) => {
-    setActiveTodoId(event.active.id as string);
+  const clearCompleted = () => {
+    setTodos(prev => prev.filter(todo => !todo.completed));
   };
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    setActiveTodoId(null);
-    const { active, over } = event;
+  const filteredTodos = todos.filter(todo => {
+    if (filter === 'active') return !todo.completed;
+    if (filter === 'completed') return todo.completed;
+    return true;
+  });
 
-    if (over && active.id !== over.id) {
-      setTodos((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over.id);
-        return arrayMove(items, oldIndex, newIndex);
-      });
-    }
-  };
-
-  const startAdding = () => {
-    setIsAdding(true);
-  };
-
-  const cancelAdding = () => {
-    setIsAdding(false);
-    setNewTodo('');
-  };
-
-  const activeTodo = activeTodoId ? todos.find(todo => todo.id === activeTodoId) : null;
+  const activeCount = todos.filter(todo => !todo.completed).length;
+  const completedCount = todos.filter(todo => todo.completed).length;
 
   return (
-    <div className="app-container">
-      <div style={{ maxWidth: '680px', margin: '0 auto', padding: '48px 24px' }}>
-        {/* Header */}
-        <div style={{ marginBottom: '32px' }}>
-          <h1 style={{
-            fontSize: '32px',
-            fontWeight: '700',
-            margin: '0 0 4px 0',
-            color: 'var(--text)'
-          }}>
-            Today
-          </h1>
-          <p style={{
-            fontSize: '16px',
-            color: 'var(--text-secondary)',
-            margin: 0
-          }}>
-            {mounted ? new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }) : ''}
-          </p>
+    <div className="max-w-2xl mx-auto p-6">
+      {/* Header */}
+      <div className="text-center mb-8">
+        <h1 className="text-4xl font-bold text-gray-900 mb-2 flex items-center justify-center gap-3">
+          <CheckSquare className="text-blue-500" size={40} />
+          Pendra
+        </h1>
+        <p className="text-gray-600">A simple, clean todo app that actually works</p>
+      </div>
+
+      {/* Add Todo */}
+      <div className="mb-6">
+        <AddTodo onAdd={addTodo} />
+      </div>
+
+      {/* Filter Tabs */}
+      {todos.length > 0 && (
+        <div className="flex gap-1 mb-6 bg-gray-100 p-1 rounded-lg">
+          {(['all', 'active', 'completed'] as const).map(filterType => (
+            <button
+              key={filterType}
+              onClick={() => setFilter(filterType)}
+              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                filter === filterType
+                  ? 'bg-white text-blue-600 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              {filterType.charAt(0).toUpperCase() + filterType.slice(1)}
+              {filterType === 'active' && activeCount > 0 && (
+                <span className="ml-1 text-xs bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-full">
+                  {activeCount}
+                </span>
+              )}
+              {filterType === 'completed' && completedCount > 0 && (
+                <span className="ml-1 text-xs bg-green-100 text-green-600 px-1.5 py-0.5 rounded-full">
+                  {completedCount}
+                </span>
+              )}
+            </button>
+          ))}
         </div>
+      )}
 
-        {/* Add new todo form */}
-        {isAdding && (
-          <form onSubmit={addTodo} className="animate-slide-down" style={{ marginBottom: '8px' }}>
-            <div className="todo-item" style={{ padding: '12px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ width: '20px' }} />
-                <div className="checkbox" style={{ opacity: 0.5 }} />
-                <input
-                  type="text"
-                  value={newTodo}
-                  onChange={(e) => setNewTodo(e.target.value)}
-                  onBlur={() => !newTodo.trim() && cancelAdding()}
-                  placeholder="What needs to be done?"
-                  className="todo-text"
-                  style={{
-                    flex: 1,
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    fontSize: '17px',
-                    color: 'var(--text)'
-                  }}
-                  autoFocus
-                  ref={inputRef}
-                />
+      {/* Todo List */}
+      <div className="space-y-2 mb-6">
+        {filteredTodos.length === 0 ? (
+          <div className="text-center py-12 text-gray-500">
+            {filter === 'all' && todos.length === 0 && (
+              <div>
+                <CheckSquare size={48} className="mx-auto mb-4 text-gray-300" />
+                <p>No tasks yet. Add one above to get started!</p>
               </div>
-            </div>
-          </form>
-        )}
-
-        {/* Todo list */}
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
-        >
-          <div className="todo-list">
-            {todos.length === 0 ? (
-              <div style={{
-                textAlign: 'center',
-                padding: '48px 24px',
-                color: 'var(--text-tertiary)'
-              }}>
-                <p style={{ fontSize: '18px', marginBottom: '8px' }}>No tasks yet</p>
-                <p style={{ fontSize: '16px' }}>Add a task to get started</p>
-              </div>
-            ) : (
-              <SortableContext
-                items={todos.map(todo => todo.id)}
-                strategy={verticalListSortingStrategy}
-              >
-                {todos.map((todo) => (
-                  <SortableTodoItem
-                    key={todo.id}
-                    todo={todo}
-                    onToggle={toggleTodo}
-                    onUpdate={updateTodo}
-                    onDelete={deleteTodo}
-                    onUpdateDate={updateTodoDate}
-                    mounted={mounted}
-                  />
-                ))}
-              </SortableContext>
+            )}
+            {filter === 'active' && activeCount === 0 && todos.length > 0 && (
+              <p>All tasks completed! 🎉</p>
+            )}
+            {filter === 'completed' && completedCount === 0 && (
+              <p>No completed tasks yet.</p>
             )}
           </div>
-          
-          <DragOverlay>
-            {activeTodo && (
-              <div className="todo-item" style={{
-                backgroundColor: 'var(--background)',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-                borderRadius: '12px',
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ width: '20px' }} />
-                  <div className="checkbox" style={{ background: 'none', border: '1.5px solid var(--gray-3)' }} />
-                  <span style={{ fontSize: '17px', color: 'var(--text)' }}>
-                    {activeTodo.text}
-                  </span>
-                </div>
-              </div>
-            )}
-          </DragOverlay>
-        </DndContext>
-
-        {/* Floating add button */}
-        <button
-          onClick={() => {
-            const title = prompt('What needs to be done?');
-            if (title) createQuickTask(title);
-          }}
-          className="floating-add-button"
-          title="Create a new task"
-          style={{
-            position: 'fixed',
-            bottom: '24px',
-            right: '24px',
-            width: '56px',
-            height: '56px',
-            borderRadius: '50%',
-            backgroundColor: '#007AFF',
-            color: 'white',
-            border: 'none',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease',
-          }}
-          aria-label="Add new task"
-        >
-          <Plus size={24} />
-        </button>
-
-        {/* Add task inline button */}
-        {!isAdding && todos.length > 0 && (
-          <button
-            onClick={() => {
-            const title = prompt('What needs to be done?');
-            if (title) createQuickTask(title);
-          }}
-            className="add-task-inline"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '12px 0',
-              marginLeft: '32px',
-              background: 'none',
-              border: 'none',
-              color: 'var(--text-tertiary)',
-              fontSize: '16px',
-              cursor: 'pointer',
-              transition: 'color 0.2s ease',
-            }}
-          >
-            <Plus size={20} />
-            <span>Add Task</span>
-          </button>
+        ) : (
+          filteredTodos.map(todo => (
+            <TodoItem
+              key={todo.id}
+              todo={todo}
+              onToggle={toggleTodo}
+              onDelete={deleteTodo}
+            />
+          ))
         )}
       </div>
+
+      {/* Footer Stats */}
+      {todos.length > 0 && (
+        <div className="flex items-center justify-between text-sm text-gray-600 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+          <span>
+            {activeCount} {activeCount === 1 ? 'task' : 'tasks'} remaining
+          </span>
+          
+          {completedCount > 0 && (
+            <button
+              onClick={clearCompleted}
+              className="flex items-center gap-1 text-red-500 hover:text-red-600 transition-colors"
+            >
+              <Trash2 size={14} />
+              Clear completed ({completedCount})
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
