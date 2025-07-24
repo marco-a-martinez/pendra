@@ -1,25 +1,30 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, Calendar, X } from 'lucide-react';
+import { Plus, Calendar, X, FolderOpen } from 'lucide-react';
 import { getTodayDate, getTomorrowDate, parseDateFromInput } from '@/lib/dateUtils';
+import { Section } from '@/lib/types';
 
 interface AddTodoProps {
-  onAdd: (text: string, dueDate?: Date) => void;
+  onAdd: (text: string, dueDate?: Date, sectionId?: string) => void;
+  sections: Section[];
+  defaultSectionId?: string;
 }
 
-export function AddTodo({ onAdd }: AddTodoProps) {
+export function AddTodo({ onAdd, sections, defaultSectionId }: AddTodoProps) {
   const [text, setText] = useState('');
   const [dueDate, setDueDate] = useState('');
+  const [sectionId, setSectionId] = useState(defaultSectionId || sections[0]?.id || '');
   const [isExpanded, setIsExpanded] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (text.trim()) {
       const parsedDueDate = dueDate ? parseDateFromInput(dueDate) : undefined;
-      onAdd(text.trim(), parsedDueDate);
+      onAdd(text.trim(), parsedDueDate, sectionId);
       setText('');
       setDueDate('');
+      setSectionId(defaultSectionId || sections[0]?.id || '');
       setIsExpanded(false);
     }
   };
@@ -27,6 +32,7 @@ export function AddTodo({ onAdd }: AddTodoProps) {
   const handleCancel = () => {
     setText('');
     setDueDate('');
+    setSectionId(defaultSectionId || sections[0]?.id || '');
     setIsExpanded(false);
   };
 
@@ -66,6 +72,27 @@ export function AddTodo({ onAdd }: AddTodoProps) {
         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-3"
         autoFocus
       />
+      
+      {/* Section Selection */}
+      {sections.length > 1 && (
+        <div className="mb-3">
+          <div className="flex items-center gap-2 mb-2">
+            <FolderOpen size={16} className="text-gray-500" />
+            <span className="text-sm font-medium text-gray-700">Section</span>
+          </div>
+          <select
+            value={sectionId}
+            onChange={(e) => setSectionId(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+          >
+            {sections.map(section => (
+              <option key={section.id} value={section.id}>
+                {section.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
       
       {/* Due Date Section */}
       <div className="mb-3">
