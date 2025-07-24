@@ -6,7 +6,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { Inbox } from 'lucide-react';
 
 export function InboxView() {
-  const { tasks, setTaskModalOpen } = useAppStore();
+  const { tasks } = useAppStore();
 
   const inboxTasks = tasks.filter(task => task.status === 'inbox');
 
@@ -17,7 +17,7 @@ export function InboxView() {
         title="Your inbox is empty"
         description="All your new tasks will appear here. Add your first task to get started."
         actionLabel="Add Task"
-        onAction={() => setTaskModalOpen(true)}
+        onAction={() => {}}
       />
     );
   }
@@ -33,7 +33,7 @@ export function InboxView() {
       <div className="space-y-3">
         {/* Inline Add Task Button */}
         <button
-          onClick={() => setTaskModalOpen(true)}
+          onClick={() => {}}
           className="w-full p-4 text-left rounded-xl border border-dashed border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-all duration-200 group"
         >
           <div className="flex items-center gap-3">

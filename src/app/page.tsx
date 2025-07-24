@@ -214,7 +214,7 @@ function SortableTodoItem({
 }
 
 export default function HomePage() {
-  const { setTaskModalOpen } = useAppStore();
+  // TaskModal removed
   const [todos, setTodos] = useState<Todo[]>([
     { id: '1', text: 'Welcome to your simple todo app!', completed: false },
     { id: '2', text: 'Click the circle to complete a todo', completed: false },
@@ -422,7 +422,7 @@ export default function HomePage() {
 
         {/* Floating add button */}
         <button
-          onClick={() => setTaskModalOpen(true)}
+          onClick={() => {}}
           className="floating-add-button"
           title="Create a new task"
           style={{
@@ -450,7 +450,7 @@ export default function HomePage() {
         {/* Add task inline button */}
         {!isAdding && todos.length > 0 && (
           <button
-            onClick={() => setTaskModalOpen(true)}
+            onClick={() => {}}
             className="add-task-inline"
             style={{
               display: 'flex',

@@ -5,7 +5,7 @@ import { useAppStore } from '@/lib/store';
 import { Task } from '@/types';
 
 export default function SimpleTestPage() {
-  const { tasks, addTask, setTaskModalOpen, taskModalOpen } = useAppStore();
+  const { tasks, addTask,  } = useAppStore();
   const [title, setTitle] = useState('');
 
   const handleAddTask = () => {
@@ -76,9 +76,9 @@ export default function SimpleTestPage() {
       
       <div className="mb-6">
         <h2 className="text-xl font-semibold mb-2">Test Modal State</h2>
-        <p className="mb-2">Task Modal Open: {taskModalOpen ? 'Yes' : 'No'}</p>
+        <p className="mb-2">Task creation removed</p>
         <button
-          onClick={() => setTaskModalOpen(!taskModalOpen)}
+          onClick={() => alert("Task creation removed")}
           className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
         >
           Toggle Task Modal

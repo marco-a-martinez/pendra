@@ -26,7 +26,7 @@ interface TaskCardProps {
 }
 
 export function TaskCard({ task, className }: TaskCardProps) {
-  const { updateTask, deleteTask, setEditingTask, setTaskModalOpen, projects } = useAppStore();
+  const { updateTask, deleteTask, projects } = useAppStore();
   const [showMenu, setShowMenu] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -43,7 +43,7 @@ export function TaskCard({ task, className }: TaskCardProps) {
 
   const handleEdit = () => {
     setEditingTask(task);
-    setTaskModalOpen(true);
+    // Task editing removed
     setShowMenu(false);
   };
 

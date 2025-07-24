@@ -43,11 +43,7 @@ interface AppStore {
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
   
-  // Modal states
-  taskModalOpen: boolean;
-  setTaskModalOpen: (open: boolean) => void;
-  editingTask: Task | null;
-  setEditingTask: (task: Task | null) => void;
+  // Modal states removed
 }
 
 export const useAppStore = create<AppStore>()(
@@ -109,11 +105,7 @@ export const useAppStore = create<AppStore>()(
       isLoading: false,
       setIsLoading: (loading) => set({ isLoading: loading }),
       
-      // Modal states
-      taskModalOpen: false,
-      setTaskModalOpen: (open) => set({ taskModalOpen: open }),
-      editingTask: null,
-      setEditingTask: (task) => set({ editingTask: task }),
+      // Modal states removed
     }),
     {
       name: 'pendra-storage',

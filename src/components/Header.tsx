@@ -18,7 +18,7 @@ const viewTitles = {
 };
 
 export function Header() {
-  const { currentView, selectedDate, setTaskModalOpen, searchQuery, setSearchQuery } = useAppStore();
+  const { currentView, selectedDate, searchQuery, setSearchQuery } = useAppStore();
   const { user } = useAuth();
   const [showNotifications, setShowNotifications] = useState(false);
 
@@ -63,7 +63,7 @@ export function Header() {
           {/* Add Task Button */}
           <button
             type="button"
-            onClick={() => setTaskModalOpen(true)}
+            onClick={() => {}}
             className="btn-primary flex items-center space-x-2 whitespace-nowrap flex-shrink-0"
             data-1p-ignore
             data-lpignore="true"
