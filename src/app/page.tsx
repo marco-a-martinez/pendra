@@ -12,7 +12,7 @@ import {
   getTodosForSection,
   getNextTodoOrder,
   getNextSectionOrder
-} from '@/lib/storage';
+} from '@/lib/database';
 import { SectionContainer } from '@/components/SectionContainer';
 import { AddTodo } from '@/components/AddTodo';
 import { CheckSquare, Trash2, Plus } from 'lucide-react';
@@ -47,19 +47,39 @@ export default function HomePage() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [draggedItem, setDraggedItem] = useState<Todo | Section | null>(null);
 
-  // Load data from localStorage on mount
+  // Load data from database on mount
   useEffect(() => {
-    setSections(loadSections());
-    setTodos(loadTodos());
+    const loadData = async () => {
+      try {
+        const [sectionsData, todosData] = await Promise.all([
+          loadSections(),
+          loadTodos()
+        ]);
+        setSections(sectionsData);
+        setTodos(todosData);
+      } catch (error) {
+        console.error('Failed to load data:', error);
+      }
+    };
+    
+    loadData();
   }, []);
 
-  // Save data to localStorage whenever they change
+  // Save data to database whenever they change
   useEffect(() => {
-    saveTodos(todos);
+    if (todos.length > 0 || sections.length > 0) { // Only save if data has been loaded
+      saveTodos(todos).catch(error => {
+        console.error('Failed to save todos:', error);
+      });
+    }
   }, [todos]);
 
   useEffect(() => {
-    saveSections(sections);
+    if (sections.length > 0) { // Only save if data has been loaded
+      saveSections(sections).catch(error => {
+        console.error('Failed to save sections:', error);
+      });
+    }
   }, [sections]);
 
   const sensors = useSensors(
