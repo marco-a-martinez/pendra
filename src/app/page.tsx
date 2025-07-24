@@ -214,7 +214,32 @@ function SortableTodoItem({
 }
 
 export default function HomePage() {
-  // TaskModal removed
+  const { addTask, user } = useAppStore();
+  
+  const createQuickTask = async (title: string) => {
+    if (!title.trim() || !user) return;
+    
+    try {
+      const { createTask } = await import('@/lib/supabase-tasks');
+      const taskData = {
+        user_id: user.id,
+        title: title.trim(),
+        status: 'inbox' as const,
+        priority: 'medium' as const,
+        tags: [],
+        order_index: Date.now(),
+      };
+      
+      const { data, error } = await createTask(taskData);
+      if (error) throw error;
+      
+      if (data) {
+        addTask(data);
+      }
+    } catch (error) {
+      console.error('Error creating task:', error);
+    }
+  };
   const [todos, setTodos] = useState<Todo[]>([
     { id: '1', text: 'Welcome to your simple todo app!', completed: false },
     { id: '2', text: 'Click the circle to complete a todo', completed: false },
@@ -422,7 +447,10 @@ export default function HomePage() {
 
         {/* Floating add button */}
         <button
-          onClick={() => {}}
+          onClick={() => {
+            const title = prompt('What needs to be done?');
+            if (title) createQuickTask(title);
+          }}
           className="floating-add-button"
           title="Create a new task"
           style={{
@@ -450,7 +478,10 @@ export default function HomePage() {
         {/* Add task inline button */}
         {!isAdding && todos.length > 0 && (
           <button
-            onClick={() => {}}
+            onClick={() => {
+            const title = prompt('What needs to be done?');
+            if (title) createQuickTask(title);
+          }}
             className="add-task-inline"
             style={{
               display: 'flex',

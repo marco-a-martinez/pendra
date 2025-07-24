@@ -4,6 +4,8 @@
 import { useState } from 'react';
 import { useAppStore } from '@/lib/store';
 import { useAuth } from './AuthProvider';
+import { createTask as createTaskSupabase } from '@/lib/supabase-tasks';
+import { useToast } from '@/hooks/use-toast';
 import { Plus, Search, Bell } from 'lucide-react';
 import { getInitials } from '@/lib/utils';
 import { formatDate } from '@/lib/dateUtils';
@@ -18,9 +20,10 @@ const viewTitles = {
 };
 
 export function Header() {
-  const { currentView, selectedDate, searchQuery, setSearchQuery } = useAppStore();
+  const { currentView, selectedDate, searchQuery, setSearchQuery, addTask, user: appUser } = useAppStore();
   const { user } = useAuth();
   const [showNotifications, setShowNotifications] = useState(false);
+  const { toast } = useToast();
 
 
 
@@ -63,7 +66,39 @@ export function Header() {
           {/* Add Task Button */}
           <button
             type="button"
-            onClick={() => {}}
+            onClick={async () => {
+              const title = prompt('What needs to be done?');
+              if (!title?.trim() || !appUser) return;
+              
+              try {
+                const taskData = {
+                  user_id: appUser.id,
+                  title: title.trim(),
+                  status: 'inbox' as const,
+                  priority: 'medium' as const,
+                  tags: [],
+                  order_index: Date.now(),
+                };
+                
+                const { data, error } = await createTaskSupabase(taskData);
+                if (error) throw error;
+                
+                if (data) {
+                  addTask(data);
+                  toast({
+                    title: "Task created",
+                    description: "Your task has been added successfully.",
+                  });
+                }
+              } catch (error) {
+                console.error('Error creating task:', error);
+                toast({
+                  title: "Error",
+                  description: "Failed to create task. Please try again.",
+                  variant: "destructive",
+                });
+              }
+            }}
             className="btn-primary flex items-center space-x-2 whitespace-nowrap flex-shrink-0"
             data-1p-ignore
             data-lpignore="true"

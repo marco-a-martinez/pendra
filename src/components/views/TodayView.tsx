@@ -3,6 +3,7 @@
 import { useAppStore } from '@/lib/store';
 import { TaskCard } from '@/components/TaskCard';
 import { EmptyState } from '@/components/EmptyState';
+import { InlineTaskCreator } from '@/components/InlineTaskCreator';
 import { CheckSquare } from 'lucide-react';
 import { isToday, isDueToday } from '@/lib/dateUtils';
 
@@ -48,8 +49,10 @@ export function TodayView() {
             Today&apos;s Tasks ({pendingTasks.length})
           </h2>
           <div className="space-y-3">
-            {/* Inline Add Task Button */}
-
+            <InlineTaskCreator 
+              defaultStatus="today" 
+              placeholder="Add a task for today..."
+            />
             
             {pendingTasks.map(task => (
               <TaskCard key={task.id} task={task} />
