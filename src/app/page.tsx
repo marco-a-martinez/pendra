@@ -299,7 +299,7 @@ export default function HomePage() {
         <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 flex items-center justify-center gap-2 sm:gap-3">
           <CheckSquare className="text-blue-500" size={32} />
           Pendra
-          <span className="text-sm sm:text-lg font-normal text-blue-500">v0.1.5</span>
+          <span className="text-sm sm:text-lg font-normal text-blue-500">v0.1.6</span>
         </h1>
         <p className="text-sm sm:text-base text-gray-600 px-2">A simple, clean todo app with drag-and-drop reordering, due dates, sections, checklists, and inline editing</p>
       </div>
