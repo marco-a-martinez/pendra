@@ -33,6 +33,8 @@ interface TodoItemProps {
 export function TodoItem({ todo, onToggle, onDelete, onUpdateTodo }: TodoItemProps) {
   const [newChecklistItem, setNewChecklistItem] = useState('');
   const [isAddingChecklistItem, setIsAddingChecklistItem] = useState(false);
+  const [isEditingTodoText, setIsEditingTodoText] = useState(false);
+  const [editTodoText, setEditTodoText] = useState(todo.text);
 
   const {
     attributes,
@@ -140,6 +142,28 @@ export function TodoItem({ todo, onToggle, onDelete, onUpdateTodo }: TodoItemPro
     }
   };
 
+  // Todo text editing handlers
+  const handleEditTodoText = () => {
+    if (isEditingTodoText && editTodoText.trim() && editTodoText !== todo.text) {
+      onUpdateTodo(todo.id, { text: editTodoText.trim() });
+    }
+    setIsEditingTodoText(false);
+  };
+
+  const handleTodoTextKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleEditTodoText();
+    } else if (e.key === 'Escape') {
+      setEditTodoText(todo.text);
+      setIsEditingTodoText(false);
+    }
+  };
+
+  const startEditingTodoText = () => {
+    setEditTodoText(todo.text);
+    setIsEditingTodoText(true);
+  };
+
   return (
     <div className="space-y-2">
       {/* Main Todo Item */}
@@ -185,15 +209,28 @@ export function TodoItem({ todo, onToggle, onDelete, onUpdateTodo }: TodoItemPro
         <div className="flex-1 min-w-0">
           {/* Todo Text */}
           <div className="flex items-center gap-2">
-            <span
-              className={`block ${
-                todo.completed
-                  ? 'text-gray-500 line-through'
-                  : 'text-gray-900'
-              }`}
-            >
-              {todo.text}
-            </span>
+            {isEditingTodoText ? (
+              <input
+                type="text"
+                value={editTodoText}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditTodoText(e.target.value)}
+                onBlur={handleEditTodoText}
+                onKeyDown={handleTodoTextKeyDown}
+                className="flex-1 bg-white border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                autoFocus
+              />
+            ) : (
+              <span
+                className={`block cursor-pointer ${
+                  todo.completed
+                    ? 'text-gray-500 line-through'
+                    : 'text-gray-900'
+                } hover:bg-gray-50 px-1 py-0.5 rounded transition-colors`}
+                onClick={startEditingTodoText}
+              >
+                {todo.text}
+              </span>
+            )}
             {hasChecklist && (
               <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
                 {checklistProgress}
