@@ -208,15 +208,18 @@ export function TodoItem({ todo, onToggle, onDelete, onUpdateTodo }: TodoItemPro
 
   const handleEditNote = () => {
     if (isEditingNote) {
-      if (editNote.trim() !== (todo.note || '')) {
-        // When saving a note, collapse it by default
+      if (editNote.trim()) {
+        // When saving a note (new or edited), always collapse it
         onUpdateTodo(todo.id, { 
-          note: editNote.trim() || undefined,
+          note: editNote.trim(),
           noteExpanded: false
         });
       } else {
-        // If no changes, just collapse the note
-        onUpdateTodo(todo.id, { noteExpanded: false });
+        // If note is empty, remove it
+        onUpdateTodo(todo.id, { 
+          note: undefined,
+          noteExpanded: false
+        });
       }
     }
     setIsEditingNote(false);
