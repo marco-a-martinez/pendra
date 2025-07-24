@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Plus, Calendar, X, FolderOpen } from 'lucide-react';
-import { getTodayDate, getTomorrowDate, parseDateFromInput } from '@/lib/dateUtils';
+import { parseDateFromInput } from '@/lib/dateUtils';
 import { Section } from '@/lib/types';
 
 interface AddTodoProps {
@@ -36,9 +36,7 @@ export function AddTodo({ onAdd, sections, defaultSectionId }: AddTodoProps) {
     setIsExpanded(false);
   };
 
-  const setQuickDate = (dateString: string) => {
-    setDueDate(dateString);
-  };
+
 
   const handleDateContainerClick = () => {
     // Focus the date input to trigger calendar popup
@@ -110,23 +108,6 @@ export function AddTodo({ onAdd, sections, defaultSectionId }: AddTodoProps) {
           )}
         </div>
         
-        {/* Quick Date Buttons */}
-        <div className="flex gap-2 mb-2">
-          <button
-            type="button"
-            onClick={() => setQuickDate(getTodayDate())}
-            className="px-3 py-2 text-xs sm:text-sm bg-orange-100 text-orange-700 rounded-md hover:bg-orange-200 transition-colors"
-          >
-            Today
-          </button>
-          <button
-            type="button"
-            onClick={() => setQuickDate(getTomorrowDate())}
-            className="px-3 py-2 text-xs sm:text-sm bg-yellow-100 text-yellow-700 rounded-md hover:bg-yellow-200 transition-colors"
-          >
-            Tomorrow
-          </button>
-        </div>
         
         {/* Date Input Container - Make entire area clickable */}
         <div 
