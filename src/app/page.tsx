@@ -63,6 +63,7 @@ export default function HomePage() {
         <h1 className="text-4xl font-bold text-gray-900 mb-2 flex items-center justify-center gap-3">
           <CheckSquare className="text-blue-500" size={40} />
           Pendra
+          <span className="text-lg font-normal text-blue-500">v0.1</span>
         </h1>
         <p className="text-gray-600">A simple, clean todo app that actually works</p>
       </div>

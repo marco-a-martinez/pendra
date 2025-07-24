@@ -1,6 +1,7 @@
 {
   "name": "pendra",
   "version": "0.1.0",
+  "description": "Pendra App v0.1 - A simple, clean todo application",
   "private": true,
   "scripts": {
     "dev": "next dev",
