@@ -15,6 +15,8 @@ export interface Todo {
   sectionId: string;
   checklist?: ChecklistItem[];
   checklistExpanded?: boolean;
+  note?: string;
+  noteExpanded?: boolean;
 }
 
 export interface Section {
