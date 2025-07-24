@@ -39,11 +39,15 @@ export function AddTodo({ onAdd }: AddTodoProps) {
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder="What needs to be done?"
-        className="input mb-3"
+        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-3"
         autoFocus
       />
       <div className="flex gap-2">
-        <button type="submit" className="btn btn-primary" disabled={!text.trim()}>
+        <button 
+          type="submit" 
+          className="px-4 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors disabled:opacity-50" 
+          disabled={!text.trim()}
+        >
           Add Task
         </button>
         <button
@@ -52,7 +56,7 @@ export function AddTodo({ onAdd }: AddTodoProps) {
             setText('');
             setIsExpanded(false);
           }}
-          className="btn btn-secondary"
+          className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300 transition-colors"
         >
           Cancel
         </button>
