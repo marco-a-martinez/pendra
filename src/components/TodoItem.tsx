@@ -170,38 +170,38 @@ export function TodoItem({ todo, onToggle, onDelete, onUpdateTodo }: TodoItemPro
       <div
         ref={setNodeRef}
         style={style}
-        className={`flex items-center gap-3 p-4 bg-white rounded-lg shadow-sm border border-gray-200 ${
+        className={`flex items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-white rounded-lg shadow-sm border border-gray-200 ${
           isDragging ? 'shadow-lg ring-2 ring-blue-500 ring-opacity-50' : ''
         }`}
       >
         {/* Drag Handle */}
         <button
-          className="flex-shrink-0 p-1 text-gray-400 hover:text-gray-600 cursor-grab active:cursor-grabbing transition-colors"
+          className="flex-shrink-0 p-2 text-gray-400 hover:text-gray-600 cursor-grab active:cursor-grabbing transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
           {...attributes}
           {...listeners}
         >
-          <GripVertical size={16} />
+          <GripVertical size={18} />
         </button>
         
         {/* Complete Button */}
         <button
           onClick={() => onToggle(todo.id)}
-          className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+          className={`flex-shrink-0 w-8 h-8 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
             todo.completed
               ? 'bg-green-500 border-green-500 text-white'
               : 'border-gray-300 hover:border-green-400'
           }`}
         >
-          {todo.completed && <Check size={14} />}
+          {todo.completed && <Check size={16} />}
         </button>
         
         {/* Checklist Expand/Collapse Button */}
         {hasChecklist && (
           <button
             onClick={toggleChecklistExpanded}
-            className="flex-shrink-0 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+            className="flex-shrink-0 p-2 text-gray-400 hover:text-gray-600 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
           >
-            {todo.checklistExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+            {todo.checklistExpanded ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
           </button>
         )}
         
@@ -260,18 +260,18 @@ export function TodoItem({ todo, onToggle, onDelete, onUpdateTodo }: TodoItemPro
         {/* Add Checklist Item Button */}
         <button
           onClick={() => setIsAddingChecklistItem(true)}
-          className="flex-shrink-0 p-1 text-gray-400 hover:text-blue-500 transition-colors"
+          className="flex-shrink-0 p-2 text-gray-400 hover:text-blue-500 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
           title="Add checklist item"
         >
-          <Plus size={16} />
+          <Plus size={18} />
         </button>
         
         {/* Delete Button */}
         <button
           onClick={() => onDelete(todo.id)}
-          className="flex-shrink-0 p-1 text-gray-400 hover:text-red-500 transition-colors"
+          className="flex-shrink-0 p-2 text-gray-400 hover:text-red-500 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
         >
-          <Trash2 size={16} />
+          <Trash2 size={18} />
         </button>
       </div>
 

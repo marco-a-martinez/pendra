@@ -111,18 +111,18 @@ export function AddTodo({ onAdd, sections, defaultSectionId }: AddTodoProps) {
         </div>
         
         {/* Quick Date Buttons */}
-        <div className="flex gap-2 mb-2">
+        <div className="flex flex-wrap gap-2 mb-2">
           <button
             type="button"
             onClick={() => setQuickDate(getTodayDate())}
-            className="px-3 py-1 text-xs bg-orange-100 text-orange-700 rounded-md hover:bg-orange-200 transition-colors"
+            className="px-3 py-2 text-sm bg-orange-100 text-orange-700 rounded-md hover:bg-orange-200 transition-colors min-h-[44px] flex items-center"
           >
             Today
           </button>
           <button
             type="button"
             onClick={() => setQuickDate(getTomorrowDate())}
-            className="px-3 py-1 text-xs bg-yellow-100 text-yellow-700 rounded-md hover:bg-yellow-200 transition-colors"
+            className="px-3 py-2 text-sm bg-yellow-100 text-yellow-700 rounded-md hover:bg-yellow-200 transition-colors min-h-[44px] flex items-center"
           >
             Tomorrow
           </button>
@@ -144,10 +144,10 @@ export function AddTodo({ onAdd, sections, defaultSectionId }: AddTodoProps) {
       </div>
       
       {/* Action Buttons */}
-      <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row gap-2">
         <button 
           type="submit" 
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors disabled:opacity-50" 
+          className="flex-1 px-4 py-3 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors disabled:opacity-50 min-h-[44px]" 
           disabled={!text.trim()}
         >
           Add Task
@@ -155,7 +155,7 @@ export function AddTodo({ onAdd, sections, defaultSectionId }: AddTodoProps) {
         <button
           type="button"
           onClick={handleCancel}
-          className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300 transition-colors"
+          className="flex-1 px-4 py-3 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300 transition-colors min-h-[44px]"
         >
           Cancel
         </button>
