@@ -111,18 +111,18 @@ export function AddTodo({ onAdd, sections, defaultSectionId }: AddTodoProps) {
         </div>
         
         {/* Quick Date Buttons */}
-        <div className="flex flex-wrap gap-2 mb-2">
+        <div className="flex gap-2 mb-2">
           <button
             type="button"
             onClick={() => setQuickDate(getTodayDate())}
-            className="px-3 py-2 text-sm bg-orange-100 text-orange-700 rounded-md hover:bg-orange-200 transition-colors min-h-[44px] flex items-center"
+            className="px-3 py-2 text-xs sm:text-sm bg-orange-100 text-orange-700 rounded-md hover:bg-orange-200 transition-colors"
           >
             Today
           </button>
           <button
             type="button"
             onClick={() => setQuickDate(getTomorrowDate())}
-            className="px-3 py-2 text-sm bg-yellow-100 text-yellow-700 rounded-md hover:bg-yellow-200 transition-colors min-h-[44px] flex items-center"
+            className="px-3 py-2 text-xs sm:text-sm bg-yellow-100 text-yellow-700 rounded-md hover:bg-yellow-200 transition-colors"
           >
             Tomorrow
           </button>
@@ -144,10 +144,10 @@ export function AddTodo({ onAdd, sections, defaultSectionId }: AddTodoProps) {
       </div>
       
       {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row gap-2">
+      <div className="flex gap-2">
         <button 
           type="submit" 
-          className="flex-1 px-4 py-3 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors disabled:opacity-50 min-h-[44px]" 
+          className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors disabled:opacity-50" 
           disabled={!text.trim()}
         >
           Add Task
@@ -155,7 +155,7 @@ export function AddTodo({ onAdd, sections, defaultSectionId }: AddTodoProps) {
         <button
           type="button"
           onClick={handleCancel}
-          className="flex-1 px-4 py-3 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300 transition-colors min-h-[44px]"
+          className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300 transition-colors"
         >
           Cancel
         </button>
